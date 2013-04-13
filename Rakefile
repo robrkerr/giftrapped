@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Giftrapper::Application.load_tasks
+Giftrapped::Application.load_tasks

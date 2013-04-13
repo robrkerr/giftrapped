@@ -1,4 +1,7 @@
-Giftrapper::Application.routes.draw do
+Giftrapped::Application.routes.draw do
+  root :to => "words#index"
+  resources :words
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

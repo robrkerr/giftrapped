@@ -1,0 +1,20 @@
+<div id='word_table'>
+  <table>
+    <% if @word %>
+      <tr id="wr_heading_row" class="heading">
+        <td class="word"> <%= @word.name %> </td>
+        <td class="phonemes"> <%= @word.phonemes_snippet %> </td>
+        <td class="syllables"> <%= @word.num_syllables %> </td>
+        <td class="rhymes"> </td>
+      </tr>
+    <% end %>
+    <% @words.each_with_index do |word,i| %>
+      <tr id="wr_<%= word.name %>" class="<%= cycle('odd', 'even') %> <%= '_rhymes' if @word.try(:rhymes_with, @words[i])==1 %>">
+        <td class="word"> <%= link_to word.name, word %> </td>
+        <td class="phonemes"> <%= word.phonemes_snippet %> </td>
+        <td class="syllables"> <%= word.num_syllables %> </td>
+        <td class="rhymes"> <%= "rhymes" if @word.try(:rhymes_with, @words[i])==1 %> </td>
+      </tr>  
+    <% end %>
+  </table>
+</div>

@@ -1,7 +1,84 @@
-/*
- * This is a manifest file that'll automatically include all the stylesheets available in this directory
- * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
- * the top of the compiled file, but it's generally better to create a new file per style scope.
- *= require_self
- *= require_tree . 
-*/
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    background: white;
+}
+
+input {
+    font: 13pt "Myriad Pro", Helvetica;
+}
+
+body {
+    font: 13pt "Myriad Pro", Helvetica;
+    margin: 5px 10% 0 10%;
+    height: 100%;
+    padding: 30px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.flash {
+    height:       50px; 
+    margin-top:   25px;
+}
+
+.input {
+    height:       80px; 
+    margin-top:   25px;
+}
+
+.input_inner {
+    height:       20px; 
+    font: 13pt "Myriad Pro", Helvetica;
+}
+
+#word_table tr {
+    height:       40px;
+}
+
+#word_table tr.heading {
+    font-weight:   bold;
+    border-bottom: 2px solid #000;
+}
+
+#word_table tr.odd {
+    background:   rgba(255, 255, 255, 1.0);
+}
+
+#word_table tr.even {
+    background:   rgba(230, 230, 230, 1.0);
+}
+
+#word_table table {
+    border-collapse:    collapse;
+    width:              1000px;
+}
+
+#word_table td.word {
+    width:        25%;
+}
+
+#word_table td.phonemes {
+    width:        55%;
+}
+
+#word_table td.syllables {
+    width:        10%;
+}
+
+#word_table td.rhymes {
+    width:        10%;
+}
+
+#title_table td.title_word {
+    color:        rgba(255,0,0,1.0);
+}
+
+#title_table td.title_spacer {
+    width:        20px;
+}
+
+

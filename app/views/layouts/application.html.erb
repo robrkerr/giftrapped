@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Giftrapper</title>
+  <title>GiftRAPPED</title>
   <%= stylesheet_link_tag    "application" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
+<div id="title_table">
+  <table>
+      <tr>
+        <% if @word %>
+          <td class="title_word"> <h2><%= @word.name + ":" %></h2> </td>
+          <td class="title_spacer">  </td>
+        <% end %>
+        <td class="title_gr"><h2>giftRAPPED</h2></td>
+      </tr>
+  </table>
+</div>
+
+<div class="input">
+  <div class="text_input">
+    <%= form_for @input do |f| %>
+      <%= f.text_field(:name) %>
+      <%= f.submit("Rap") %>
+    <% end %>
+  </div>
+</div>
+
 <%= yield %>
+
+<div class="flash">
+  <% flash.each do |key, value| %>
+    <div class="flash" id="<%= key %>">
+      <%= value %>
+    </div>
+  <% end %>
+</div>
 
 </body>
 </html>
