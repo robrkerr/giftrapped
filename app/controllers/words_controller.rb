@@ -25,9 +25,18 @@ class WordsController < ApplicationController
   
   def show
     @word = Word.find(params[:id])
-    @words = Word.includes(:word_phonemes => :phoneme).all
-    @words.sort_by! { |w| -@word.rhymes_with(w) }
-    @words = @words[0..16]
+    @words = []
+    n = @word.split_by_vowels.length
+    emcompassing_words = @word.words_sharing_phonemes_from_last_vowel(n-1)
+    emcompassing_words, same_words = emcompassing_words.partition { |w| w.num_phonemes != @word.num_phonemes }
+    @words = @words | emcompassing_words
+    (n-2).downto(0) { |i| 
+      @words = @words | @word.words_sharing_phonemes_from_last_vowel(i)
+    }
+    @words -= same_words
+    # num = 4
+    # @words.select! { |w| w.num_syllables == num }
+    @words_to_show = @words[0..12]
     respond_to do |format|
       format.html # show.html.erb
     end

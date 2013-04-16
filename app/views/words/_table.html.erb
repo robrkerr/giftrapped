@@ -3,18 +3,29 @@
     <% if @word %>
       <tr id="wr_heading_row" class="heading">
         <td class="word"> <%= @word.name %> </td>
-        <td class="phonemes"> <%= @word.phonemes_snippet %> </td>
         <td class="syllables"> <%= @word.num_syllables %> </td>
-        <td class="rhymes"> </td>
+        <td class="phonemes">
+          <% @word.phonemes.reverse.each do |p| %>
+            <div> <%= p.full_name %> </div>
+            <div class="spacer"> </div>
+          <% end%>
+        </td>
       </tr>
     <% end %>
-    <% @words.each_with_index do |word,i| %>
-      <tr id="wr_<%= word.name %>" class="<%= cycle('odd', 'even') %> <%= '_rhymes' if @word.try(:rhymes_with, @words[i])==1 %>">
+    <% @words_to_show.each_with_index do |word,i| %>
+      <tr id="wr_<%= word.name %>" class="<%= cycle('odd', 'even') %>">
         <td class="word"> <%= link_to word.name, word %> </td>
-        <td class="phonemes"> <%= word.phonemes_snippet %> </td>
         <td class="syllables"> <%= word.num_syllables %> </td>
-        <td class="rhymes"> <%= "rhymes" if @word.try(:rhymes_with, @words[i])==1 %> </td>
+        <td class="phonemes">
+          <% matching = true %>
+          <% word.phonemes.reverse.each_with_index do |p,j| %>
+            <% matching = false if p != @word.phonemes.reverse[j] %>
+            <div class="<%= "match" if matching %>"> <%= p.full_name %> </div>
+            <div class="spacer"> </div>
+          <% end%>
+        </td>
       </tr>  
     <% end %>
   </table>
 </div>
+

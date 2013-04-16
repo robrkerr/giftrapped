@@ -25,6 +25,8 @@ GEM
       activesupport (= 3.1.0)
       arel (~> 2.2.1)
       tzinfo (~> 0.3.29)
+    activerecord-import (0.3.1)
+      activerecord (~> 3.0)
     activeresource (3.1.0)
       activemodel (= 3.1.0)
       activesupport (= 3.1.0)
@@ -161,6 +163,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-import
   capybara
   coffee-rails (~> 3.1.0)
   cucumber-rails

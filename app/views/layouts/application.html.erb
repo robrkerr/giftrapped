@@ -20,12 +20,27 @@
   </table>
 </div>
 
-<div class="input">
-  <div class="text_input">
+<div id="input_area">
+  <div id="word_input" class="input">
     <%= form_for @input do |f| %>
       <%= f.text_field(:name) %>
       <%= f.submit("Rap") %>
     <% end %>
+  </div>
+  <div class="input">
+    <select name="first_letter">
+      <% "abcdefghijklmnopqrstuvwxyz".each_char do |c| %>
+        <option value="#{c}"><%= c %></option>
+      <% end %>
+    </select>
+  </div>
+  <div class="input">
+    <select name="syllables">
+      <% [1,2,3,4,5,6].each do |n| %>
+        <option value="#{n}"><%= n %></option>
+      <% end %>
+      <option value="7+"><%= "7+" %></option>
+    </select>
   </div>
 </div>
 

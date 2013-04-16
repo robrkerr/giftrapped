@@ -25,18 +25,22 @@ body {
     margin-top:   25px;
 }
 
-.input {
+#input_area {
     height:       80px; 
     margin-top:   25px;
 }
 
-.input_inner {
-    height:       20px; 
-    font: 13pt "Myriad Pro", Helvetica;
+#word_input {
+    width:        400px;
+}
+
+div.input {
+    float:        left;
+    width:        80px;
 }
 
 #word_table tr {
-    height:       40px;
+    height:       48px;
 }
 
 #word_table tr.heading {
@@ -58,20 +62,41 @@ body {
 }
 
 #word_table td.word {
-    width:        25%;
+    width:          20%;
 }
 
 #word_table td.phonemes {
-    width:        55%;
+    width:          65%;
+    margin-left:    auto;
+    margin-right:   25px;
+}
+
+#word_table div {
+    float:          right;
+    width:          40px;
+    height:         40px;
+    text-align:     center;
+    vertical-align: middle;
+    line-height:    40px;
+}
+
+#word_table div.spacer {
+    width:          8px;
+}
+
+#word_table div.match {
+    background-color:    rgba(120, 230, 120, 0.6);
 }
 
 #word_table td.syllables {
-    width:        10%;
+    width:          15%;
+    text-align:     center;
 }
 
-#word_table td.rhymes {
-    width:        10%;
-}
+/*#word_table td.rhymes {
+    width:          15%;
+    text-align:     right;
+}*/
 
 #title_table td.title_word {
     color:        rgba(255,0,0,1.0);

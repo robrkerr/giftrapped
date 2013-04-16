@@ -20,8 +20,9 @@ def seed_words filename, output=true
     words.map! { |w| {:name => w}}
   }
   seed_timer("Populating word table... ", output) {
-    WordPhoneme.transaction do
-      words = Word.create!(words)
+    Word.transaction do
+      Word.import words.map { |w| Word.new(w) }
+      words = Word.order('id ASC').all
     end
   }
 
@@ -33,14 +34,15 @@ def seed_words filename, output=true
   }
   seed_timer("Tidying word-phoneme data... ", output) {
     word_phonemes = word_phonemes.each_with_index.map { |wps,i| 
-      wps.each_with_index.map { |wp,j| 
-        {:word_id => words[i].id, :phoneme_id => phonemes[wp].first.id, :order => j} 
+      wps.reverse.each_with_index.map { |wp,j| 
+        {:word_id => words[i].id, :phoneme_id => phonemes[wp].first.id, 
+              :order => j}
       }
     }
   }
   seed_timer("Populating word-phoneme table... ", output) {
     WordPhoneme.transaction do
-      WordPhoneme.create!(word_phonemes.flatten)
+      WordPhoneme.import word_phonemes.flatten.map { |wp| WordPhoneme.new(wp) }
     end
   }
 end
