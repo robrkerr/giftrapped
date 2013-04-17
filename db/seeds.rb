@@ -9,7 +9,13 @@
 require "#{Rails.root}/db/seed_helper.rb"
 
 load "#{Rails.root}/db/phoneme_seed.rb"
+`split -a 1 -l 10000 data/cmudict.0.7a data/word_batch_`
+Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|
+  puts "Loading words: Batch #{i+1}"
+  seed_words(file)
+end
+`rm data/word_batch_*`
 # seed_words("#{Rails.root}/data/cmudict.0.7a.partial")
 # seed_words("#{Rails.root}/data/cmudict.0.7a.10k")
-seed_words("#{Rails.root}/data/cmudict.0.7a")
+# seed_words("#{Rails.root}/data/cmudict.0.7a")
 
