@@ -1,5 +1,6 @@
 class WordsController < ApplicationController
   before_filter :new_input, :only => [:show, :index]
+  before_filter :get_different_phonemes, :only => [:show, :index]
   
   def index
     # @words = Word.find(:all, :limit => 9)
@@ -25,7 +26,6 @@ class WordsController < ApplicationController
   
   def show
     @word = Word.find(params[:id])
-    @phonemes = Phoneme.find_by_sql("select distinct(name) from phonemes order by name asc")
     @words = []
     n = @word.split_by_vowels.length
     emcompassing_words = @word.words_sharing_phonemes_from_last_vowel(n-1)
@@ -51,5 +51,9 @@ private
   
   def new_input
     @input = Word.new
+  end
+
+  def get_different_phonemes
+    @phonemes = Phoneme.find_by_sql("select distinct(name) from phonemes order by name asc")
   end
 end
