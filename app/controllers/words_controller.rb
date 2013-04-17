@@ -25,6 +25,7 @@ class WordsController < ApplicationController
   
   def show
     @word = Word.find(params[:id])
+    @phonemes = Phoneme.find_by_sql("select distinct(name) from phonemes order by name asc")
     @words = []
     n = @word.split_by_vowels.length
     emcompassing_words = @word.words_sharing_phonemes_from_last_vowel(n-1)

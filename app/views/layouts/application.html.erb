@@ -29,8 +29,8 @@
   </div>
   <div class="input">
     <select name="first_letter">
-      <% "abcdefghijklmnopqrstuvwxyz".each_char do |c| %>
-        <option value="#{c}"><%= c %></option>
+      <% @phonemes.each do |ph| %>
+        <option value="#{ph.name}"><%= ph.name %></option>
       <% end %>
     </select>
   </div>

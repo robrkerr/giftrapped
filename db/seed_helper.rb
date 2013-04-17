@@ -11,24 +11,22 @@ def seed_words filename, output=true
   words = []; word_phonemes = []; phonemes = {}
   seed_timer("  Reading word file... ", output) {
     words, word_phonemes = load_words(filename)
+    wwp = words.zip(word_phonemes).sort_by { |w,wp| w }
+    words = wwp.map { |w,wp| w }
+    word_phonemes = wwp.map { |w,wp| wp }
   }
 
-  seed_timer("  Clearing word table... ", output) {
-    Word.delete_all
-  }
   seed_timer("  Tidying word data... ", output) {
     words.map! { |w| {:name => w}}
   }
   seed_timer("  Populating word table... ", output) {
+    all_words_before = Word.all
     Word.transaction do
       Word.import words.map { |w| Word.new(w) }
-      words = Word.order('id ASC').all
     end
+    words = (Word.all - all_words_before).sort_by(&:name)
   }
 
-  seed_timer("  Clearing word-phoneme table... ", output) {
-    WordPhoneme.delete_all
-  }
   seed_timer("  Getting phoneme ids... ", output) {
     phonemes = Phoneme.all.group_by { |p| [p.name,p.stress] }
   }
