@@ -32,17 +32,25 @@ def seed_words filename, output=true
   seed_timer("Getting phoneme ids... ", output) {
     phonemes = Phoneme.all.group_by { |p| [p.name,p.stress] }
   }
-  seed_timer("Tidying word-phoneme data... ", output) {
-    word_phonemes = word_phonemes.each_with_index.map { |wps,i| 
-      wps.reverse.each_with_index.map { |wp,j| 
-        {:word_id => words[i].id, :phoneme_id => phonemes[wp].first.id, 
-              :order => j}
-      }
-    }
-  }
   seed_timer("Populating word-phoneme table... ", output) {
-    WordPhoneme.transaction do
-      WordPhoneme.import word_phonemes.flatten.map { |wp| WordPhoneme.new(wp) }
+    i = 0
+    batch_size = 10000
+    while (i < word_phonemes.length) do
+      if (i+batch_size < word_phonemes.length)
+        word_phonemes_batch = word_phonemes[i..(i+batch_size-1)]
+      else
+        word_phonemes_batch = word_phonemes[i..(-1)]
+      end
+      word_phonemes_batch = word_phonemes_batch.each_with_index.map { |wps,i| 
+        wps.reverse.each_with_index.map { |wp,j| 
+          {:word_id => words[i].id, :phoneme_id => phonemes[wp].first.id, 
+                :order => j}
+        }
+      }
+      WordPhoneme.transaction do
+        WordPhoneme.import word_phonemes_batch.flatten.map { |wp| WordPhoneme.new(wp) }
+      end
+      i += batch_size
     end
   }
 end
