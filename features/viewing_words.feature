@@ -32,27 +32,29 @@ Feature: Viewing words
     And I am on the homepage
 
   Scenario: Entering a word
-    When I fill in "word[name]" with "hat"
+    When I search for "hat"
     And I press "Rap"
     Then I should see "hat" within "#title_table td.title_word h2"
     And I should see "hat" within "#wr_heading_row"
-    And I should see "hh - ae1 - t" within "#wr_heading_row"
-    And I should see "cat" within "#wr_cat"
-    And I should see "k - ae1 - t" within "#wr_cat"
-    And I should see "rhymes" within "#wr_cat"
-    And I should see "dog" within "#wr_dog"
-    And I should see "d - ao1 - g" within "#wr_dog"
-    And I should not see "rhymes" within "#wr_dog"
+    And I should see "hh" within "#wr_heading_row td.phonemes"
+    And I should see "ae1" within "#wr_heading_row td.phonemes"
+    And I should see "t" within "#wr_heading_row td.phonemes"
+    And I should see "cat" within "#word_table"
+    And I should see "cat" within "#wr_cat_"
+    And I should see "k" within "#wr_cat_ td.phonemes"
+    And I should see "ae1" within "#wr_cat_ td.phonemes"
+    And I should see "t" within "#wr_cat_ td.phonemes"
+    And I should not see "dog" within "#word_table"
 
   Scenario: Clicking on word
-    When I fill in "word[name]" with "hat"
+    When I search for "hat"
     And I press "Rap"
     And I follow "cat" within "#word_table"
     Then I should see "cat" within "#title_table td.title_word h2"
     And I should not see "hat" within "#title_table td.title_word h2"
     
   Scenario: Entering a invalid word
-    When I fill in "word[name]" with "gggggg"
+    When I search for "gggggg"
     And I press "Rap"
     Then I should see "The word you entered doesn't match any we know of."
   

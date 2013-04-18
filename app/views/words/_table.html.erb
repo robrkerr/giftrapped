@@ -13,7 +13,7 @@
       </tr>
     <% end %>
     <% @words_to_show.each_with_index do |word,i| %>
-      <tr id="wr_<%= word.name %>" class="<%= cycle('odd', 'even') %>">
+      <tr id="wr_<%= word.name %>_" class="<%= cycle('odd', 'even') %>">
         <td class="word"> <%= link_to word.name, word %> </td>
         <td class="syllables"> <%= word.num_syllables %> </td>
         <td class="phonemes">

@@ -31,12 +31,12 @@ body {
 }
 
 #word_input {
-    width:        400px;
+    width:        800px;
 }
 
 div.input {
     float:        left;
-    width:        80px;
+    width:        200px;
 }
 
 #word_table tr {
@@ -92,11 +92,6 @@ div.input {
     width:          15%;
     text-align:     center;
 }
-
-/*#word_table td.rhymes {
-    width:          15%;
-    text-align:     right;
-}*/
 
 #title_table td.title_word {
     color:        rgba(255,0,0,1.0);

@@ -10,13 +10,14 @@ class WordsController < ApplicationController
   end
   
   def create
-    find_words_by_name(params[:word][:name].downcase)
+    find_words_by_name(params[:name].downcase)
+    get_params = params.slice(:first_phoneme,:num_syllables).select { |k,v| v && v!="" }
     respond_to do |format|
       if @word.length > 1
         # maybe do something better here...
-        format.html { redirect_to @word.first }
+        format.html { redirect_to word_path(@word.first, get_params) }
       elsif @word.length > 0
-        format.html { redirect_to @word }
+        format.html { redirect_to word_path(@word, get_params) }
       else
         flash[:alert] = "The word you entered doesn't match any we know of."
         format.html { redirect_to words_path }
@@ -35,8 +36,12 @@ class WordsController < ApplicationController
       @words = @words | @word.words_sharing_phonemes_from_last_vowel(i)
     }
     @words -= same_words
-    # num = 4
-    # @words.select! { |w| w.num_syllables == num }
+    if params[:num_syllables] && (params[:num_syllables] != "")
+      @words.select! { |w| w.num_syllables == params[:num_syllables].to_i }
+    end
+    if params[:first_phoneme] && (params[:first_phoneme] != "")
+      @words.select! { |w| w.phonemes[0].name == params[:first_phoneme] }
+    end
     @words_to_show = @words[0..12]
     respond_to do |format|
       format.html # show.html.erb
