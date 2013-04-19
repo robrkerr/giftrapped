@@ -36,13 +36,13 @@ class WordsController < ApplicationController
     }
     @words -= same_words
     if params[:num_syllables] && (params[:num_syllables] != "")
-      @words.select! { |w| w.num_syllables == params[:num_syllables].to_i }
+      @words = @words & words_with_n_syllables(params[:num_syllables].to_i)
       @ns_value = params[:num_syllables]
     else
       @ns_value = ""
     end
     if params[:first_phoneme] && (params[:first_phoneme] != "")
-      @words.select! { |w| w.phonemes[0].name == params[:first_phoneme] }
+      @words = @words & words_beginning_with(params[:first_phoneme])
       @fp_value = params[:first_phoneme]
     else
       @fp_value = ""
@@ -65,5 +65,27 @@ private
 
   def get_different_phonemes
     @phonemes = Phoneme.find_by_sql("select distinct(name) from phonemes order by name asc")
+  end
+
+  def words_with_n_syllables n
+    sql_string = "select words.* from words, word_phonemes, phonemes"
+    sql_string << " where words.id = word_phonemes.word_id"
+    sql_string << " and phonemes.id = word_phonemes.phoneme_id"
+    sql_string << " and phonemes.ptype = 'vowel'"
+    sql_string << " group by words.id having count(*) = #{n}"
+    return Word.find_by_sql(sql_string)
+  end
+
+  def words_beginning_with ph
+    sql_first_phoneme = "select word_id, max(wp.order) as max_order from word_phonemes"
+    sql_first_phoneme << " as wp group by word_id"
+    sql_string = "select words.* from words, word_phonemes, phonemes, "
+    sql_string << "(#{sql_first_phoneme}) as first_phonemes"
+    sql_string << " where words.id = word_phonemes.word_id"
+    sql_string << " and word_phonemes.word_id = first_phonemes.word_id"
+    sql_string << " and word_phonemes.phoneme_id = phonemes.id"
+    sql_string << " and phonemes.name = '#{ph}'"
+    sql_string << " and word_phonemes.order = first_phonemes.max_order"
+    return Word.find_by_sql(sql_string)
   end
 end
