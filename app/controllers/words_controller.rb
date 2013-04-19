@@ -3,7 +3,6 @@ class WordsController < ApplicationController
   before_filter :get_different_phonemes, :only => [:show, :index]
   
   def index
-    # @words = Word.find(:all, :limit => 9)
     respond_to do |format|
       format.html 
     end
@@ -38,9 +37,15 @@ class WordsController < ApplicationController
     @words -= same_words
     if params[:num_syllables] && (params[:num_syllables] != "")
       @words.select! { |w| w.num_syllables == params[:num_syllables].to_i }
+      @ns_value = params[:num_syllables]
+    else
+      @ns_value = ""
     end
     if params[:first_phoneme] && (params[:first_phoneme] != "")
       @words.select! { |w| w.phonemes[0].name == params[:first_phoneme] }
+      @fp_value = params[:first_phoneme]
+    else
+      @fp_value = ""
     end
     @words_to_show = @words[0..12]
     respond_to do |format|

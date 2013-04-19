@@ -24,30 +24,30 @@ Then(/^I should see some words$/) do
   should satisfy { |page| Word.all.map { |word| page.has_content?(word.name) }.any? }
 end
 
-When(/^I search for "([^"]*)"$/) do |input|
+When(/^I type in "([^"]*)"$/) do |input|
   steps(%Q{When I fill in "name" with "#{input}"})
+end
+
+When(/^I search for "([^"]*)"$/) do |input|
+  steps(%Q{
+    When I fill in "name" with "#{input}"
+    And I press "Rap"
+    })
 end
 
 When(/^I load more words$/) do
   seed_words("#{Rails.root}/data/cmudict.0.7a.partial",false)
 end
 
-Then(/^I should see that "([^"]*)" does rhyme with "([^"]*)"$/) do |word2, word1|
+Then(/^I should see "([^"]*)" as a result$/) do |word|
   steps(%Q{
-    When I search for "#{word1}"
-    And I press "Rap"
-    Then I should see "#{word1}" within "#title_table td.title_word h2"
-    And I should see "#{word1}" within "#wr_heading_row"
-    And I should see "#{word2}" within "#wr_#{word2}_"
+    And there should be an object "#wr_#{word}_"
+    And I should see "#{word}" within "#wr_#{word}_"
   })
 end
 
-Then(/^I should see that "([^"]*)" does not rhyme with "([^"]*)"$/) do |word2, word1|
+Then(/^I should not see "([^"]*)" as a result$/) do |word|
   steps(%Q{
-    When I search for "#{word1}"
-    And I press "Rap"
-    Then I should see "#{word1}" within "#title_table td.title_word h2"
-    And I should see "#{word1}" within "#wr_heading_row"
-    And I should not see "#wr_{word2}_" within "#word_table"
+    And there should not be an object "#wr_#{word}_"
   })
 end

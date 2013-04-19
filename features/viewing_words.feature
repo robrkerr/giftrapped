@@ -32,7 +32,7 @@ Feature: Viewing words
     And I am on the homepage
 
   Scenario: Entering a word
-    When I search for "hat"
+    When I type in "hat"
     And I press "Rap"
     Then I should see "hat" within "#title_table td.title_word h2"
     And I should see "hat" within "#wr_heading_row"
@@ -48,21 +48,33 @@ Feature: Viewing words
 
   Scenario: Clicking on word
     When I search for "hat"
-    And I press "Rap"
     And I follow "cat" within "#word_table"
     Then I should see "cat" within "#title_table td.title_word h2"
     And I should not see "hat" within "#title_table td.title_word h2"
     
   Scenario: Entering a invalid word
     When I search for "gggggg"
-    And I press "Rap"
     Then I should see "The word you entered doesn't match any we know of."
   
   Scenario: Rhyming
-    Then I should see that "apple" does not rhyme with "dog"
+    When I search for "apple"
+    Then I should not see "dog" as a result
     
   Scenario: More words
     When I load more words
-    Then I should see that "eye" does rhyme with "pie"
-    And I should see that "pie" does not rhyme with "potpie"
-    
+    And I search for "pie"
+    Then I should see "eye" as a result
+    And I should see "potpie" as a result
+
+  Scenario: Using filters
+    When I load more words
+    And I type in "taboo"
+    And I select "l" from "first_phoneme"
+    And I press "Rap"
+    Then I should see "loo" as a result
+    And I should not see "igloo" as a result
+    When I select "" from "first_phoneme"
+    And I select "2" from "num_syllables"
+    And I press "Rap"
+    Then I should see "igloo" as a result
+    And I should not see "loo" as a result

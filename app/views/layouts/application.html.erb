@@ -23,14 +23,16 @@
 <div id="input_area">
   <div id="word_input" class="input">
     <%= form_tag "/words", :method => "post" do %>
-      <%= text_field_tag :name %>
+      <%= text_field_tag :name, (@word.try(&:name) || "") %>
       <% fp_opts = [""] + @phonemes.map(&:name) %>
       First phoneme:
-      <%= select_tag :first_phoneme, options_for_select(fp_opts.zip(fp_opts)) %>
+      <%= select_tag :first_phoneme, 
+              options_for_select(fp_opts.zip(fp_opts),(@fp_value || "")) %>
       <% ns_opts_labels = ["","1","2","3","4","5","6","7+"] %>
       <% ns_opts_vals = ["",1,2,3,4,5,6,7] %>
       Number of syllables:
-      <%= select_tag :num_syllables, options_for_select(ns_opts_labels.zip(ns_opts_vals)) %>
+      <%= select_tag :num_syllables, 
+              options_for_select(ns_opts_labels.zip(ns_opts_vals),(@ns_value || "")) %>
       <%= submit_tag "Rap" %>
     <% end %>
   </div>

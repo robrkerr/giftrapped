@@ -22,8 +22,20 @@ Then(/^I should not see "([^"]*)" within "([^"]*)"$/) do |text,obj|
   end
 end
 
+Then(/^there should be an object "([^"]*)"$/) do |obj|
+  should have_css(obj)
+end
+
+Then(/^there should not be an object "([^"]*)"$/) do |obj|
+  should_not have_css(obj)
+end
+
 When(/^I fill in "([^"]*)" with "([^"]*)"$/) do |form_item, input|
   fill_in form_item, with: input
+end
+
+When(/^I select "([^"]*)" from "([^"]*)"$/) do |input, sel|
+  select input, :from => sel
 end
 
 When(/^I press "([^"]*)"$/) do |button|
