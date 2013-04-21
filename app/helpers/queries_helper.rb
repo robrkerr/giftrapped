@@ -1,2 +1,2 @@
-module QueryHelper
+module QueriesHelper
 end

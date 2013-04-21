@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe QueryController do
+describe QueriesController do
 
 end
