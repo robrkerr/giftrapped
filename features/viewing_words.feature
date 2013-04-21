@@ -46,11 +46,11 @@ Feature: Viewing words
     And I should see "t" within "#wr_cat_ td.phonemes"
     And I should not see "dog" within "#word_table"
 
-  Scenario: Clicking on word
-    When I search for "hat"
-    And I follow "cat" within "#word_table"
-    Then I should see "cat" within "#title_table td.title_word h2"
-    And I should not see "hat" within "#title_table td.title_word h2"
+#  Scenario: Clicking on word
+#    When I search for "hat"
+#    And I follow "cat" within "#word_table"
+#    Then I should see "cat" within "#title_table td.title_word h2"
+#    And I should not see "hat" within "#title_table td.title_word h2"
     
   Scenario: Entering a invalid word
     When I search for "gggggg"
@@ -69,12 +69,12 @@ Feature: Viewing words
   Scenario: Using filters
     When I load more words
     And I type in "taboo"
-    And I select "l" from "first_phoneme"
+    And I select "l" from "query[first_phoneme]"
     And I press "Rap"
     Then I should see "loo" as a result
     And I should not see "igloo" as a result
-    When I select "" from "first_phoneme"
-    And I select "2" from "num_syllables"
+    When I select "" from "query[first_phoneme]"
+    And I select "2" from "query[num_syllables]"
     And I press "Rap"
     Then I should see "igloo" as a result
     And I should not see "loo" as a result

@@ -22,18 +22,18 @@
 
 <div id="input_area">
   <div id="word_input" class="input">
-    <%= form_tag "/words", :method => "post" do %>
-      <%= text_field_tag :name, (@word.try(&:name) || "") %>
+    <%= form_for @query, :url => query_path do |q| %>
+      <%= q.text_field :word, :value => (@word.try(&:name) || "") %>
       <% fp_opts = [""] + @phonemes.map(&:name) %>
       First phoneme:
-      <%= select_tag :first_phoneme, 
+      <%= q.select :first_phoneme, 
               options_for_select(fp_opts.zip(fp_opts),(@fp_value || "")) %>
       <% ns_opts_labels = ["","1","2","3","4","5","6","7+"] %>
       <% ns_opts_vals = ["",1,2,3,4,5,6,7] %>
       Number of syllables:
-      <%= select_tag :num_syllables, 
+      <%= q.select :num_syllables, 
               options_for_select(ns_opts_labels.zip(ns_opts_vals),(@ns_value || "")) %>
-      <%= submit_tag "Rap" %>
+      <%= q.submit "Rap" %>
     <% end %>
   </div>
 </div>

@@ -25,12 +25,12 @@ Then(/^I should see some words$/) do
 end
 
 When(/^I type in "([^"]*)"$/) do |input|
-  steps(%Q{When I fill in "name" with "#{input}"})
+  steps(%Q{When I fill in "query[word]" with "#{input}"})
 end
 
 When(/^I search for "([^"]*)"$/) do |input|
   steps(%Q{
-    When I fill in "name" with "#{input}"
+    When I type in "#{input}"
     And I press "Rap"
     })
 end

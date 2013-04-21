@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe WordsController do
+describe QueryController do
 
 end
