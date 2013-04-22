@@ -23,7 +23,7 @@
 <div id="input_area">
   <div id="word_input" class="input">
     <%= form_for @query, :url => query_path do |q| %>
-      <%= q.text_field :text, :value => (@word.try(&:name) || "") %>
+      <%= q.text_field :text, :value => (@query.text || "") %>
       <% fp_opts = [""] + @phonemes.map(&:name) %>
       First phoneme:
       <%= q.select :first_phoneme, 

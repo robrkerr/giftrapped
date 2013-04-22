@@ -35,6 +35,7 @@ Feature: Viewing words
     When I type in "hat"
     And I press "Rap"
     Then I should see "hat" within "#title_table td.title_word h2"
+    And I should see that field "query[text]" does contain "hat"
     And I should see "hat" within "#wr_heading_row"
     And I should see "hh" within "#wr_heading_row td.phonemes"
     And I should see "ae1" within "#wr_heading_row td.phonemes"
@@ -55,6 +56,7 @@ Feature: Viewing words
   Scenario: Entering a invalid word
     When I search for "gggggg"
     Then I should see "The word you entered doesn't match any we know of."
+    And I should see that field "query[text]" does not contain "gggggg"
   
   Scenario: Rhyming
     When I search for "apple"
@@ -83,6 +85,7 @@ Feature: Viewing words
     When I load more words
     And I search for "buffet"
     Then I should see "Please select a pronouncation."
+    And I should see that field "query[text]" does contain "buffet"
     And I should see "buffet" within "#option1"
     And I should see "b" within "#option1 td.phonemes"
     And I should see "ah1" within "#option1 td.phonemes"

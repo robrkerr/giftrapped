@@ -22,6 +22,15 @@ Then(/^I should not see "([^"]*)" within "([^"]*)"$/) do |text,obj|
   end
 end
 
+Then(/^I should see that field "([^"]*)" does contain "([^"]*)"$/) do |field,text|
+  should have_field(field, :with => text)
+end
+
+Then(/^I should see that field "([^"]*)" does not contain "([^"]*)"$/) do |field,text|
+  should have_field(field)
+  should_not have_field(field, :with => text)
+end
+
 Then(/^there should be an object "([^"]*)"$/) do |obj|
   should have_css(obj)
 end

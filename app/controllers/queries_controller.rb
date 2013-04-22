@@ -27,10 +27,12 @@ class QueriesController < ApplicationController
   	@query = Query.new
   	if params[:id]
   		@word = Word.find(params[:id].to_i)
+  		@query.text = @word.name
   		words = run_query @word
   		@words_to_show = words[0..12]
     elsif params[:word]
     	@words_to_show = find_words_by_name params[:word]
+    	@query.text = @words_to_show.first.name
 			standard_params = params.slice(:first_phoneme,:num_syllables)
 		  standard_params.select! { |k,v| v && v!="" }
 		  @get_params = []
