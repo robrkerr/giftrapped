@@ -1,3 +1,7 @@
-<% if @word %>
-  <%= render "table" %>
+<% if @words_to_show %>
+  <% if @word %>
+  	<%= render "table" %>
+  <% else %>
+  	<%= render "word_options" %>
+  <% end %>
 <% end %>

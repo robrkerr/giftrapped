@@ -1,14 +1,17 @@
 class QueriesController < ApplicationController
   
   def create
-  	word_input = params[:query][:word].downcase
-    word = find_words_by_name(word_input)
+  	text = params[:query][:text].downcase.split(" ").last.split("-").last
+  	get_params = params[:query].slice(:first_phoneme,:num_syllables)
+    get_params.select! { |k,v| v && v!="" }
+    word = find_words_by_name text
     respond_to do |format|
-      if word.length > 0
-      	get_params = params[:query].slice(:first_phoneme,:num_syllables)
-    	get_params.select! { |k,v| v && v!="" }
-    	# do something different when there are multiple words!
-    	get_params[:id] = word.first.id 
+      if word.length > 1
+      	flash[:alert] = "Please select a pronouncation."
+      	get_params[:word] = text
+      	format.html { redirect_to query_path(get_params) }
+      elsif word.length > 0
+      	get_params[:id] = word.first.id
         format.html { redirect_to query_path(get_params) }
       else
         flash[:alert] = "The word you entered doesn't match any we know of."
@@ -19,11 +22,21 @@ class QueriesController < ApplicationController
   
   def show
   	@phonemes = get_different_phonemes
+  	@ns_value = params[:num_syllables] || ""
+  	@fp_value = params[:first_phoneme] || ""
   	@query = Query.new
   	if params[:id]
-    	@word = Word.find(params[:id])
-    	words = run_query @word
-    	@words_to_show = words[0..12]
+  		@word = Word.find(params[:id].to_i)
+  		words = run_query @word
+  		@words_to_show = words[0..12]
+    elsif params[:word]
+    	@words_to_show = find_words_by_name params[:word]
+			standard_params = params.slice(:first_phoneme,:num_syllables)
+		  standard_params.select! { |k,v| v && v!="" }
+		  @get_params = []
+			@words_to_show.each { |word| 
+				@get_params << standard_params.merge({:id => word.id})
+			}
     end
     respond_to do |format|
       format.html # show.html.erb
@@ -44,15 +57,9 @@ private
     words -= same_words
     if params[:num_syllables] && (params[:num_syllables] != "")
       words = words & words_with_n_syllables(params[:num_syllables].to_i)
-      @ns_value = params[:num_syllables]
-    else
-      @ns_value = ""
     end
     if params[:first_phoneme] && (params[:first_phoneme] != "")
       words = words & words_beginning_with(params[:first_phoneme])
-      @fp_value = params[:first_phoneme]
-    else
-      @fp_value = ""
     end
     return words
   end

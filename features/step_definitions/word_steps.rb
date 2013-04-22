@@ -25,7 +25,7 @@ Then(/^I should see some words$/) do
 end
 
 When(/^I type in "([^"]*)"$/) do |input|
-  steps(%Q{When I fill in "query[word]" with "#{input}"})
+  steps(%Q{When I fill in "query[text]" with "#{input}"})
 end
 
 When(/^I search for "([^"]*)"$/) do |input|

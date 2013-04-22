@@ -78,3 +78,27 @@ Feature: Viewing words
     And I press "Rap"
     Then I should see "igloo" as a result
     And I should not see "loo" as a result
+
+  Scenario: Searching for a word with multiple pronunciations
+    When I load more words
+    And I search for "buffet"
+    Then I should see "Please select a pronouncation."
+    And I should see "buffet" within "#option1"
+    And I should see "b" within "#option1 td.phonemes"
+    And I should see "ah1" within "#option1 td.phonemes"
+    And I should see "f" within "#option1 td.phonemes"
+    And I should see "ah0" within "#option1 td.phonemes"
+    And I should see "t" within "#option1 td.phonemes"
+    And I should see "buffet" within "#option2"
+    And I should see "b" within "#option2 td.phonemes"
+    And I should see "ah0" within "#option2 td.phonemes"
+    And I should see "f" within "#option2 td.phonemes"
+    And I should see "ey1" within "#option2 td.phonemes"
+    When I follow "buffet" within "#option1"
+    Then I should see "buffet" within "#title_table td.title_word h2"
+    And I should see "buffet" within "#wr_heading_row"
+    And I should see "b" within "#wr_heading_row td.phonemes"
+    And I should see "ah1" within "#wr_heading_row td.phonemes"
+    And I should see "f" within "#wr_heading_row td.phonemes"
+    And I should see "ah0" within "#wr_heading_row td.phonemes"
+    And I should see "t" within "#wr_heading_row td.phonemes"

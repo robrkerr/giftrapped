@@ -9,9 +9,9 @@ def load_words file_name
   	line = line.chomp.split(" ")
   	word = line[0].sub(%r/[0-9]/,"").sub(%r/\(\)/,"")
   	phonemes = line[1..-1]
-  	phonemes.map!{ |p| 
-  	  simple = p.sub(%r/[0-9]/,"")
-  	  stress = p.sub(%r/[a-z]/,"").to_i
+  	phonemes.map!{ |ph| 
+  	  simple = ph.sub(%r/[0-9]/,"")
+  	  stress = ph.sub(%r/[a-z]+/,"").to_i
   	  [simple, stress]
   	}
   	words << word

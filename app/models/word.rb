@@ -28,13 +28,6 @@ class Word < ActiveRecord::Base
     return num_phonemes - phoneme_types.rindex("vowel")
   end
 
-  def words_sharing_last_phoneme
-    last_phoneme_id = word_phonemes.last.phoneme_id
-    Word.joins(:word_phonemes).where(
-        'word_phonemes.phoneme_id = ? AND word_phonemes.order = 0', 
-        last_phoneme_id) - [self]
-  end
-
   def words_sharing_phonemes_from_last_vowel n = 0
     sql_string_1 = "select words.*"
     sql_string_2 = " from words"
@@ -42,14 +35,16 @@ class Word < ActiveRecord::Base
     split_word = self.split_by_vowels.reverse
     num = 0
     0.upto(n) { |k| 
-      last_phoneme_ids = split_word[k].map(&:id).reverse
-      last_phoneme_ids.each_with_index { |pid,i| sql_string_2 << ", word_phonemes as wp#{i+num}" }
-      last_phoneme_ids.each_with_index { |pid,i| 
-        sql_string_3 << " and" if (k != 0) || (i != 0)
-        sql_string_3 << " words.id = wp#{i+num}.word_id and wp#{i+num}.phoneme_id = #{pid}" 
-        sql_string_3 << " and wp#{i+num}.order = #{i+num}"
+      last_phoneme_names = split_word[k].map(&:name).reverse
+      last_phoneme_names.each_with_index { |pname,i| 
+        sql_string_2 << ", word_phonemes as wp#{i+num}, phonemes as ph#{i+num}" 
       }
-      num += last_phoneme_ids.length
+      last_phoneme_names.each_with_index { |pname,i| 
+        sql_string_3 << " and" if (k != 0) || (i != 0)
+        sql_string_3 << " words.id = wp#{i+num}.word_id and wp#{i+num}.phoneme_id = ph#{i+num}.id"
+        sql_string_3 << " and wp#{i+num}.order = #{i+num} and ph#{i+num}.name = '#{pname}'"
+      }
+      num += last_phoneme_names.length
     }
     return Word.find_by_sql(sql_string_1 + sql_string_2 + sql_string_3)
   end 
