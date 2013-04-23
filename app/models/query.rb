@@ -23,7 +23,11 @@ class Query
 		@first_phoneme = params[:first_phoneme] || ""
 		@num_syllables = params[:num_syllables] || ""
 		@id = params[:id].try(&:to_i)
-		@text = @id ? possible_words.first.name : (params[:text] || "")
+		if @id
+			@text = possible_words.first.name 	
+		else
+			@text = params[:text].present? ? params[:text].downcase.split(" ").last.split("-").last : ""
+		end
 	end
 
   def persisted?
@@ -35,18 +39,14 @@ class Query
   end
 
   def word_name
-  	return @text.downcase.split(" ").last.split("-").last if @text.present?
-  	return ""
+  	@text.present? ? @text : ""
   end
 
   def params
   	hash = optional_params
-  	if possible_words.length > 1
-  		hash[:text] = word_name
-  	elsif possible_words.length == 1
-  		hash[:id] = possible_words.first.id
-  	end
-  	return hash
+  	hash[:text] = word_name if possible_words.length > 1
+  	hash[:id] = possible_words.first.id if possible_words.length == 1
+  	hash
   end
 
   def optional_params
@@ -55,7 +55,7 @@ class Query
   		hash[:first_phoneme] = @first_phoneme if @first_phoneme.present?
   		hash[:num_syllables] = @num_syllables if @num_syllables.present?
   	end
-  	return hash
+  	hash
   end
 
   def words_to_show
@@ -67,8 +67,7 @@ class Query
   end
 
   def word
-  	return possible_words.first if valid?
-  	return nil
+  	valid? ? possible_words.first : nil
   end
 
   def run_query
@@ -83,7 +82,7 @@ class Query
     words -= same_words
     words = words & words_with_n_syllables(@num_syllables.to_i) if @num_syllables.present?
     words = words & words_beginning_with(@first_phoneme) if @first_phoneme.present?
-    return words
+    words
   end
 
   def phoneme_filter_options 
@@ -106,7 +105,7 @@ class Query
     sql_string << " and phonemes.id = word_phonemes.phoneme_id"
     sql_string << " and phonemes.ptype = 'vowel'"
     sql_string << " group by words.id having count(*) = #{n}"
-    return Word.find_by_sql(sql_string)
+    Word.find_by_sql(sql_string)
   end
 
   def words_beginning_with ph
@@ -119,7 +118,6 @@ class Query
     sql_string << " and word_phonemes.phoneme_id = phonemes.id"
     sql_string << " and phonemes.name = '#{ph}'"
     sql_string << " and word_phonemes.order = first_phonemes.max_order"
-    return Word.find_by_sql(sql_string)
+    Word.find_by_sql(sql_string)
   end
-
 end
