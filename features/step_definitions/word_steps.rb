@@ -39,15 +39,3 @@ When(/^I load more words$/) do
   seed_words("#{Rails.root}/data/cmudict.0.7a.partial",false)
 end
 
-Then(/^I should see "([^"]*)" as a result$/) do |word|
-  steps(%Q{
-    And there should be an object "#wr_#{word}_"
-    And I should see "#{word}" within "#wr_#{word}_"
-  })
-end
-
-Then(/^I should not see "([^"]*)" as a result$/) do |word|
-  steps(%Q{
-    And there should not be an object "#wr_#{word}_"
-  })
-end

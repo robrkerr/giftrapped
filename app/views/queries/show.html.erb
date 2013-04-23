@@ -1,7 +1,28 @@
-<% if @words_to_show %>
-  <% if @word %>
-  	<%= render "table" %>
-  <% else %>
-  	<%= render "word_options" %>
-  <% end %>
+<div id="title_table">
+  <table>
+      <tr>
+        <% if @query.word %>
+          <td class="title_word"> <h2><%= @query.text + ":" %></h2> </td>
+          <td class="title_spacer">  </td>
+        <% end %>
+        <td class="title_gr"><h2>giftRAPPED</h2></td>
+      </tr>
+  </table>
+</div>
+
+<div id="input_area">
+  <div id="word_input" class="input">
+    <%= form_for @query, :url => query_path do |q| %>
+      <%= q.text_field :text, :value => (@query.text || "") %>
+      First phoneme:
+      <%= q.select :first_phoneme, options_for_select(@phoneme_filter_options, @query.first_phoneme) %>
+      Number of syllables:
+      <%= q.select :num_syllables, options_for_select(@num_syllables_filter_options, @query.num_syllables) %>
+      <%= q.submit "Rap" %>
+    <% end %>
+  </div>
+</div>
+
+<% if @query.words_to_show %>
+  <%= render "table" %>
 <% end %>

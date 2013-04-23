@@ -8,36 +8,6 @@
 </head>
 <body>
 
-<div id="title_table">
-  <table>
-      <tr>
-        <% if @word %>
-          <td class="title_word"> <h2><%= @word.name + ":" %></h2> </td>
-          <td class="title_spacer">  </td>
-        <% end %>
-        <td class="title_gr"><h2>giftRAPPED</h2></td>
-      </tr>
-  </table>
-</div>
-
-<div id="input_area">
-  <div id="word_input" class="input">
-    <%= form_for @query, :url => query_path do |q| %>
-      <%= q.text_field :text, :value => (@query.text || "") %>
-      <% fp_opts = [""] + @phonemes.map(&:name) %>
-      First phoneme:
-      <%= q.select :first_phoneme, 
-              options_for_select(fp_opts.zip(fp_opts),(@fp_value || "")) %>
-      <% ns_opts_labels = ["","1","2","3","4","5","6","7+"] %>
-      <% ns_opts_vals = ["",1,2,3,4,5,6,7] %>
-      Number of syllables:
-      <%= q.select :num_syllables, 
-              options_for_select(ns_opts_labels.zip(ns_opts_vals),(@ns_value || "")) %>
-      <%= q.submit "Rap" %>
-    <% end %>
-  </div>
-</div>
-
 <%= yield %>
 
 <div class="flash">

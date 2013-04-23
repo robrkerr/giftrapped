@@ -1,26 +1,25 @@
 <div id='word_table'>
   <table>
-    <% if @word %>
+    <% if @query.word %>
       <tr id="wr_heading_row" class="heading">
-        <td class="word"> <%= @word.name %> </td>
-        <td class="syllables"> <%= @word.num_syllables %> </td>
+        <td class="word"> <%= @query.text %> </td>
+        <td class="syllables"> <%= @query.num_syllables %> </td>
         <td class="phonemes">
-          <% @word.phonemes.reverse.each do |p| %>
+          <% @query.word.phonemes.reverse.each do |p| %>
             <div> <%= p.full_name %> </div>
             <div class="spacer"> </div>
           <% end%>
         </td>
       </tr>
     <% end %>
-    <% @words_to_show.each_with_index do |word,i| %>
-      <tr id="wr_<%= word.name %>_" class="<%= cycle('odd', 'even') %>">
-        <td class="word"> <%= word.name %> </td>
-        <!-- <td class="word"> link_to word.name, word </td> -->
+    <% @query.words_to_show.each_with_index do |word,i| %>
+      <tr id="wr_<%= i %>_" class="<%= cycle('odd', 'even') %>">
+        <td class="word"> <%= link_to word.name, @query.params_for_each_option[i] %> </td>
         <td class="syllables"> <%= word.num_syllables %> </td>
         <td class="phonemes">
           <% matching = true %>
           <% word.phonemes.reverse.each_with_index do |p,j| %>
-            <% matching = false if p != @word.phonemes.reverse[j] %>
+            <% matching = false unless @query.word && (p == @query.word.phonemes.reverse[j]) %>
             <div class="<%= "match" if matching %>"> <%= p.full_name %> </div>
             <div class="spacer"> </div>
           <% end%>
