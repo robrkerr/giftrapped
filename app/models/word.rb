@@ -4,28 +4,24 @@ class Word < ActiveRecord::Base
   has_many :phonemes, :through => :word_phonemes
   validates :name, :presence => true
   
-  def phonemes_snippet
-    return phonemes.map { |e| e.full_name }.join(" - ")
-  end
-  
   def phonemes
-    return word_phonemes.map { |e| e.phoneme }
+    word_phonemes.map(&:phoneme)
   end
   
   def phoneme_types
-    return phonemes.map { |e| e.ptype }
+    phonemes.map(&:ptype)
   end
   
   def phoneme_names
-    return phonemes.map { |e| e.name }
+    phonemes.map(&:name)
   end
   
   def num_phonemes
-    return word_phonemes.count
+    word_phonemes.count
   end
-  
-  def vowel_from_end 
-    return num_phonemes - phoneme_types.rindex("vowel")
+
+  def num_syllables
+    phoneme_types.select { |p| p == "vowel"}.length
   end
 
   def words_sharing_phonemes_from_last_vowel n = 0
@@ -48,15 +44,6 @@ class Word < ActiveRecord::Base
     }
     return Word.find_by_sql(sql_string_1 + sql_string_2 + sql_string_3)
   end 
-  
-  def ends_with_word word, n = 0
-    n = num_phonemes if n == 0 
-    return (phoneme_names[(-n)..(-1)] == word.phoneme_names[(-n)..(-1)])
-  end
-    
-  def num_syllables
-    return phoneme_types.select { |p| p == "vowel"}.length
-  end
 
   def split_by_vowels
     n = num_phonemes

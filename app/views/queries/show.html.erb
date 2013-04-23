@@ -15,9 +15,9 @@
     <%= form_for @query, :url => query_path do |q| %>
       <%= q.text_field :text, :value => (@query.text || "") %>
       First phoneme:
-      <%= q.select :first_phoneme, options_for_select(@phoneme_filter_options, @query.first_phoneme) %>
+      <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
       Number of syllables:
-      <%= q.select :num_syllables, options_for_select(@num_syllables_filter_options, @query.num_syllables) %>
+      <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
       <%= q.submit "Rap" %>
     <% end %>
   </div>

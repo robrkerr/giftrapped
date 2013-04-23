@@ -86,6 +86,18 @@ class Query
     return words
   end
 
+  def phoneme_filter_options 
+  	sql = "select distinct(name) from phonemes order by name asc"
+  	opts = [""] + Phoneme.find_by_sql(sql).map(&:name)
+		opts.zip(opts)
+  end
+
+  def num_syllables_filter_options
+  	labels = ["","1","2","3","4","5","6","7+"]
+		vals = ["",1,2,3,4,5,6,7]
+		labels.zip(vals)
+  end
+
   private
 
   def words_with_n_syllables n
