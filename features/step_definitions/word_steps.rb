@@ -1,4 +1,3 @@
-require "#{Rails.root}/db/seed_helper.rb"
 
 Given(/^there is a word "([^"]*)"$/) do |name|
   @word = FactoryGirl.create(:word, name: name)
@@ -32,10 +31,11 @@ When(/^I search for "([^"]*)"$/) do |input|
   steps(%Q{
     When I type in "#{input}"
     And I press "Rap"
-    })
+  })
 end
 
 When(/^I load more words$/) do
-  seed_words("#{Rails.root}/data/cmudict.0.7a.partial",false)
+  seeder = Seeder.new false
+  words = PhoneticWordReader.read_words 'data/cmudict.0.7a.partial'
+  seeder.seed_words words
 end
-

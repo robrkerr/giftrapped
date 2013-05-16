@@ -18,6 +18,10 @@
       <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
       Number of syllables:
       <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
+      Word type:
+      <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
+      Only perfect rhymes:
+      <%= q.check_box :perfect %>
       <%= q.submit "Rap" %>
     <% end %>
   </div>

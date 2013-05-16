@@ -5,12 +5,13 @@
 # files.
 
 require 'cucumber/rails'
+require 'seeder'
+require 'phoneme_loader'
+require 'phonetic_word_reader'
+require 'word_lexeme_reader'
 
-Word.delete_all
-WordPhoneme.delete_all
-Phoneme.delete_all
-
-load "#{Rails.root}/db/phoneme_seed.rb"
+seeder = Seeder.new
+seeder.seed_phonemes PhonemeLoader.get_phonemes
 
 World FactoryGirl::Syntax::Methods
 

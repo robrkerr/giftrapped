@@ -3,7 +3,7 @@ class Query
   include ActiveModel::Conversion
   extend  ActiveModel::Naming
 
-	attr_accessor :text, :first_phoneme, :num_syllables, :id
+	attr_accessor :id, :text, :first_phoneme, :num_syllables, :word_type, :perfect
 	validate :exactly_one_word
 
 	def exactly_one_word
@@ -22,6 +22,7 @@ class Query
 	def initialize params = {}
 		@first_phoneme = params[:first_phoneme] || ""
 		@num_syllables = params[:num_syllables] || ""
+		@word_type = params[:word_type] || ""
 		@id = params[:id].try(&:to_i)
 		if @id
 			@text = possible_words.first.name 	
@@ -95,6 +96,11 @@ class Query
   	labels = ["","1","2","3","4","5","6","7+"]
 		vals = ["",1,2,3,4,5,6,7]
 		labels.zip(vals)
+  end
+
+  def word_type_filter_options
+  	opts = ["","noun","adj","adv","verb"]
+		opts.zip(opts)
   end
 
   private

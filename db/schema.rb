@@ -11,7 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130408233249) do
+ActiveRecord::Schema.define(:version => 20130515115343) do
+
+  create_table "lexemes", :force => true do |t|
+    t.string   "word"
+    t.string   "word_class"
+    t.text     "gloss"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "phonemes", :force => true do |t|
     t.string   "name"
