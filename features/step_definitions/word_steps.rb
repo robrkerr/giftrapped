@@ -5,9 +5,16 @@ end
 
 Given(/^that word has phonemes:$/) do |table|
   n = table.hashes.length
+  k = 0
   table.hashes.each_with_index do |attributes,i|
-    phoneme = Phoneme.find(:all, :conditions => attributes).first
-    @word.word_phonemes.create!({:phoneme_id => phoneme.id, :order => n-1-i})
+    phoneme = Phoneme.find(:all, :conditions => attributes.slice("name")).first
+
+    k += 1 unless (i==0) || ((attributes[:ptype]=="vowel")==(table.hashes[i-1][:ptype]=="vowel"))
+    @word.word_phonemes.create!({:phoneme_id => phoneme.id, 
+                                 :position => i, 
+                                 :r_position => n-1-i,
+                                 :vc_block => k,
+                                 :v_stress => attributes[:stress]})
   end
 end
 

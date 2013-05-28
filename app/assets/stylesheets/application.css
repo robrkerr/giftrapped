@@ -26,17 +26,30 @@ body {
 }
 
 #input_area {
-    height:       80px; 
-    margin-top:   25px;
-}
-
-#word_input {
+    height:       100px; 
+    margin-top:   50px;
     width:        1000px;
+    margin-right: auto;
+    margin-left:  0px;
 }
 
-div.input {
-    float:        left;
-    width:        200px;
+#input_area div {
+    float:          left;
+    vertical-align: middle;
+    height:         40px;
+    line-height:    30px;
+}
+
+#input_area div.text_field {
+    width:         59%;
+}
+
+#input_area div.first_phoneme_field {
+    width:         20%;
+}
+
+#input_area div.num_syllables_field {
+    width:         21%;
 }
 
 #word_table tr {
@@ -45,6 +58,7 @@ div.input {
 
 #word_table tr.heading {
     font-weight:   bold;
+    color:         rgba(0, 40, 200, 1);
     border-bottom: 2px solid #000;
 }
 
@@ -85,7 +99,8 @@ div.input {
 }
 
 #word_table div.match {
-    background-color:    rgba(120, 230, 120, 0.6);
+    font-weight:   bold;
+    color:         rgba(0, 40, 200, 1);
 }
 
 #word_table td.syllables {
@@ -94,7 +109,8 @@ div.input {
 }
 
 #title_table td.title_word {
-    color:        rgba(255,0,0,1.0);
+    color:         rgba(0, 40, 200, 1);
+    /*color:        rgba(255,0,0,1.0);*/
 }
 
 #title_table td.title_spacer {

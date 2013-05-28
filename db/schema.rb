@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130515115343) do
+ActiveRecord::Schema.define(:version => 20130526002107) do
 
   create_table "lexemes", :force => true do |t|
     t.string   "word"
@@ -23,7 +23,6 @@ ActiveRecord::Schema.define(:version => 20130515115343) do
 
   create_table "phonemes", :force => true do |t|
     t.string   "name"
-    t.integer  "stress"
     t.string   "ptype"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -32,9 +31,13 @@ ActiveRecord::Schema.define(:version => 20130515115343) do
   create_table "word_phonemes", :force => true do |t|
     t.integer  "word_id"
     t.integer  "phoneme_id"
-    t.integer  "order"
+    t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "r_position"
+    t.integer  "vc_block"
+    t.integer  "r_vc_block"
+    t.integer  "v_stress"
   end
 
   add_index "word_phonemes", ["phoneme_id"], :name => "index_word_phonemes_on_phoneme_id"

@@ -19,7 +19,7 @@ class Seeder
   def seed_words words
     words.sort_by! { |w| w[:name] }
     word_entries = populate_words words.map { |w| w.slice(:name)}
-    populate_word_phonemes tidy_word_phonemes(word_entries, words.map { |w| w[:phonemes]}, get_phoneme_ids)
+    populate_word_phonemes tidy_word_phonemes(word_entries, words.map { |w| w[:phonemes]}, get_phonemes)
   end
 
   def clear_lexemes
@@ -32,14 +32,22 @@ class Seeder
 
   private
 
-  def get_phoneme_ids
-    Phoneme.all.group_by { |p| [p.name,p.stress] }
+  def get_phonemes
+    Phoneme.all.group_by { |p| p.name }
   end
     
-  def tidy_word_phonemes words, word_phonemes, phoneme_ids
-    word_phonemes.each_with_index.map { |wps,i| 
-      wps.reverse.each_with_index.map { |wp,j| 
-        {:word_id => words[i].id, :phoneme_id => phoneme_ids[wp].first.id, :order => j}
+  def tidy_word_phonemes words, word_phonemes, phonemes
+    word_phonemes.each_with_index.map { |wps,i|
+      k = 0
+      wps.each_with_index.map { |wp,j| 
+        ph = phonemes[wp[0]].first
+        k += 1 unless (j==0) || ((ph.ptype=="vowel")==(phonemes[wps[j-1][0]].first.ptype=="vowel"))
+        {:word_id => words[i].id, 
+         :phoneme_id => ph.id, 
+         :position => j,
+         :r_position => wps.length-1-j,
+         :vc_block => k,
+         :v_stress => (ph.ptype=="vowel") ? wp[1] : 3}
       }
     }
   end

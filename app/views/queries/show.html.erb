@@ -11,20 +11,24 @@
 </div>
 
 <div id="input_area">
-  <div id="word_input" class="input">
-    <%= form_for @query, :url => query_path do |q| %>
+  <%= form_for @query, :url => query_path do |q| %>
+    <div class="text_field" > 
       <%= q.text_field :text, :value => (@query.text || "") %>
-      First phoneme:
+      <%= q.submit "Rap" %>
+    </div>
+    <div class="first_phoneme_field" > 
+      First phoneme: 
       <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
+    </div>
+    <div class="num_syllables_field" >
       Number of syllables:
       <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
-      Word type:
-      <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
-      Only perfect rhymes:
-      <%= q.check_box :perfect %>
-      <%= q.submit "Rap" %>
-    <% end %>
-  </div>
+    </div>
+<!--       <br> Word type:
+    <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
+    <br> Only perfect rhymes:
+    <%= q.check_box :perfect %> -->
+  <% end %>
 </div>
 
 <% if @query.words_to_show %>

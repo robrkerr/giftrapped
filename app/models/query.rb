@@ -60,7 +60,7 @@ class Query
   end
 
   def words_to_show
-  	@id ? run_query[0..12] : possible_words
+  	@id ? run_query : possible_words
   end
 
   def params_for_each_option
@@ -72,18 +72,22 @@ class Query
   end
 
   def run_query
-  	return nil unless valid?
-    n = word.split_by_vowels.length
-    emcompassing_words = word.words_sharing_phonemes_from_last_vowel(n-1)
-    emcompassing_words, same_words = emcompassing_words.partition { |w| w.num_phonemes != word.num_phonemes }
-    words = [] | emcompassing_words
-    (n-2).downto(0) { |i| 
-      words = words | word.words_sharing_phonemes_from_last_vowel(i)
-    }
-    words -= same_words
-    words = words & words_with_n_syllables(@num_syllables.to_i) if @num_syllables.present?
-    words = words & words_beginning_with(@first_phoneme) if @first_phoneme.present?
-    words
+    return nil unless valid?
+    scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
+    matches_any = word.word_phonemes.reverse.each_with_index.map { |wp, i| 
+      "(r_position = #{i} AND phoneme_id = #{wp.phoneme.id})"
+    }.join(" or ")
+    match_strength = "sum(2 ^ (-r_position-1)) AS match_strength"
+    results = scope.select([:word_id, match_strength]).
+      where(matches_any).
+      where("word_id != ?", word.id).
+      group(:word_id).
+      order("match_strength DESC").
+      limit(13)
+    min_strength = (word.phoneme_types.last=="vowel") ? 0.5 : 0.75
+    results.select { |e| 
+      e.attributes["match_strength"].to_f >= min_strength
+    }.map { |e| Word.find(e.word_id) }
   end
 
   def phoneme_filter_options 
@@ -105,25 +109,32 @@ class Query
 
   private
 
-  def words_with_n_syllables n
-    sql_string = "select words.* from words, word_phonemes, phonemes"
-    sql_string << " where words.id = word_phonemes.word_id"
-    sql_string << " and phonemes.id = word_phonemes.phoneme_id"
-    sql_string << " and phonemes.ptype = 'vowel'"
-    sql_string << " group by words.id having count(*) = #{n}"
-    Word.find_by_sql(sql_string)
+  def filter_by_first_phoneme scope
+    if @first_phoneme.present?
+      ph_id = Phoneme.where(:name => @first_phoneme).first.id
+      filtered_words = <<-SQL
+        INNER JOIN (SELECT word_id AS filtered_word_id FROM word_phonemes
+          WHERE position = 0 AND phoneme_id = #{ph_id})
+        AS fw1 ON fw1.filtered_word_id = word_id
+      SQL
+      scope.joins(filtered_words)
+    else
+      scope
+    end
   end
 
-  def words_beginning_with ph
-    sql_first_phoneme = "select word_id, max(wp.order) as max_order from word_phonemes"
-    sql_first_phoneme << " as wp group by word_id"
-    sql_string = "select words.* from words, word_phonemes, phonemes, "
-    sql_string << "(#{sql_first_phoneme}) as first_phonemes"
-    sql_string << " where words.id = word_phonemes.word_id"
-    sql_string << " and word_phonemes.word_id = first_phonemes.word_id"
-    sql_string << " and word_phonemes.phoneme_id = phonemes.id"
-    sql_string << " and phonemes.name = '#{ph}'"
-    sql_string << " and word_phonemes.order = first_phonemes.max_order"
-    Word.find_by_sql(sql_string)
+  def filter_by_num_syllables scope
+    if @num_syllables.present?
+      filtered_words = <<-SQL
+        INNER JOIN (SELECT word_id AS filtered_word_id 
+          FROM word_phonemes WHERE v_stress < 3 GROUP BY filtered_word_id 
+          HAVING count(1) = #{@num_syllables})
+        AS fw2 ON fw2.filtered_word_id = word_id
+      SQL
+      scope.joins(filtered_words)
+    else
+      scope
+    end
   end
+
 end

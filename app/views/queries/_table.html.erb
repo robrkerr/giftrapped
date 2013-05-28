@@ -3,9 +3,9 @@
     <% if @query.word %>
       <tr id="wr_heading_row" class="heading">
         <td class="word"> <%= @query.text %> </td>
-        <td class="syllables"> <%= @query.num_syllables %> </td>
+        <td class="syllables"> <%= @query.word.num_syllables %> </td>
         <td class="phonemes">
-          <% @query.word.phonemes.reverse.each do |p| %>
+          <% @query.word.word_phonemes.reverse.each do |p| %>
             <div> <%= p.full_name %> </div>
             <div class="spacer"> </div>
           <% end%>
@@ -18,9 +18,9 @@
         <td class="syllables"> <%= word.num_syllables %> </td>
         <td class="phonemes">
           <% matching = true %>
-          <% word.phonemes.reverse.each_with_index do |p,j| %>
-            <% matching = false unless @query.word && (p == @query.word.phonemes.reverse[j]) %>
-            <div class="<%= "match" if matching %>"> <%= p.full_name %> </div>
+          <% word.word_phonemes.reverse.each_with_index do |p,j| %>
+            <% matching = false unless @query.word && @query.word.has_phoneme(p,j) %>
+            <div <%= "class=match" if matching %>> <%= p.full_name %> </div>
             <div class="spacer"> </div>
           <% end%>
         </td>

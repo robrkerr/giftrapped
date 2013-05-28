@@ -1,17 +1,5 @@
 class PhonemeLoader
   def self.get_phonemes
-    self.phonemes_without_stresses.map { |p| 
-      if p[:ptype] == "vowel"
-        [0,1,2].map { |i| p.merge({:stress => i})}
-      else
-        p.merge({:stress => 0})
-      end
-    }
-  end
-
-  private
-
-  def self.phonemes_without_stresses
     [{:name => "aa", :ptype => "vowel"},
      {:name => "ae", :ptype => "vowel"},
      {:name => "ah", :ptype => "vowel"},

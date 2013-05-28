@@ -7,28 +7,28 @@ Feature: Viewing some words
     Given there is a word "dog"
     And that word has phonemes:
       | name    | stress  |
-      | d       | 0       |
+      | d       | 3       |
       | ao      | 1       |
-      | g       | 0       |
+      | g       | 3       |
     And there is a word "cat"
     And that word has phonemes:
       | name    | stress  |
-      | k       | 0       |
+      | k       | 3       |
       | ae      | 1       |
-      | t       | 0       |
+      | t       | 3       |
     And there is a word "hat"
     And that word has phonemes:
       | name    | stress  |
-      | hh      | 0       |
+      | hh      | 3       |
       | ae      | 1       |
-      | t       | 0       |
+      | t       | 3       |
     And there is a word "apple"
     And that word has phonemes:
       | name    | stress  |
       | ae      | 1       |
-      | p       | 0       |
-      | ah      | 0       |
-      | l       | 0       |
+      | p       | 3       |
+      | ah      | 3       |
+      | l       | 3       |
     And I am on the homepage
 
   Scenario: Entering a word
