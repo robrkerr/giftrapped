@@ -41,7 +41,7 @@ Feature: Viewing more words
     And I should see "ey1" within "#wr_1_ div.phonemes"
     When I follow "buffet" within "#wr_0_"
     Then I should see "buffet" within "#title_table div.title_word h2"
-    And I should see "buffet" within "#wr_heading_row"
+    # And I should see "buffet" within "#wr_heading_row"
     And I should see "b" within "#wr_heading_row div.phonemes"
     And I should see "ah1" within "#wr_heading_row div.phonemes"
     And I should see "f" within "#wr_heading_row div.phonemes"

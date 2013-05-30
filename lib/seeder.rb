@@ -32,6 +32,10 @@ class Seeder
     populate_word_lexemes word_lexemes, first_id
   end
 
+  def seed_extra_word_lexemes word_relations
+    add_extra_word_lexemes word_relations
+  end
+
   private
 
   def get_phonemes
@@ -83,6 +87,26 @@ class Seeder
       Word.where("name = '#{k}'").each { |word|
         v.each { |lexeme_id|
           word_lexeme_entries << {:word_id => word.id, :lexeme_id => lexeme_id + first_id }
+        }
+      }
+    }
+    WordLexeme.transaction do
+      WordLexeme.import word_lexeme_entries.map { |wl| WordLexeme.new(wl) }
+    end
+  end
+
+  def add_extra_word_lexemes word_relations
+    word_lexeme_entries = []
+    word_relations.each { |word_name,related_words|
+      Word.where("name = '#{word_name}'").each { |word|
+        lex_ids = word.word_lexemes.map(&:lexeme_id)
+        related_words.each { |related_word_name|
+          Word.where("name = '#{related_word_name}'").each { |related_word|
+            lex_ids.each { |lex_id|
+              word_lexeme_entries << {:word_id => related_word.id, 
+                                      :lexeme_id => lex_id }
+            }
+          }
         }
       }
     }

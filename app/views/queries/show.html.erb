@@ -8,12 +8,8 @@
   <div class="title_gr"><h2>giftRAPPED</h2></div>
 </div>
 
+<%= form_for @query, :url => query_path do |q| %>
 <div id="input_area">
-  <%= form_for @query, :url => query_path do |q| %>
-    <div class="text_field" > 
-      <%= q.text_field :text, :value => (@query.text || "") %>
-      <%= q.submit "Rap" %>
-    </div>
     <div class="first_phoneme_field" > 
       First phoneme: 
       <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
@@ -22,20 +18,38 @@
       Number of syllables:
       <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
     </div>
+    <div>
+      <%= q.submit "Rap" %>
+    </div>
 <!--       <br> Word type:
     <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
     <br> Only perfect rhymes:
     <%= q.check_box :perfect %> -->
-  <% end %>
 </div>
 
+<div id="wr_heading_row" class="word_table heading">
+  <div class="text_field word">
+    <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => "off" %>
+  </div>
+  <% if @query.word %>
+    <div class="syllables"> <%= @query.word.num_syllables %> </div>
+    <div class="phonemes">
+      <% @query.word.word_phonemes.reverse.each do |p| %>
+        <div class="single_phoneme"> <%= p.full_name %> </div>
+        <div class="spacer"> </div>
+      <% end%>
+    </div>
+  <% end %>
+</div>
+<% end %>
+
 <script type="text/javascript">
-// $("#sliding_word").hide();
-$("#title_table").animate( {
-  left: -$("#sliding_word").outerWidth()
+$(document).ready(function(){
+  $("#title_table").animate({"left": "#{-$('#sliding_word').outerWidth()}"}, "fast");
+  $("#title_table").animate({"left": "0"}, "slow");
 });
-$("#title_table").animate( {
-  left: 0
+$(window).delegate('*', 'keypress', function (evt){
+  $("#query_text").focus();
 });
 </script>
 

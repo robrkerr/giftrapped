@@ -36,7 +36,7 @@ Feature: Viewing some words
     And I press "Rap"
     Then I should see "hat" within "#title_table div.title_word h2"
     And I should see that field "query[text]" does contain "hat"
-    And I should see "hat" within "#wr_heading_row"
+    # And I should see "hat" within "#wr_heading_row"
     And I should see "hh" within "#wr_heading_row div.phonemes"
     And I should see "ae1" within "#wr_heading_row div.phonemes"
     And I should see "t" within "#wr_heading_row div.phonemes"

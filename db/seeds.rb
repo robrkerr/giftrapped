@@ -20,25 +20,25 @@ end
 
 seeder = Seeder.new
 seed_timer("Clearing tables... ") {
-  # seeder.clear_phonemes
-  # seeder.clear_words
+  seeder.clear_phonemes
+  seeder.clear_words
   seeder.clear_lexemes
 }
-# seed_timer("Seeding phonemes... ") {
-#   seeder.seed_phonemes PhonemeLoader.get_phonemes
-# }
-# `split -a 1 -l 10000 data/cmudict.0.7a data/word_batch_`
-# Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|
-#   puts "Loading words: Batch #{i+1}"
-#   words = []
-#   seed_timer("  Reading words... ") {
-#   	words = PhoneticWordReader.read_words(file)
-#   }
-#   seed_timer("  Populating word tables... ") {
-#   	seeder.seed_words words
-#   }
-# end
-# `rm data/word_batch_*`
+seed_timer("Seeding phonemes... ") {
+  seeder.seed_phonemes PhonemeLoader.get_phonemes
+}
+`split -a 1 -l 10000 data/cmudict.0.7a data/word_batch_`
+Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|
+  puts "Loading words: Batch #{i+1}"
+  words = []
+  seed_timer("  Reading words... ") {
+  	words = PhoneticWordReader.read_words(file)
+  }
+  seed_timer("  Populating word tables... ") {
+  	seeder.seed_words words
+  }
+end
+`rm data/word_batch_*`
 Dir[Rails.root + "data/wordnet/data.*"].each_with_index do |file,i|
   puts "Loading lexemes: Batch #{i+1}"
   lexemes = []
@@ -48,6 +48,16 @@ Dir[Rails.root + "data/wordnet/data.*"].each_with_index do |file,i|
   }
   seed_timer("  Populating lexeme tables... ") {
     seeder.seed_lexemes lexemes, word_lexemes
+  }
+end
+Dir[Rails.root + "data/wordnet/*.exc"].each_with_index do |file,i|
+  puts "Loading extra word relations: Batch #{i+1}"
+  word_relations = {}
+  seed_timer("  Reading word relations... ") {
+    word_relations = WordLexemeReader.read_word_relations(file)
+  }
+  seed_timer("  Populating word-lexemes table... ") {
+    seeder.seed_extra_word_lexemes word_relations
   }
 end
 

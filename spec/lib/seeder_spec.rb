@@ -101,3 +101,33 @@ describe Seeder do
 	end
 end
 
+describe Seeder do
+	it "can add existing lexemes to words related to existing words with those lexemes" do
+		seeder = Seeder.new false
+		seeder.clear_phonemes
+		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		words = [{:name => "rabbit", :phonemes => [["r"]]},
+						 {:name => "rabbity", :phonemes => [["r"]]},
+						 {:name => "rabbits", :phonemes => [["r"]]}]
+		seeder.seed_words words
+		should satisfy { Word.count == 3 }
+		seeder.clear_lexemes
+		lexemes = [{:lexeme_id => 0, :word_class => "noun", :gloss => "rabbit meaning1"},
+							 {:lexeme_id => 1, :word_class => "verb", :gloss => "rabbit meaning2"}]
+		word_lexemes = {"rabbit" => [0,1]}
+		seeder.seed_lexemes lexemes, word_lexemes
+		related_words = {"rabbit" => ["rabbits","rabbity"]}
+		seeder.seed_extra_word_lexemes related_words
+		should satisfy { Lexeme.count == 2 }
+		should satisfy { WordLexeme.count == 6 }
+		word = Word.where("name = 'rabbits'").first
+		should satisfy { word.name == "rabbits" }
+		lex = word.lexemes
+		should satisfy { lex.length == 2 }
+		should satisfy { lex[0].word_class == "noun" }
+		should satisfy { lex[0].gloss == "rabbit meaning1" }
+		should satisfy { lex[1].word_class == "verb" }
+		should satisfy { lex[1].gloss == "rabbit meaning2" }
+	end
+end
+

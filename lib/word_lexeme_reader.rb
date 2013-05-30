@@ -28,6 +28,21 @@ class WordLexemeReader
     return lexemes, word_lexemes
   end
 
+  def self.read_word_relations filename
+    word_relations = Hash.new { |h,k| h[k] = [] }
+    file = File.new(filename,"r")
+    while (line = file.gets("\n"))
+      split_line = line.split(" ")
+      related_word = split_line[0]
+      word = split_line[1]
+      next if related_word == word
+      next if related_word[/[^a-z]/] || word[/[^a-z]/]
+      word_relations[word] << related_word
+    end
+    file.close
+    return word_relations
+  end
+
   private
 
   def self.load_full_types

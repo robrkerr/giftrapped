@@ -67,8 +67,8 @@ div.title_gr {
 }
 
 #input_area {
-  height:       100px; 
-  margin-top:   50px;
+  height:       80px; 
+  margin-top:   80px;
   width:        1000px;
   margin-right: auto;
   margin-left:  0px;
@@ -82,15 +82,32 @@ div.title_gr {
 }
 
 #input_area div.text_field {
-  width:         59%;
+  width:         280px;
+  height:         48px;
+}
+
+#query_text {
+  width:         1000px;
+  border-style:  none;
+  font-weight:   bold;
+  color:         rgba(0, 40, 200, 1);
+  height:        48px;
+  line-height:   30px;
+}
+
+#query_text:focus {
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: inset 0 0 15px 5px #9ecaed;
+  border-bottom: none;
 }
 
 #input_area div.first_phoneme_field {
-  width:         20%;
+  width:         200px;
 }
 
 #input_area div.num_syllables_field {
-  width:         21%;
+  width:         240px;
 }
 
 div.heading {
@@ -117,13 +134,13 @@ div.even {
 div.word_table {
   width:          1000px;
   /*height:         auto;*/
-  margin-bottom:  0px;
-  margin-top:     0px;
+  /*margin-bottom:  0px;*/
+  /*margin-top:     0px;*/
 }
 
 div.word {
   float:          left;
-  width:          200px;
+  width:          280px;
   height:         48px;
   vertical-align: middle;
   line-height:    48px;
@@ -131,7 +148,7 @@ div.word {
 
 div.syllables {
   float:          left;
-  width:          150px;
+  width:          70px;
   text-align:     center;
   height:         48px;
   vertical-align: middle;
@@ -155,9 +172,11 @@ div.lexemes {
   padding-bottom: 5px;
   vertical-align: middle;
   line-height:    20px;
+  font:           11pt "Myriad Pro", Helvetica;
 }
 
 div.lexeme_spacer {
+  float:          left;
   width:          1000px;
   height:         15px;
 }

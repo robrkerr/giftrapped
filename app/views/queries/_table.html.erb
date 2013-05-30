@@ -1,15 +1,3 @@
-<% if @query.word %>
-  <div id="wr_heading_row" class="word_table heading">
-    <div class="word"> <%= @query.text %> </div>
-    <div class="syllables"> <%= @query.word.num_syllables %> </div>
-    <div class="phonemes">
-      <% @query.word.word_phonemes.reverse.each do |p| %>
-        <div class="single_phoneme"> <%= p.full_name %> </div>
-        <div class="spacer"> </div>
-      <% end%>
-    </div>
-  </div>
-<% end %>
 <% @query.words_to_show.each_with_index do |word,i| %>
   <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
     <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
