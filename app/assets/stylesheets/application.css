@@ -1,120 +1,184 @@
 * {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 html {
-    background: white;
+  background: white;
+}
+
+a:link, a:visited {
+  color:   rgba(0, 0, 0, 1.0);
+  text-decoration: none;
+}
+     
+a:hover, a:active {
+  color:            rgba(0, 40, 200, 1);
+  text-decoration:  none;
+  font-weight:      bold;
 }
 
 input {
-    font: 13pt "Myriad Pro", Helvetica;
+  font: 13pt "Myriad Pro", Helvetica;
 }
 
 body {
-    font: 13pt "Myriad Pro", Helvetica;
-    margin: 5px 10% 0 10%;
-    height: 100%;
-    padding: 30px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
+  font: 13pt "Myriad Pro", Helvetica;
+  margin: 5px 10% 0 10%;
+  height: 100%;
+  padding: 30px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
 }
 
 .flash {
-    height:       50px; 
-    margin-top:   25px;
+  width:          1000px; 
+  height:         80px; 
+  line-height:    80px;
+  vertical-align: middle;
+}
+
+#title_table div {
+  margin-left:    auto;
+  margin-right:   0px;
+}
+
+#sliding_word div {
+  height:         40px;
+  /*width:          auto;*/
+  display:        inline-block;
+}
+
+div.title_word {
+  float:          left;
+  color:          rgba(0, 40, 200, 1);
+  height:         40px;
+}
+
+div.title_spacer {
+  float:          left;
+  width:          20px;
+  height:         40px;
+}
+
+div.title_gr {
+  float:          left;
+  height:         40px;
 }
 
 #input_area {
-    height:       100px; 
-    margin-top:   50px;
-    width:        1000px;
-    margin-right: auto;
-    margin-left:  0px;
+  height:       100px; 
+  margin-top:   50px;
+  width:        1000px;
+  margin-right: auto;
+  margin-left:  0px;
 }
 
 #input_area div {
-    float:          left;
-    vertical-align: middle;
-    height:         40px;
-    line-height:    30px;
+  float:          left;
+  vertical-align: middle;
+  height:         40px;
+  line-height:    30px;
 }
 
 #input_area div.text_field {
-    width:         59%;
+  width:         59%;
 }
 
 #input_area div.first_phoneme_field {
-    width:         20%;
+  width:         20%;
 }
 
 #input_area div.num_syllables_field {
-    width:         21%;
+  width:         21%;
 }
 
-#word_table tr {
-    height:       48px;
+div.heading {
+  font-weight:   bold;
+  color:         rgba(0, 40, 200, 1);
+  height:        48px;
+  border-bottom: 2px solid #000;
 }
 
-#word_table tr.heading {
-    font-weight:   bold;
-    color:         rgba(0, 40, 200, 1);
-    border-bottom: 2px solid #000;
+div.odd {
+  background:   rgba(255, 255, 255, 1.0);
 }
 
-#word_table tr.odd {
-    background:   rgba(255, 255, 255, 1.0);
+div.even {
+  background:   rgba(230, 230, 230, 1.0);
 }
 
-#word_table tr.even {
-    background:   rgba(230, 230, 230, 1.0);
+/*#word_table div.row_div:hover {
+  -moz-box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
+  -webkit-box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
+  box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
+}*/
+
+div.word_table {
+  width:          1000px;
+  /*height:         auto;*/
+  margin-bottom:  0px;
+  margin-top:     0px;
 }
 
-#word_table table {
-    border-collapse:    collapse;
-    width:              1000px;
+div.word {
+  float:          left;
+  width:          200px;
+  height:         48px;
+  vertical-align: middle;
+  line-height:    48px;
 }
 
-#word_table td.word {
-    width:          20%;
+div.syllables {
+  float:          left;
+  width:          150px;
+  text-align:     center;
+  height:         48px;
+  vertical-align: middle;
+  line-height:    48px;
 }
 
-#word_table td.phonemes {
-    width:          65%;
-    margin-left:    auto;
-    margin-right:   25px;
+div.phonemes {
+  float:          left;
+  width:          650px;
+  margin-left:    auto;
+  margin-right:   0px;
+  height:         48px;
 }
 
-#word_table div {
-    float:          right;
-    width:          40px;
-    height:         40px;
-    text-align:     center;
-    vertical-align: middle;
-    line-height:    40px;
+div.lexemes {
+  width:          970px;
+  height:         auto;
+  padding-left:   15px;
+  padding-right:  15px;
+  padding-top:    5px;
+  padding-bottom: 5px;
+  vertical-align: middle;
+  line-height:    20px;
 }
 
-#word_table div.spacer {
-    width:          8px;
+div.lexeme_spacer {
+  width:          1000px;
+  height:         15px;
 }
 
-#word_table div.match {
-    font-weight:   bold;
-    color:         rgba(0, 40, 200, 1);
+div.single_phoneme {
+  float:          right;
+  width:          40px;
+  height:         48px;
+  text-align:     center;
+  vertical-align: middle;
+  line-height:    48px;
 }
 
-#word_table td.syllables {
-    width:          15%;
-    text-align:     center;
+div.spacer {
+  float:          right;
+  width:          8px;
+  height:         48px;
 }
 
-#title_table td.title_word {
-    color:         rgba(0, 40, 200, 1);
-    /*color:        rgba(255,0,0,1.0);*/
+div.match {
+  font-weight:    bold;
+  color:          rgba(0, 40, 200, 1);
 }
-
-#title_table td.title_spacer {
-    width:        20px;
-}
-
 

@@ -1,31 +1,56 @@
-<div id='word_table'>
-  <table>
-    <% if @query.word %>
-      <tr id="wr_heading_row" class="heading">
-        <td class="word"> <%= @query.text %> </td>
-        <td class="syllables"> <%= @query.word.num_syllables %> </td>
-        <td class="phonemes">
-          <% @query.word.word_phonemes.reverse.each do |p| %>
-            <div> <%= p.full_name %> </div>
-            <div class="spacer"> </div>
-          <% end%>
-        </td>
-      </tr>
+<% if @query.word %>
+  <div id="wr_heading_row" class="word_table heading">
+    <div class="word"> <%= @query.text %> </div>
+    <div class="syllables"> <%= @query.word.num_syllables %> </div>
+    <div class="phonemes">
+      <% @query.word.word_phonemes.reverse.each do |p| %>
+        <div class="single_phoneme"> <%= p.full_name %> </div>
+        <div class="spacer"> </div>
+      <% end%>
+    </div>
+  </div>
+<% end %>
+<% @query.words_to_show.each_with_index do |word,i| %>
+  <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
+    <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
+      <%= link_to word.name, @query.params_for_each_option[i] %> 
+    </div>
+    <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
+      <%= word.num_syllables %> 
+    </div>
+    <div class="phonemes <%= (i%2==0) ? "even" : "odd" %>">
+      <% matching = true %>
+      <% word.word_phonemes.reverse.each_with_index do |p,j| %>
+        <% matching = false unless @query.word && @query.word.has_phoneme(p,j) %>
+        <div class="single_phoneme <%= "match" if matching %>"> <%= p.full_name %> </div>
+        <div class="spacer"> </div>
+      <% end%>
+    </div>
+  </div>
+  <div id="wr_<%= i %>_lexemes" class="word_table result_extended">
+    <% if word.lexemes.length > 0 %>
+      <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+      <% word.lexemes.each_with_index do |lexeme,j| %>
+        <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
+          <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
+        </div>
+      <% end%>
+      <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
     <% end %>
-    <% @query.words_to_show.each_with_index do |word,i| %>
-      <tr id="wr_<%= i %>_" class="<%= cycle('odd', 'even') %>">
-        <td class="word"> <%= link_to word.name, @query.params_for_each_option[i] %> </td>
-        <td class="syllables"> <%= word.num_syllables %> </td>
-        <td class="phonemes">
-          <% matching = true %>
-          <% word.word_phonemes.reverse.each_with_index do |p,j| %>
-            <% matching = false unless @query.word && @query.word.has_phoneme(p,j) %>
-            <div <%= "class=match" if matching %>> <%= p.full_name %> </div>
-            <div class="spacer"> </div>
-          <% end%>
-        </td>
-      </tr>  
-    <% end %>
-  </table>
-</div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+$(".result_extended").each(function() {
+  $(this).hide();
+});
+$(".result_simple").click(function () {
+  if ($("#" + this.id + "lexemes").is(":visible")) {
+    $(".result_extended").slideUp();
+  } else {
+    $(".result_extended").slideUp();
+    $("#" + this.id + "lexemes").slideToggle();  
+  }
+});
+</script>
 

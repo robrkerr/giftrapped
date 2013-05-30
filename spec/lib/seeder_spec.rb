@@ -39,11 +39,11 @@ describe Seeder do
 		seeder = Seeder.new false
 		seeder.clear_phonemes
 		seeder.seed_phonemes PhonemeLoader.get_phonemes
-		words = [{:name => "wordy", :phonemes => [["w"],["aa",1],["t"],["hh"],]}]
+		words = [{:name => "wordy", :phonemes => [["w"],["aa",1],["t"],["hh"]]}]
 		seeder.seed_words words
 		should satisfy { Word.count == 1 }
 		should satisfy { WordPhoneme.count == 4 }
-		word = Word.all.first
+		word = Word.first
 		should satisfy { word.name == "wordy" }
 		wphonemes = word.word_phonemes
 		should satisfy { wphonemes[0].position == 0 }
@@ -72,6 +72,32 @@ describe Seeder do
 		should satisfy { phoneme_types[1] == "vowel" }
 		should satisfy { phoneme_types[2] == "stop" }
 		should satisfy { phoneme_types[3] == "aspirate" }
+	end
+end
+
+describe Seeder do
+	it "can enter a word and its lexemes into the word, lexeme and word_lexemes tables" do
+		seeder = Seeder.new false
+		seeder.clear_phonemes
+		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		words = [{:name => "rabbit", :phonemes => [["r"]]}]
+		seeder.seed_words words
+		should satisfy { Word.count == 1 }
+		seeder.clear_lexemes
+		lexemes = [{:lexeme_id => 0, :word_class => "noun", :gloss => "rabbit meaning1"},
+							 {:lexeme_id => 1, :word_class => "verb", :gloss => "rabbit meaning2"}]
+		word_lexemes = {"rabbit" => [0,1]}
+		seeder.seed_lexemes lexemes, word_lexemes
+		should satisfy { Lexeme.count == 2 }
+		should satisfy { WordLexeme.count == 2 }
+		word = Word.first
+		should satisfy { word.name == "rabbit" }
+		lex = word.lexemes
+		should satisfy { lex.length == 2 }
+		should satisfy { lex[0].word_class == "noun" }
+		should satisfy { lex[0].gloss == "rabbit meaning1" }
+		should satisfy { lex[1].word_class == "verb" }
+		should satisfy { lex[1].gloss == "rabbit meaning2" }
 	end
 end
 

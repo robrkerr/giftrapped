@@ -1,13 +1,11 @@
 <div id="title_table">
-  <table>
-      <tr>
-        <% if @query.word %>
-          <td class="title_word"> <h2><%= @query.text + ":" %></h2> </td>
-          <td class="title_spacer">  </td>
-        <% end %>
-        <td class="title_gr"><h2>giftRAPPED</h2></td>
-      </tr>
-  </table>
+  <div id="sliding_word">
+    <% if @query.word %>
+      <div class="title_word"> <h2><%= @query.text + ":" %></h2> </div>
+      <div class="title_spacer"> </div>
+    <% end %>
+  </div>
+  <div class="title_gr"><h2>giftRAPPED</h2></div>
 </div>
 
 <div id="input_area">
@@ -30,6 +28,16 @@
     <%= q.check_box :perfect %> -->
   <% end %>
 </div>
+
+<script type="text/javascript">
+// $("#sliding_word").hide();
+$("#title_table").animate( {
+  left: -$("#sliding_word").outerWidth()
+});
+$("#title_table").animate( {
+  left: 0
+});
+</script>
 
 <% if @query.words_to_show %>
   <%= render "table" %>

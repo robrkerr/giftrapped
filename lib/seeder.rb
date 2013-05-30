@@ -24,10 +24,12 @@ class Seeder
 
   def clear_lexemes
     Lexeme.delete_all
+    WordLexeme.delete_all
   end
 
-  def seed_lexemes lexemes
-    populate_lexemes lexemes
+  def seed_lexemes lexemes, word_lexemes
+    first_id = populate_lexemes lexemes
+    populate_word_lexemes word_lexemes, first_id
   end
 
   private
@@ -67,8 +69,25 @@ class Seeder
   end
 
   def populate_lexemes lexemes
+    last_lexeme = Lexeme.all.sort_by(&:lexeme_id).last
+    first_id = last_lexeme ? last_lexeme.id+1 : 0
     Lexeme.transaction do
-      Lexeme.import lexemes.map { |lex| Lexeme.new(lex) }
+      Lexeme.import lexemes.map { |lex| lex[:lexeme_id] += first_id; Lexeme.new(lex) }
+    end
+    first_id
+  end
+
+  def populate_word_lexemes word_lexemes, first_id
+    word_lexeme_entries = []
+    word_lexemes.each { |k,v|
+      Word.where("name = '#{k}'").each { |word|
+        v.each { |lexeme_id|
+          word_lexeme_entries << {:word_id => word.id, :lexeme_id => lexeme_id + first_id }
+        }
+      }
+    }
+    WordLexeme.transaction do
+      WordLexeme.import word_lexeme_entries.map { |wl| WordLexeme.new(wl) }
     end
   end
 end
