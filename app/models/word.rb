@@ -23,9 +23,15 @@ class Word < ActiveRecord::Base
     word_lexemes.map { |e| e.lexeme }
   end
 
-  def has_phoneme word_phoneme, index
+  def has_phoneme word_phoneme, index, reverse=false
     return false unless index < num_phonemes
-    phoneme_names.reverse[index] == word_phoneme.name
+    names = reverse ? phoneme_names : phoneme_names.reverse
+    names[index] == word_phoneme.name
+  end
+
+  def position_of_last_stressed_vowel reverse=false
+    stressed = word_phonemes.select { |e| (e.v_stress==1) || (e.v_stress==2) }
+    reverse ? stressed.last.r_position : stressed.first.position
   end
 end
 

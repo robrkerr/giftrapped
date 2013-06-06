@@ -3,7 +3,8 @@ class Query
   include ActiveModel::Conversion
   extend  ActiveModel::Naming
 
-	attr_accessor :id, :text, :first_phoneme, :num_syllables, :word_type, :perfect
+	attr_accessor :id, :text, :first_phoneme, :num_syllables
+  attr_accessor :reverse, :word_type, :perfect
 	validate :exactly_one_word
 
 	def exactly_one_word
@@ -23,6 +24,8 @@ class Query
 		@first_phoneme = params[:first_phoneme] || ""
 		@num_syllables = params[:num_syllables] || ""
 		@word_type = params[:word_type] || ""
+    @reverse = params[:reverse] || "0"
+    @perfect = params[:perfect] || "0"
 		@id = params[:id].try(&:to_i)
 		if @id
 			@text = possible_words.first.name 	
@@ -55,6 +58,8 @@ class Query
 		if possible_words.length > 0
   		hash[:first_phoneme] = @first_phoneme if @first_phoneme.present?
   		hash[:num_syllables] = @num_syllables if @num_syllables.present?
+      hash[:reverse] = @reverse if @reverse.present? && @reverse == "1"
+      hash[:perfect] = @perfect if @perfect.present? && @perfect == "1"
   	end
   	hash
   end
@@ -71,20 +76,33 @@ class Query
   	valid? ? possible_words.first : nil
   end
 
+  def position_field
+    (@reverse=="1") ? "r_position" : "position"
+  end
+
+  def r_position_field
+    (@reverse=="1") ? "position" : "r_position"
+  end
+
   def run_query
     return nil unless valid?
     scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
-    matches_any = word.word_phonemes.reverse.each_with_index.map { |wp, i| 
-      "(r_position = #{i} AND phoneme_id = #{wp.phoneme.id})"
+    wphonemes = (@reverse=="1") ? word.word_phonemes : word.word_phonemes.reverse
+    matches_any = wphonemes.each_with_index.map { |wp, i| 
+      "(#{r_position_field} = #{i} AND phoneme_id = #{wp.phoneme.id})"
     }.join(" or ")
-    match_strength = "sum(2 ^ (-r_position-1)) AS match_strength"
+    match_strength = "sum(2 ^ (-#{r_position_field}-1)) AS match_strength"
     results = scope.select([:word_id, match_strength]).
       where(matches_any).
       where("word_id != ?", word.id).
       group(:word_id).
       order("match_strength DESC").
       limit(13)
-    min_strength = (word.phoneme_types.last=="vowel") ? 0.5 : 0.75
+    if (@perfect=="1")
+      min_strength = 1 - 0.5**(word.position_of_last_stressed_vowel(@reverse)+1)
+    else
+      min_strength = (word.phoneme_types.last=="vowel") ? 0.5 : 0.75
+    end
     results.select { |e| 
       e.attributes["match_strength"].to_f >= min_strength
     }.map { |e| Word.find(e.word_id) }
@@ -114,7 +132,7 @@ class Query
       ph_id = Phoneme.where(:name => @first_phoneme).first.id
       filtered_words = <<-SQL
         INNER JOIN (SELECT word_id AS filtered_word_id FROM word_phonemes
-          WHERE position = 0 AND phoneme_id = #{ph_id})
+          WHERE #{position_field} = 0 AND phoneme_id = #{ph_id})
         AS fw1 ON fw1.filtered_word_id = word_id
       SQL
       scope.joins(filtered_words)

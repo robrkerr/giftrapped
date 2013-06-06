@@ -1,17 +1,20 @@
 <% @query.words_to_show.each_with_index do |word,i| %>
   <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
+  <!-- <div id="wr_<%= i %>_" class="word_table result_simple"> -->
     <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
       <%= link_to word.name, @query.params_for_each_option[i] %> 
     </div>
     <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
       <%= word.num_syllables %> 
     </div>
-    <div class="phonemes <%= (i%2==0) ? "even" : "odd" %>">
+    <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
+    <div class="phonemes <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
       <% matching = true %>
-      <% word.word_phonemes.reverse.each_with_index do |p,j| %>
-        <% matching = false unless @query.word && @query.word.has_phoneme(p,j) %>
-        <div class="single_phoneme <%= "match" if matching %>"> <%= p.full_name %> </div>
-        <div class="spacer"> </div>
+      <% wphonemes = (@query.reverse=="1") ? word.word_phonemes : word.word_phonemes.reverse %>
+      <% wphonemes.each_with_index do |p,j| %>
+        <% matching = false unless @query.word && @query.word.has_phoneme(p,j,@query.reverse=="1") %>
+        <div class="single_phoneme <%= order_class %> <%= "match" if matching %>"> <%= p.full_name %> </div>
+        <div class="spacer <%= order_class %>"> </div>
       <% end%>
     </div>
   </div>
