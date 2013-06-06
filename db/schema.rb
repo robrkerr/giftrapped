@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130529072358) do
+ActiveRecord::Schema.define(:version => 20130606080749) do
 
   create_table "lexemes", :force => true do |t|
     t.string   "word_class"
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20130529072358) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "source"
   end
 
 end
