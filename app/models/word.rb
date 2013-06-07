@@ -10,6 +10,10 @@ class Word < ActiveRecord::Base
   def phoneme_names
     word_phonemes.map(&:name)
   end
+
+  def full_phoneme_names
+    word_phonemes.map(&:full_name)
+  end
   
   def num_phonemes
     word_phonemes.count

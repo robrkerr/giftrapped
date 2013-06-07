@@ -12,6 +12,7 @@ class QueriesController < ApplicationController
   	@query = Query.new params
     respond_to do |format|
       format.html # show.html.erb
+      format.json { render :json => @query.auto_complete.to_json }
     end
   end
 

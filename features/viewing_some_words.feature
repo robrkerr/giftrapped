@@ -56,5 +56,5 @@ Feature: Viewing some words
   Scenario: Entering a invalid word
     When I search for "gggggg"
     Then I should see "The word you entered doesn't match any we know of."
-    And I should see that field "query[text]" does not contain "gggggg"
+    And I should see that field "query[text]" does contain "gggggg"
 

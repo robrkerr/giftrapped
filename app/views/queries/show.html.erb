@@ -37,7 +37,8 @@
 
 <div id="wr_heading_row" class="word_table heading">
   <div class="text_field overlapping">
-    <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => "off" %>
+    <%= q.text_field :text, :value => (@query.text || "") %>
+    <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
   </div>
   <div class="word">
     <!-- background -->
@@ -57,13 +58,33 @@
 <% end %>
 
 <script type="text/javascript">
-$(document).ready(function(){
-  $("#title_table").animate({"left": "#{-$('#sliding_word').outerWidth()}"}, "fast");
-  $("#title_table").animate({"left": "0"}, "slow");
-});
-$(window).delegate('*', 'keypress', function (evt){
-  $("#query_text").focus();
-});
+  $(document).ready(function(){
+    $("#title_table").animate({"left": "#{-$('#sliding_word').outerWidth()}"}, "fast");
+    $("#title_table").animate({"left": "0"}, "slow");
+  });
+  $(document).delegate('*', 'keypress', function (evt){
+    $("#query_text").focus();
+    $("#query_id").val("");
+  });
+</script>
+
+<script>
+  $(function() {
+    $("#query_text").autocomplete({
+      source: '<%= query_path(:json) %>',
+      select: function(event, ui) {
+        // $("#query_text").val(ui.item.label + " : " + ui.item.phonemes);
+        $("#query_text").val(ui.item.label);
+        $("#query_id").val(ui.item.id);
+        return false;
+      }
+    }).data("uiAutocomplete")._renderItem = function(ul, item) {
+      return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonemes.join(" - ") + "</span></a>")
+        .appendTo(ul);
+      };
+  });
 </script>
 
 <% if @query.words_to_show %>

@@ -3,19 +3,15 @@ class Query
   include ActiveModel::Conversion
   extend  ActiveModel::Naming
 
-	attr_accessor :id, :text, :first_phoneme, :num_syllables
+	attr_accessor :word, :id, :text, :first_phoneme, :num_syllables
   attr_accessor :reverse, :word_type, :perfect
-	validate :exactly_one_word
+	validate :found_a_word
 
-	def exactly_one_word
-		case possible_words.length
-		when 1
-			true
-		when 0
+	def found_a_word
+		if @word
+      true
+    else
 			errors[:base] << "The word you entered doesn't match any we know of."
-			false
-		else
-			errors[:base] << "Please select a pronouncation."
 			false
 		end
 	end
@@ -26,36 +22,47 @@ class Query
 		@word_type = params[:word_type] || ""
     @reverse = params[:reverse] || "0"
     @perfect = params[:perfect] || "0"
-		@id = params[:id].try(&:to_i)
-		if @id
-			@text = possible_words.first.name 	
-		else
-			@text = params[:text].present? ? params[:text].downcase.split(" ").last.split("-").last : ""
+    @term = params[:term] || false
+    if params[:id].present?
+		  @id = params[:id].to_i
+      @word = Word.find(@id)
+      @text = @word.name
+    else
+      @text = params[:text].present? ? parse_text(params[:text]) : ""
+      @word = Word.where(:name => @text).try(&:first) || nil
+      @id = @word.id if @word
 		end
 	end
+
+  def parse_text text
+    text.downcase.split(" ").last.split("-").last
+  end
 
   def persisted?
     false
   end
 
-  def possible_words
-  	@id ? [Word.find(@id)] : Word.find(:all, :conditions => {:name => word_name})
-  end
-
-  def word_name
-  	@text.present? ? @text : ""
+  def auto_complete
+    return [] unless @term
+    words = Word.where("name LIKE ?", "#{@term}%").limit(5)
+    words.map { |w| {
+        :label => w.name, 
+        :phonemes => w.full_phoneme_names,
+        :id => w.id
+      }
+    }
   end
 
   def params
   	hash = optional_params
-  	hash[:text] = word_name if possible_words.length > 1
-  	hash[:id] = possible_words.first.id if possible_words.length == 1
+  	hash[:text] = @text unless @id
+  	hash[:id] = @id
   	hash
   end
 
   def optional_params
 		hash = {}
-		if possible_words.length > 0
+		if valid?
   		hash[:first_phoneme] = @first_phoneme if @first_phoneme.present?
   		hash[:num_syllables] = @num_syllables if @num_syllables.present?
       hash[:reverse] = @reverse if @reverse.present? && @reverse == "1"
@@ -64,16 +71,8 @@ class Query
   	hash
   end
 
-  def words_to_show
-  	@id ? run_query : possible_words
-  end
-
   def params_for_each_option
 		words_to_show.map { |word| optional_params.merge({:id => word.id}) }
-  end
-
-  def word
-  	valid? ? possible_words.first : nil
   end
 
   def position_field
@@ -84,24 +83,24 @@ class Query
     (@reverse=="1") ? "position" : "r_position"
   end
 
-  def run_query
-    return nil unless valid?
+  def words_to_show
+    return [] unless valid?
     scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
-    wphonemes = (@reverse=="1") ? word.word_phonemes : word.word_phonemes.reverse
+    wphonemes = (@reverse=="1") ? @word.word_phonemes : @word.word_phonemes.reverse
     matches_any = wphonemes.each_with_index.map { |wp, i| 
       "(#{r_position_field} = #{i} AND phoneme_id = #{wp.phoneme.id})"
     }.join(" or ")
     match_strength = "sum(2 ^ (-#{r_position_field}-1)) AS match_strength"
     results = scope.select([:word_id, match_strength]).
       where(matches_any).
-      where("word_id != ?", word.id).
+      where("word_id != ?", @id).
       group(:word_id).
       order("match_strength DESC").
       limit(13)
     if (@perfect=="1")
-      min_strength = 1 - 0.5**(word.position_of_last_stressed_vowel(@reverse)+1)
+      min_strength = 1 - 0.5**(@word.position_of_last_stressed_vowel(@reverse)+1)
     else
-      min_strength = (word.phoneme_types.last=="vowel") ? 0.5 : 0.75
+      min_strength = (@word.phoneme_types.last=="vowel") ? 0.5 : 0.75
     end
     results.select { |e| 
       e.attributes["match_strength"].to_f >= min_strength

@@ -244,3 +244,27 @@ div.match {
   color:          rgba(0, 40, 200, 1);
 }
 
+.ui-menu .ui-menu-item {
+  list-style-image: none !important;
+}
+
+.ui-menu-item a {
+  overflow: hidden;
+  margin:0;
+  padding:0;
+}
+
+span.autoleft {
+  margin: 0;
+  display: block;
+  float:          left;
+  text-align:     left;
+}
+
+span.autoright {
+  margin: 0;
+  display: block;
+  float:          right;
+  text-align:     right; 
+}
+
