@@ -1,10 +1,7 @@
 <div id="title_table">
-  <div id="sliding_word">
-    <% if @query.word %>
-      <div class="title_word"> <h2><%= @query.text + ":" %></h2> </div>
-      <div class="title_spacer"> </div>
-    <% end %>
-  </div>
+  <% if @query.word %>
+    <div class="title_word"> <h2><%= @query.text + ":" %></h2> </div>
+  <% end %>
   <div class="title_gr"><h2>giftRAPPED</h2></div>
 </div>
 
@@ -58,11 +55,13 @@
 <% end %>
 
 <script type="text/javascript">
-  $(document).ready(function(){
-    $("#title_table").animate({"left": "#{-$('#sliding_word').outerWidth()}"}, "fast");
-    $("#title_table").animate({"left": "0"}, "slow");
-  });
-  $(document).delegate('*', 'keypress', function (evt){
+  $(".title_word").animate({"width": "toggle"}, 0);
+  $(".title_word").hide("slide", {direction: "left"}, 0);
+  $(document).ready(function() {
+    $(".title_word").animate({"width": "toggle"}, 500);
+    $(".title_word").show("slide", {direction: "left"}, 500);
+  }); 
+  $(document).delegate('*', 'keypress', function (evt) {
     $("#query_text").focus();
     $("#query_id").val("");
   });
@@ -76,6 +75,7 @@
         // $("#query_text").val(ui.item.label + " : " + ui.item.phonemes);
         $("#query_text").val(ui.item.label);
         $("#query_id").val(ui.item.id);
+        $("#new_query").submit();
         return false;
       }
     }).data("uiAutocomplete")._renderItem = function(ul, item) {

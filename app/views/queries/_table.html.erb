@@ -2,7 +2,7 @@
   <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
   <!-- <div id="wr_<%= i %>_" class="word_table result_simple"> -->
     <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
-      <%= link_to word.name, @query.params_for_each_option[i] %> 
+      <%= link_to word.name, @query.params_for_each_option[i], :class => "word_link" %> 
     </div>
     <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
       <%= word.num_syllables %> 
@@ -32,16 +32,41 @@
 <% end %>
 
 <script type="text/javascript">
-$(".result_extended").each(function() {
-  $(this).hide();
-});
-$(".result_simple").click(function () {
-  if ($("#" + this.id + "lexemes").is(":visible")) {
-    $(".result_extended").slideUp();
-  } else {
-    $(".result_extended").slideUp();
-    $("#" + this.id + "lexemes").slideToggle();  
-  }
-});
+  $(".result_extended").each(function() {
+    $(this).hide();
+  });
+  $(".result_simple").each(function() {
+    $(this).hide();
+  });
+  $("#wr_heading_row").hide();
+  $(document).ready(function() {
+    $(".result_simple").each(function() {
+      $(this).slideDown(500);
+    });
+    $("#wr_heading_row").show("slide", {direction: "down"}, 500);
+    $(".result_simple").click(function() {
+      if ($("#" + this.id + "lexemes").is(":visible")) {
+        $(".result_extended").slideUp(500);
+      } else {
+        $(".result_extended").slideUp(500);
+        $("#" + this.id + "lexemes").slideToggle(500);
+      }
+    });
+    $(".word_link").click(function(e) {
+      e.stopPropagation();
+      $(".result_extended").slideUp(500);
+      $(".result_simple").slideUp(500);
+      $("#wr_heading_row").hide("slide", {direction: "down"}, 500);
+      $(".title_word").animate({"width": "toggle"}, 500);
+      $(".title_word").hide("slide", {direction: "left"}, 500);
+    });
+    $("#new_query").submit(function() {
+      $(".result_extended").slideUp(500);
+      $(".result_simple").slideUp(500);
+      $("#wr_heading_row").hide("slide", {direction: "down"}, 500);
+      $(".title_word").animate({"width": "toggle"}, 500);
+      $(".title_word").hide("slide", {direction: "left"}, 500);
+    });
+  });
 </script>
 

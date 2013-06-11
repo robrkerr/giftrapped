@@ -38,30 +38,18 @@ body {
   vertical-align: middle;
 }
 
-#title_table div {
-  margin-left:    auto;
-  margin-right:   0px;
-}
-
-#sliding_word div {
-  height:         40px;
-  /*width:          auto;*/
-  display:        inline-block;
-}
-
 div.title_word {
   float:          left;
   color:          rgba(0, 40, 200, 1);
   height:         40px;
-}
-
-div.title_spacer {
-  float:          left;
-  width:          20px;
-  height:         40px;
+  /*padding-left:   0px;*/
+  padding-right:  20px;
+  /*text-align:     right;*/
+  /*width:          auto;*/
 }
 
 div.title_gr {
+  display:        inline-block;
   float:          left;
   height:         40px;
 }
@@ -89,7 +77,8 @@ div.title_gr {
 }
 
 #query_text {
-  width:         1000px;
+  width:         992px;
+  padding-left:  8px;
   border-style:  none;
   font-weight:   bold;
   color:         rgba(0, 40, 200, 1);
@@ -161,10 +150,11 @@ div.word_table {
 
 div.word {
   float:          left;
-  width:          280px;
+  width:          272px;
   height:         48px;
   vertical-align: middle;
   line-height:    48px;
+  padding-left:    8px;
 }
 
 div.syllables {
