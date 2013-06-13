@@ -1,30 +1,12 @@
-<div id="title_table">
-  <% if @query.word %>
-    <!-- <div class="title_word_box hidden"> -->
-    <div class="title_word"> <h2><%= @query.text + ":" %></h2> </div>
-  <% end %>
-  <div class="title_gr"><h2>giftRAPPED</h2></div>
-</div>
-
-<!-- <div id="links">
-  Add words
-</div> -->
+<%= render "layouts/title" %>
+<%= render "search_bar" %>
+<%= render "table" %> 
 
 <script type="text/javascript">
-  // $(".title_word").hide();
-  $(".title_word").animate({"width": "toggle"}, 0);
-  $(".title_word").hide("slide", {direction: "left"}, 0);
-  $(document).ready(function() {
-    // $(".title_word").toggleClass("visible");
-    $(".title_word").animate({"width": "toggle"}, 500);
-    $(".title_word").show("slide", {direction: "left"}, 500);
-  }); 
+  if ($("#query_dictionary").val()=="1") {
+    $("a.word_link").css("color", "rgba(200, 0, 40, 1)");
+    $("div.title_word").css("color", "rgba(200, 0, 40, 1)");
+    $("#query_text").css("color", "rgba(200, 0, 40, 1)");
+    $("div.heading").css("color", "rgba(200, 0, 40, 1)");
+  }
 </script>
-
-<%= render "search_bar" %>
-
-<div id="table_box">
-  <% if @query.words_to_show %>
-    <%= render "table" %>  
-  <% end %>
-</div>

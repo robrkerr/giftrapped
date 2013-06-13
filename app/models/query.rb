@@ -4,7 +4,7 @@ class Query
   extend  ActiveModel::Naming
 
 	attr_accessor :word, :id, :text, :first_phoneme, :num_syllables
-  attr_accessor :reverse, :word_type, :perfect
+  attr_accessor :reverse, :word_type, :perfect, :dictionary
 	validate :found_a_word
 
 	def found_a_word
@@ -22,7 +22,9 @@ class Query
 		@word_type = params[:word_type] || ""
     @reverse = params[:reverse] || "0"
     @perfect = params[:perfect] || "0"
+    @dictionary = params[:dictionary] || "0"
     @term = params[:term] || false
+    @number_of_results = 13
     if params[:id].present?
 		  @id = params[:id].to_i
       @word = Word.find(@id)
@@ -55,12 +57,17 @@ class Query
     }
   end
 
+  def dictionary_results text, number
+    Word.where("name = '#{text}'").limit(number)
+  end
+
   def params
   	hash = optional_params
   	hash[:text] = @text unless @id
-  	hash[:id] = @id
+    hash[:id] = @id
+    hash[:dictionary] = "1" if (@dictionary == "1")
   	hash
-  end
+  end  
 
   def optional_params
 		hash = {}
@@ -71,6 +78,14 @@ class Query
       hash[:perfect] = @perfect if @perfect.present? && @perfect == "1"
   	end
   	hash
+  end
+
+  def toggle_params
+    hash = {}
+    hash[:text] = @text unless @id
+    hash[:id] = @id
+    hash[:dictionary] = "1" if (@dictionary == "0")
+    hash
   end
 
   def params_for_each_option
@@ -87,6 +102,7 @@ class Query
 
   def words_to_show
     return [] unless valid?
+    return dictionary_results(@word.name, @number_of_results) if (@dictionary=="1")
     scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
     wphonemes = (@reverse=="1") ? @word.word_phonemes : @word.word_phonemes.reverse
     matches_any = wphonemes.each_with_index.map { |wp, i| 
@@ -98,7 +114,7 @@ class Query
       where("word_id != ?", @id).
       group(:word_id).
       order("match_strength DESC").
-      limit(13)
+      limit(@number_of_results)
     if (@perfect=="1")
       min_strength = 1 - 0.5**(@word.position_of_last_stressed_vowel(@reverse)+1)
     else

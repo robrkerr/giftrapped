@@ -9,8 +9,9 @@
     </div>
     <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
     <div class="phonemes <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
-      <% matching = true %>
+      <% matching = @query.dictionary=="0" %>
       <% wphonemes = (@query.reverse=="1") ? word.word_phonemes : word.word_phonemes.reverse %>
+      <div class="spacer <%= order_class %>"> </div>
       <% wphonemes.each_with_index do |p,j| %>
         <% matching = false unless @query.word && @query.word.has_phoneme(p,j,@query.reverse=="1") %>
         <div class="single_phoneme <%= order_class %> <%= "match" if matching %>"> <%= p.full_name %> </div>
@@ -28,6 +29,15 @@
       <% end%>
       <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
     <% end %>
+  </div>
+<% end %>
+<% if (@query.dictionary=="1") && (@query.text != "") %>
+  <div id="new_entry" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
+    <div class="word <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> 
+      <%= link_to "add new word...", new_word_path, :class => "word_link" %> 
+    </div>
+    <div class="syllables <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> </div>
+    <div class="phonemes <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> </div>
   </div>
 <% end %>
 
@@ -52,7 +62,7 @@
         $("#" + this.id + "lexemes").slideToggle(500);
       }
     });
-    $(".word_link").click(function(e) {
+    $("a").click(function(e) {
       e.stopPropagation();
       $(".result_extended").slideUp(500);
       $(".result_simple").slideUp(500);

@@ -7,14 +7,11 @@ html {
   background: white;
 }
 
-a:link, a:visited {
-  color:   rgba(0, 0, 0, 1.0);
-  text-decoration: none;
+a {
+  color:            rgba(0, 40, 200, 1);
 }
      
 a:hover, a:active {
-  color:            rgba(0, 40, 200, 1);
-  text-decoration:  none;
   font-weight:      bold;
 }
 
@@ -38,14 +35,14 @@ body {
   vertical-align: middle;
 }
 
+#title_banner {
+  width: 1000px;
+}
+
 div.title_word {
-  /*display:             inline-block;*/
   float:               left;
   color:               rgba(0, 40, 200, 1);
   height:              40px;
-  /*transition:          all 0.5s linear;*/
-  /*-webkit-transition:  all 0.5s linear;*/
-  /*margin-right:        20px;*/
   padding-right:        20px;
 }
 
@@ -55,10 +52,8 @@ div.title_gr {
   height:         40px;
 }
 
-#link div {
-  position:       absolute;
-  top:            0px;
-  right:          1000px;
+#links {
+  float:            right;
 }
 
 #input_area {
@@ -142,12 +137,6 @@ div.even {
   background:   rgba(230, 230, 230, 1.0);
 }
 
-/*#word_table div.row_div:hover {
-  -moz-box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
-  -webkit-box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
-  box-shadow: 0 0 5px rgba(0, 40, 200, 1);;
-}*/
-
 div.word_table {
   width:          1000px;
   /*height:         auto;*/
@@ -208,7 +197,7 @@ div.lexeme_spacer {
 }
 
 div.single_phoneme {
-  width:          40px;
+  width:          28px;
   height:         48px;
   text-align:     center;
   vertical-align: middle;
@@ -265,3 +254,10 @@ span.autoright {
   text-align:     right; 
 }
 
+.rhyming_link {
+  color:            rgba(0, 40, 200, 1);
+}
+
+.dictionary_link {
+  color:            rgba(200, 0, 40, 1);
+}
