@@ -1,0 +1,77 @@
+<%= form_for @query, :url => query_path do |q| %>
+  <div id="input_area">
+    <div class="first_phoneme_field" > 
+      First phoneme: 
+      <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
+    </div>
+    <div class="num_syllables_field" >
+      Number of syllables:
+      <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
+    </div>
+    <div class="word_type_field" >
+      Word type:
+      <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
+    </div>
+    <div class="perfect_box" >
+      Perfect Rhyme:
+      <%= q.check_box :perfect %>
+    </div>
+    <div class="reverse_box" >
+      Reverse Rhyme:
+      <%= q.check_box :reverse %>
+    </div>
+    <div>
+      <%= q.submit "Rap" %>
+    </div>
+  </div>
+
+  <div id="wr_heading_row" class="word_table heading">
+    <div class="text_field overlapping">
+      <%= q.text_field :text, :value => (@query.text || "") %>
+      <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
+    </div>
+    <div class="word">
+      <!-- background -->
+    </div>
+    <div class="syllables"> <%= @query.word.try(&:num_syllables) || "" %> </div>
+    <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
+    <div class="phonemes <%= order_class %>">
+      <% wphonemes = (@query.reverse=="1") ? (@query.word.try(&:word_phonemes) || []) : (@query.word.try(&:word_phonemes) || []).reverse %>
+      <% wphonemes.each do |p| %>
+        <div class="single_phoneme <%= order_class %>"> <%= p.full_name %> </div>
+        <div class="spacer <%= order_class %>"> </div>
+      <% end%>
+    </div>
+  </div>
+<% end %>
+
+<script>
+$(document).delegate('*', 'keypress', function (evt) {
+    $("#query_text").focus();
+    $("#query_id").val("");
+  });
+  $(function() {
+    $("#query_text").autocomplete({
+      source: '<%= query_path(:json) %>',
+      select: function(event, ui) {
+        // $("#query_text").val(ui.item.label + " : " + ui.item.phonemes);
+        $("#query_text").val(ui.item.label);
+        $("#query_id").val(ui.item.id);
+        $("#wr_heading_row div.syllables").html(ui.item.num_syllables);
+        if ($("#wr_heading_row div.phonemes").hasClass("normal_order")) {
+          $("#wr_heading_row div.phonemes").html("<div class='single_phoneme normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'></div><div class='single_phoneme normal_order'>") + "</div><div class='spacer normal_order'></div>");
+        } 
+        else if ($("#wr_heading_row div.phonemes").hasClass("reversed")) {
+          $("#wr_heading_row div.phonemes").html("<div class='single_phoneme reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'></div><div class='single_phoneme reversed'>") + "</div><div class='spacer reversed'></div>");
+        }
+        $("#new_query").submit();
+        return false;
+      }
+    }).data("uiAutocomplete")._renderItem = function(ul, item) {
+      return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonemes.join(" - ") + "</span></a>")
+        .appendTo(ul);
+      };
+  });
+</script>

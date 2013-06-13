@@ -39,13 +39,14 @@ body {
 }
 
 div.title_word {
-  float:          left;
-  color:          rgba(0, 40, 200, 1);
-  height:         40px;
-  /*padding-left:   0px;*/
-  padding-right:  20px;
-  /*text-align:     right;*/
-  /*width:          auto;*/
+  /*display:             inline-block;*/
+  float:               left;
+  color:               rgba(0, 40, 200, 1);
+  height:              40px;
+  /*transition:          all 0.5s linear;*/
+  /*-webkit-transition:  all 0.5s linear;*/
+  /*margin-right:        20px;*/
+  padding-right:        20px;
 }
 
 div.title_gr {
@@ -54,12 +55,18 @@ div.title_gr {
   height:         40px;
 }
 
+#link div {
+  position:       absolute;
+  top:            0px;
+  right:          1000px;
+}
+
 #input_area {
-  height:       80px; 
-  margin-top:   80px;
-  /*width:        1000px;*/
-  margin-right: auto;
-  margin-left:  0px;
+  height:         80px; 
+  margin-top:     80px;
+  /*width:          1000px;*/
+  margin-right:   auto;
+  margin-left:    0px;
 }
 
 #input_area div {

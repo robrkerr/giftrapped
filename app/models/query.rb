@@ -48,6 +48,8 @@ class Query
     words.map { |w| {
         :label => w.name, 
         :phonemes => w.full_phoneme_names,
+        :reversed_phonemes => w.full_phoneme_names.reverse,
+        :num_syllables => w.num_syllables,
         :id => w.id
       }
     }
