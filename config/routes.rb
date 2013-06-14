@@ -1,6 +1,6 @@
 Giftrapped::Application.routes.draw do
   resource :query, :path => '', :only => [:create,:show]
-  resources :words, :path => 'words'
+  resources :words, :path => 'words', :except => [:index,:show]
   
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -1,6 +1,6 @@
 <div id="title_banner">
-  <% if @query.try(&:word) %>
-    <div class="title_word"> <h2><%= @query.text + ":" %></h2> </div>
+  <% if @title_word %>
+    <div class="title_word"> <h2><%= @title_word + ":" %></h2> </div>
   <% end %>
   <div class="title_gr"><h2>giftRAPPED</h2></div>
   <div id="links">

@@ -2,7 +2,11 @@
   <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
   <!-- <div id="wr_<%= i %>_" class="word_table result_simple"> -->
     <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
-      <%= link_to word.name, @query.params_for_each_option[i], :class => "word_link" %> 
+      <% if @query.dictionary=="1" %>
+        <%= link_to word.name, edit_word_path(@query.word), :class => "word_link" %> 
+      <% else %>
+        <%= link_to word.name, @query.params_for_each_option[i], :class => "word_link" %> 
+      <% end %>
     </div>
     <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
       <%= word.num_syllables %> 
@@ -34,7 +38,7 @@
 <% if (@query.dictionary=="1") && (@query.text != "") %>
   <div id="new_entry" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
     <div class="word <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> 
-      <%= link_to "add new word...", new_word_path, :class => "word_link" %> 
+      <%= link_to "add new word...", new_word_path({:text => @query.text}), :class => "word_link" %> 
     </div>
     <div class="syllables <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> </div>
     <div class="phonemes <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> </div>

@@ -10,8 +10,13 @@ class QueriesController < ApplicationController
   
   def show
   	@query = Query.new params
+    @title_word = @query.text if @query.word
     respond_to do |format|
-      format.html # show.html.erb
+      if (params[:dictionary]!="1") && (!params.has_key?(:id)) && (@query.id)
+        format.html { redirect_to query_path(@query.params) }
+      else
+        format.html # show.html.erb
+      end
       format.json { render :json => @query.auto_complete.to_json }
     end
   end

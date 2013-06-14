@@ -62,15 +62,28 @@ class Query
   end
 
   def params
-  	hash = optional_params
-  	hash[:text] = @text unless @id
-    hash[:id] = @id
-    hash[:dictionary] = "1" if (@dictionary == "1")
-  	hash
-  end  
+  	basic_params optional_params
+  end
 
-  def optional_params
-		hash = {}
+  def toggle_params
+    basic_params({}, true)
+  end
+
+  def basic_params hash={}, toggle=false
+    if (@dictionary == "1")
+      hash[:text] = @text unless @text == ""
+      hash[:dictionary] = "1" unless toggle
+    elsif toggle
+      hash[:text] = @text unless @text == ""
+      hash[:dictionary] = "1"
+    else
+      hash[:text] = @text unless (@id || @text=="")
+      hash[:id] = @id
+    end
+    hash
+  end
+
+  def optional_params hash={}
 		if valid?
   		hash[:first_phoneme] = @first_phoneme if @first_phoneme.present?
   		hash[:num_syllables] = @num_syllables if @num_syllables.present?
@@ -78,14 +91,6 @@ class Query
       hash[:perfect] = @perfect if @perfect.present? && @perfect == "1"
   	end
   	hash
-  end
-
-  def toggle_params
-    hash = {}
-    hash[:text] = @text unless @id
-    hash[:id] = @id
-    hash[:dictionary] = "1" if (@dictionary == "0")
-    hash
   end
 
   def params_for_each_option

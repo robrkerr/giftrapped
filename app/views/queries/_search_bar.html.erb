@@ -35,7 +35,7 @@
         <%= q.text_field :text, :value => (@query.text || "") %>
       <% end %>
       <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-      <%= q.text_field :dictionary, :type => :hidden %>
+      <%= q.text_field :dictionary, :type => :hidden, :value => (@query.dictionary || "0") %>
     </div>
     <div class="word">
       <!-- background -->
@@ -61,35 +61,40 @@
 <% end %>
 
 <script>
-$(document).delegate('*', 'keypress', function (evt) {
-    $("#query_text").focus();
+  $(document).delegate('*', 'keypress', function (evt) {
+    if (!$("#query_text").focus()) {
+      $("#query_text").focus().val($("#query_text").val());
+    }
     $("#query_id").val("");
   });
-  if (!$("query_dictionary").val()=="1") {
-    $(function() {
-      $("#query_text").autocomplete({
-        source: '<%= query_path(:json) %>',
-        select: function(event, ui) {
-          $("#query_text").val(ui.item.label);
-          $("#query_id").val(ui.item.id);
-          if ($(".syllables").val()!="") {
-            $("#wr_heading_row div.syllables").html(ui.item.num_syllables);
-            if ($("#wr_heading_row div.phonemes").hasClass("normal_order")) {
-              $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'></div><div class='single_phoneme normal_order'>") + "</div><div class='spacer normal_order'></div>");
-            } 
-            else if ($("#wr_heading_row div.phonemes").hasClass("reversed")) {
-              $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'></div><div class='single_phoneme reversed'>") + "</div><div class='spacer reversed'></div>");
+  $(document).ready(function() {
+    $("#query_text").focus().val($("#query_text").val());
+    if ($("#query_dictionary").val()!="1") {
+      $(function() {
+        $("#query_text").autocomplete({
+          source: '<%= query_path(:json) %>',
+          select: function(event, ui) {
+            $("#query_text").val(ui.item.label);
+            $("#query_id").val(ui.item.id);
+            if ($(".syllables").val()!="") {
+              $("#wr_heading_row div.syllables").html(ui.item.num_syllables);
+              if ($("#wr_heading_row div.phonemes").hasClass("normal_order")) {
+                $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'></div><div class='single_phoneme normal_order'>") + "</div><div class='spacer normal_order'></div>");
+              } 
+              else if ($("#wr_heading_row div.phonemes").hasClass("reversed")) {
+                $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'></div><div class='single_phoneme reversed'>") + "</div><div class='spacer reversed'></div>");
+              }
             }
+            $("#new_query").submit();
+            return false;
           }
-          $("#new_query").submit();
-          return false;
-        }
-      }).data("uiAutocomplete")._renderItem = function(ul, item) {
-        return $("<li></li>")
-          .data("item.autocomplete", item)
-          .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonemes.join(" - ") + "</span></a>")
-          .appendTo(ul);
-        };
-    });
-  }
+        }).data("uiAutocomplete")._renderItem = function(ul, item) {
+          return $("<li></li>")
+            .data("item.autocomplete", item)
+            .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonemes.join(" - ") + "</span></a>")
+            .appendTo(ul);
+          };
+      });
+    }
+  });
 </script>
