@@ -43,7 +43,7 @@ div.title_word {
   float:               left;
   color:               rgba(0, 40, 200, 1);
   height:              40px;
-  padding-right:        20px;
+  padding-right:       20px;
 }
 
 div.title_gr {
@@ -53,14 +53,15 @@ div.title_gr {
 }
 
 #links {
-  float:            right;
+  float:          right;
 }
 
 #input_area {
   height:         80px; 
   margin-top:     80px;
-  /*width:          1000px;*/
-  margin-right:   auto;
+  width:          1000px;
+  /*margin-right:   auto;*/
+  margin-right:    0px;
   margin-left:    0px;
 }
 
@@ -78,9 +79,7 @@ div.title_gr {
   z-index :      20;
 }
 
-#query_text {
-  width:         992px;
-  padding-left:  8px;
+input[type=text] {
   border-style:  none;
   font-weight:   bold;
   color:         rgba(0, 40, 200, 1);
@@ -91,11 +90,22 @@ div.title_gr {
   z-index :      20;
 }
 
+#query_text {
+  width:         992px;
+  padding-left:  8px;
+}
+
+#new_phoneme {
+  width:         200px;
+  margin-left:   150px;
+  padding-left:  10px;
+}
+
 div.overlapping {
   position:       absolute;
 }
 
-#query_text:focus {
+input:focus {
   outline:          none;
   /*border-color:     #9ecaed;*/
   /*box-shadow:       inset 0 0 15px 5px #9ecaed;*/
@@ -120,6 +130,10 @@ div.overlapping {
 
 #input_area div.reverse_box {
   width:         175px;
+}
+
+#input_area div.rap_button_box {
+  float:         right;
 }
 
 div.heading {
@@ -197,11 +211,12 @@ div.lexeme_spacer {
 }
 
 div.single_phoneme {
-  width:          28px;
+  width:          34px;
   height:         48px;
   text-align:     center;
   vertical-align: middle;
   line-height:    48px;
+  /*background-color: rgba(255,220,240,1);*/
 }
 
 div.single_phoneme.normal_order {
@@ -213,7 +228,7 @@ div.single_phoneme.reversed {
 }
 
 div.spacer {
-  width:          8px;
+  width:          6px;
   height:         48px;
 }
 
@@ -260,4 +275,24 @@ span.autoright {
 
 .dictionary_link {
   color:            rgba(200, 0, 40, 1);
+}
+
+div.prompt {
+  color:          rgba(0, 0, 0, 1);
+  font-weight:    normal;
+  float:          left;
+  height:         48px;
+  width:          352px;
+  vertical-align: middle;
+  line-height:    48px;
+  padding-left:    8px;
+}
+
+div.phoneme_text {
+  float:          left;
+  width:          200px;
+  text-align:     left;
+  height:         48px;
+  vertical-align: middle;
+  line-height:    48px;
 }

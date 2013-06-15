@@ -108,25 +108,43 @@ class Query
   def words_to_show
     return [] unless valid?
     return dictionary_results(@word.name, @number_of_results) if (@dictionary=="1")
+    run_query
+  end
+
+  def run_query
+    position_of_last_stress = @word.position_of_last_stressed_vowel(@reverse=="1")
+    min_strength = (@word.phoneme_types.last=="vowel") ? 0.5 : 0.75
+    min_perfect_strength = 1 - 0.5**(position_of_last_stress+1)
+    #
     scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
     wphonemes = (@reverse=="1") ? @word.word_phonemes : @word.word_phonemes.reverse
+    #
     matches_any = wphonemes.each_with_index.map { |wp, i| 
       "(#{r_position_field} = #{i} AND phoneme_id = #{wp.phoneme.id})"
     }.join(" or ")
     match_strength = "sum(2 ^ (-#{r_position_field}-1)) AS match_strength"
-    results = scope.select([:word_id, match_strength]).
+    is_stressed = "case v_stress when 1 then 1 when 2 then 1 else 0 end"
+    is_last_stressed_position = "case #{r_position_field} when #{position_of_last_stress} then 1 else 0 end"
+    stress_match = "sum((#{is_last_stressed_position})*(#{is_stressed})) AS stress_match"
+    # stress_count = "sum((#{is_stressed})*2^(-#{r_position_field}-1)) AS stress_count"
+    perfect = "case ((sum(2 ^ (-#{r_position_field}-1)) >= #{min_perfect_strength}) AND (sum((#{is_last_stressed_position})*(#{is_stressed})) = 1)) when true then 1 else 0 end AS perfect"
+    front_match1 = "case #{position_field} when 0 then 1 else 0 end"
+    front_match2 = "case #{r_position_field} when #{wphonemes.length-1} then 1 else 0 end"
+    identity_status = "sum((#{front_match1}) + (#{front_match2}))"
+    #
+    results = scope.select([:word_id, match_strength, stress_match, perfect]).
       where(matches_any).
       where("word_id != ?", @id).
       group(:word_id).
-      order("match_strength DESC").
+      having("#{identity_status} = 0").
+      order("perfect DESC, match_strength DESC").
       limit(@number_of_results)
-    if (@perfect=="1")
-      min_strength = 1 - 0.5**(@word.position_of_last_stressed_vowel(@reverse)+1)
-    else
-      min_strength = (@word.phoneme_types.last=="vowel") ? 0.5 : 0.75
-    end
-    results.select { |e| 
-      e.attributes["match_strength"].to_f >= min_strength
+    results.select { |e|
+      if (@perfect=="1")
+        (e.attributes["match_strength"].to_f >= min_perfect_strength) && (e.attributes["perfect"].to_f == 1)
+      else
+        (e.attributes["match_strength"].to_f >= min_strength)
+      end
     }.map { |e| Word.find(e.word_id) }
   end
 

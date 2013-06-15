@@ -35,7 +35,7 @@ class Word < ActiveRecord::Base
 
   def position_of_last_stressed_vowel reverse=false
     stressed = word_phonemes.select { |e| (e.v_stress==1) || (e.v_stress==2) }
-    reverse ? stressed.last.r_position : stressed.first.position
+    reverse ? stressed.first.position : stressed.last.r_position
   end
 end
 
