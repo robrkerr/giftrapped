@@ -128,16 +128,21 @@ class Query
     stress_match = "sum((#{is_last_stressed_position})*(#{is_stressed})) AS stress_match"
     # stress_count = "sum((#{is_stressed})*2^(-#{r_position_field}-1)) AS stress_count"
     perfect = "case ((sum(2 ^ (-#{r_position_field}-1)) >= #{min_perfect_strength}) AND (sum((#{is_last_stressed_position})*(#{is_stressed})) = 1)) when true then 1 else 0 end AS perfect"
-    front_match1 = "case #{position_field} when 0 then 1 else 0 end"
-    front_match2 = "case #{r_position_field} when #{wphonemes.length-1} then 1 else 0 end"
-    identity_status = "sum((#{front_match1}) + (#{front_match2}))"
+    if @word.phoneme_types.first=="vowel"
+      fronts_match = "case #{position_field} = 0 AND v_stress != 3 AND #{r_position_field} = #{wphonemes.length-1} when true then 2 else 0 end"
+      identity_status = "sum(#{fronts_match})"
+    else
+      front_match1 = "case #{position_field} = 0 AND v_stress = 3 when true then 1 else 0 end"
+      front_match2 = "case #{r_position_field} when #{wphonemes.length-1} then 1 else 0 end"
+      identity_status = "sum((#{front_match1}) + (#{front_match2}))"
+    end
     #
     results = scope.select([:word_id, match_strength, stress_match, perfect]).
       where(matches_any).
       where("word_id != ?", @id).
       group(:word_id).
       having("#{identity_status} = 0").
-      order("perfect DESC, match_strength DESC").
+      order("perfect DESC, match_strength DESC, word_id ASC").
       limit(@number_of_results)
     results.select { |e|
       if (@perfect=="1")

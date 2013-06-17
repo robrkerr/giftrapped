@@ -40,7 +40,9 @@ Then(/^there should not be an object "([^"]*)"$/) do |obj|
 end
 
 When(/^I fill in "([^"]*)" with "([^"]*)"$/) do |form_item, input|
+  should have_css("#" + form_item, :count => 1)
   fill_in form_item, with: input
+  should have_field(form_item, :with => input)
 end
 
 When(/^I select "([^"]*)" from "([^"]*)"$/) do |input, sel|
