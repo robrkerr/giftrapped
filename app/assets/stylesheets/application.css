@@ -1,3 +1,8 @@
+/*
+ *= require jquery-ui/smoothness
+ *
+ */
+
 * {
   padding: 0;
   margin: 0;
@@ -211,7 +216,7 @@ div.lexeme_spacer {
 }
 
 div.single_phoneme {
-  width:          34px;
+  /*width:          34px;*/
   height:         48px;
   text-align:     center;
   vertical-align: middle;
@@ -228,8 +233,12 @@ div.single_phoneme.reversed {
 }
 
 div.spacer {
-  width:          6px;
+  padding-left:   3px;
+  padding-right:  3px;
   height:         48px;
+  vertical-align: middle;
+  text-align:     center;
+  line-height:    48px;
 }
 
 div.spacer.normal_order {
@@ -250,6 +259,7 @@ div.match {
 }
 
 .ui-menu-item a {
+  font: 13pt "Myriad Pro", Helvetica;
   overflow: hidden;
   margin:0;
   padding:0;

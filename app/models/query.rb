@@ -87,6 +87,7 @@ class Query
 		if valid?
   		hash[:first_phoneme] = @first_phoneme if @first_phoneme.present?
   		hash[:num_syllables] = @num_syllables if @num_syllables.present?
+      hash[:word_type] = @word_type if @word_type.present?
       hash[:reverse] = @reverse if @reverse.present? && @reverse == "1"
       hash[:perfect] = @perfect if @perfect.present? && @perfect == "1"
   	end
@@ -116,7 +117,13 @@ class Query
     min_strength = (@word.phoneme_types.last=="vowel") ? 0.5 : 0.75
     min_perfect_strength = 1 - 0.5**(position_of_last_stress+1)
     #
-    scope = filter_by_first_phoneme filter_by_num_syllables(WordPhoneme)
+    if (@word_type!="")
+      sub_query = "SELECT word_id FROM word_lexemes, lexemes WHERE word_lexemes.lexeme_id = lexemes.lexeme_id AND lexemes.word_class = '#{@word_type}' GROUP BY word_id"
+      initial_scope = WordPhoneme.joins("INNER JOIN (#{sub_query}) AS filtered ON word_phonemes.word_id = filtered.word_id")
+    else
+      initial_scope = WordPhoneme
+    end
+    scope = filter_by_first_phoneme filter_by_num_syllables(initial_scope)
     wphonemes = (@reverse=="1") ? @word.word_phonemes : @word.word_phonemes.reverse
     #
     matches_any = wphonemes.each_with_index.map { |wp, i| 
@@ -137,10 +144,10 @@ class Query
       identity_status = "sum((#{front_match1}) + (#{front_match2}))"
     end
     #
-    results = scope.select([:word_id, match_strength, stress_match, perfect]).
+    results = scope.select(["word_phonemes.word_id", match_strength, stress_match, perfect]).
       where(matches_any).
-      where("word_id != ?", @id).
-      group(:word_id).
+      where("word_phonemes.word_id != ?", @id).
+      group("word_phonemes.word_id").
       having("#{identity_status} = 0").
       order("perfect DESC, match_strength DESC, word_id ASC").
       limit(@number_of_results)
@@ -178,7 +185,7 @@ class Query
       filtered_words = <<-SQL
         INNER JOIN (SELECT word_id AS filtered_word_id FROM word_phonemes
           WHERE #{position_field} = 0 AND phoneme_id = #{ph_id})
-        AS fw1 ON fw1.filtered_word_id = word_id
+        AS fw1 ON fw1.filtered_word_id = word_phonemes.word_id
       SQL
       scope.joins(filtered_words)
     else
@@ -192,7 +199,7 @@ class Query
         INNER JOIN (SELECT word_id AS filtered_word_id 
           FROM word_phonemes WHERE v_stress < 3 GROUP BY filtered_word_id 
           HAVING count(1) = #{@num_syllables})
-        AS fw2 ON fw2.filtered_word_id = word_id
+        AS fw2 ON fw2.filtered_word_id = word_phonemes.word_id
       SQL
       scope.joins(filtered_words)
     else

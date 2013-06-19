@@ -15,11 +15,10 @@
     <div class="phonemes <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
       <% matching = @query.dictionary=="0" %>
       <% wphonemes = (@query.reverse=="1") ? word.word_phonemes : word.word_phonemes.reverse %>
-      <div class="spacer <%= order_class %>"> </div>
       <% wphonemes.each_with_index do |p,j| %>
         <% matching = false unless @query.word && @query.word.has_phoneme(p,j,@query.reverse=="1") %>
+        <div class="spacer <%= order_class %>"><%= "-" unless j == 0 %></div>
         <div class="single_phoneme <%= order_class %> <%= "match" if matching %>"> <%= p.full_name %> </div>
-        <div class="spacer <%= order_class %>"> </div>
       <% end%>
     </div>
   </div>

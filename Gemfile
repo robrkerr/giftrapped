@@ -19,6 +19,7 @@ end
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
+gem 'jquery-ui-themes'
 
 # Use unicorn as the web server
 # gem 'unicorn'

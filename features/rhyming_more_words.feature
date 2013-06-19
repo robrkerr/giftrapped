@@ -9,15 +9,11 @@ Feature: Rhyming more words
 
   Scenario: Ignoring identity rhymes
     When I search for "pie"
-    Then I should see "pie" within "#title_banner div.title_word h2"
-    And I should see that field "query_text" does contain "pie"
-    And I should not see "potpie" within "#wr_0_"
+    Then I should not see "potpie" within "#wr_0_"
     And I should see "eye" within "#wr_0_"
     # When I search for "eye"
     When I follow "eye" within "div.result_simple"  
-    Then I should see "eye" within "#title_banner div.title_word h2"
-    And I should see that field "query_text" does contain "eye"
-    And I should see "pie" within "#wr_0_"
+    Then I should see "pie" within "#wr_0_"
     And I should see "potpie" within "#wr_1_"
     # When I search for "potpie"
     When I follow "potpie" within "#wr_1_"  
@@ -35,6 +31,15 @@ Feature: Rhyming more words
     And I press "Rap"
     Then I should see "canoe" within "#wr_0_"
     And I should not see "loo" within "div.result_simple"
+
+  Scenario: Determining perfect rhymes
+    When I search for "knightly"
+    Then I should see "brightly" within "#wr_0_"
+    And I should see "quietly" within "#wr_1_"
+    When I check "query[perfect]"
+    And I press "Rap"
+    Then I should see "brightly" within "#wr_0_"
+    And I should not see "quietly" within "div.result_simple"
 
   # Scenario: Searching for a word with multiple pronunciations
     # When I search for "buffet"
