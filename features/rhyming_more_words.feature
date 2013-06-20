@@ -12,7 +12,7 @@ Feature: Rhyming more words
     Then I should not see "potpie" within "#wr_0_"
     And I should see "eye" within "#wr_0_"
     # When I search for "eye"
-    When I follow "eye" within "div.result_simple"  
+    When I follow "eye" within "#results_table"  
     Then I should see "pie" within "#wr_0_"
     And I should see "potpie" within "#wr_1_"
     # When I search for "potpie"
@@ -20,26 +20,35 @@ Feature: Rhyming more words
     Then I should not see "pie" within "#wr_0_"
     And I should see "eye" within "#wr_0_"
 
+  Scenario: Not identity rhymes
+    When I search for "brightly"
+    Then I should see "rightly" within "#wr_0_"
+    When I follow "rightly" within "#results_table"  
+    Then I should see "brightly" within "#wr_0_"
+    # sleep, sheep, sleet...
+
   Scenario: Using filters
     When I type in "taboo"
     And I select "l" from "query[first_phoneme]"
     And I press "Rap"
     Then I should see "loo" within "#wr_0_"
-    And I should not see "canoe" within "div.result_simple"
+    And I should not see "canoe" within "#results_table"
     When I select "" from "query[first_phoneme]"
     And I select "2" from "query[num_syllables]"
     And I press "Rap"
     Then I should see "canoe" within "#wr_0_"
-    And I should not see "loo" within "div.result_simple"
+    And I should not see "loo" within "#results_table"
 
   Scenario: Determining perfect rhymes
     When I search for "knightly"
     Then I should see "brightly" within "#wr_0_"
-    And I should see "quietly" within "#wr_1_"
+    And I should see "rightly" within "#wr_1_"
+    And I should see "quietly" within "#wr_2_"
     When I check "query[perfect]"
     And I press "Rap"
     Then I should see "brightly" within "#wr_0_"
-    And I should not see "quietly" within "div.result_simple"
+    And I should see "rightly" within "#wr_1_"
+    And I should not see "quietly" within "#results_table"
 
   # Scenario: Searching for a word with multiple pronunciations
     # When I search for "buffet"

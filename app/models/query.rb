@@ -135,7 +135,8 @@ class Query
     stress_match = "sum((#{is_last_stressed_position})*(#{is_stressed})) AS stress_match"
     # stress_count = "sum((#{is_stressed})*2^(-#{r_position_field}-1)) AS stress_count"
     perfect = "case ((sum(2 ^ (-#{r_position_field}-1)) >= #{min_perfect_strength}) AND (sum((#{is_last_stressed_position})*(#{is_stressed})) = 1)) when true then 1 else 0 end AS perfect"
-    if @word.phoneme_types.first=="vowel"
+    ind = @word.phoneme_types.index("vowel")
+    if ind == 0
       fronts_match = "case #{position_field} = 0 AND v_stress != 3 AND #{r_position_field} = #{wphonemes.length-1} when true then 2 else 0 end"
       identity_status = "sum(#{fronts_match})"
     else

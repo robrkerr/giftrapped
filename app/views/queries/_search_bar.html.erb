@@ -2,23 +2,23 @@
   <div id="input_area">
     <% if @query.dictionary == "0" %>
       <div class="first_phoneme_field" > 
-        First phoneme: 
+        <span><%= (@query.reverse=="1") ? "Last phoneme:" : "First phoneme:"%></span>
         <%= q.select :first_phoneme, options_for_select(@query.phoneme_filter_options, @query.first_phoneme) %>
       </div>
       <div class="num_syllables_field" >
-        Number of syllables:
+        <span>Number of syllables:</span>
         <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
       </div>
       <div class="word_type_field" >
-        Word type:
+        <span>Word type:</span>
         <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
       </div>
       <div class="perfect_box" >
-        Perfect Rhyme:
+        <span>Perfect rhyme:</span>
         <%= q.check_box :perfect %>
       </div>
       <div class="reverse_box" >
-        Reverse Rhyme:
+        <span>Reverse rhyme:</span>
         <%= q.check_box :reverse %>
       </div>
       <div class="rap_button_box">
@@ -67,6 +67,13 @@
     $("#query_id").val("");
   });
   $(document).ready(function() {
+    $("#query_reverse").click(function() {
+      if ($(".first_phoneme_field span").html()=="Last phoneme:") {
+        $(".first_phoneme_field span").html("First phoneme:");
+      } else {
+        $(".first_phoneme_field span").html("Last phoneme:");
+      }
+    });
     $("#query_text").focus().val($("#query_text").val());
     if ($("#query_dictionary").val()!="1") {
       $(function() {

@@ -1,6 +1,8 @@
 <%= render "layouts/title" %>
 <%= render "search_bar" %>
-<%= render "table" %> 
+<div id="results_table">
+  <%= render "table" %> 
+</div>
 
 <script type="text/javascript">
   if ($("#query_dictionary").val()=="1") {
