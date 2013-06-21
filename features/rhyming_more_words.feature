@@ -9,23 +9,39 @@ Feature: Rhyming more words
 
   Scenario: Ignoring identity rhymes
     When I search for "pie"
-    Then I should not see "potpie" within "#wr_0_"
+    Then I should not see "potpie" within "#results_table"
     And I should see "eye" within "#wr_0_"
     # When I search for "eye"
     When I follow "eye" within "#results_table"  
     Then I should see "pie" within "#wr_0_"
     And I should see "potpie" within "#wr_1_"
     # When I search for "potpie"
-    When I follow "potpie" within "#wr_1_"  
-    Then I should not see "pie" within "#wr_0_"
+    When I follow "potpie" within "#wr_1_"
+    Then I should not see "pie" within "#results_table"
     And I should see "eye" within "#wr_0_"
 
-  Scenario: Not identity rhymes
+  Scenario: Ignoring more identity rhymes
+    When I search for "believe"
+    Then I should not see "leave" within "#results_table"
+
+  Scenario: Ignoring more identity rhymes again
+    When I search for "leave"
+    Then I should not see "believe" within "#results_table"
+
+  Scenario: Rhymes that aren't identity rhymes
     When I search for "brightly"
     Then I should see "rightly" within "#wr_0_"
     When I follow "rightly" within "#results_table"  
     Then I should see "brightly" within "#wr_0_"
-    # sleep, sheep, sleet...
+
+  Scenario: Other rhymes that aren't identity rhymes
+    When I search for "sleep"
+    Then I should see "steep" within "#wr_0_"
+    And I should see "sheep" within "#wr_1_"
+    And I should see "steep" within "#wr_2_"
+    And I should see "leap" within "#wr_3_"
+    And I should see "seep" within "#wr_4_"
+    And I should not see "asleep" within "#results_table"
 
   Scenario: Using filters
     When I type in "taboo"
