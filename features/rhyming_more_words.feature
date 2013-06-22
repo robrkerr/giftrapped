@@ -4,7 +4,7 @@ Feature: Rhyming more words
   I want them to seed the word database properly and to view results on the page
   
   Background: We have more words
-    Given I load more words
+    Given I have a bunch of words
     And I am on the homepage
 
   Scenario: Ignoring identity rhymes

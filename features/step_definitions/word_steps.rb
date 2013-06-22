@@ -41,7 +41,7 @@ When(/^I search for "([^"]*)"$/) do |input|
   })
 end
 
-When(/^I load more words$/) do
+When(/^I have a bunch of words$/) do
   seeder = Seeder.new false
   words = PhoneticWordReader.read_words 'data/cmudict.0.7a.partial'
   seeder.seed_words words
