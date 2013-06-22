@@ -31,11 +31,11 @@ class WordsController < ApplicationController
   private
 
   def autocomplete_phonemes term
-    Phoneme.where(["name LIKE ?", term + "%"]).map { |ph| 
-      is_vowel = ph.ptype == "vowel"
-      stresses = is_vowel ? [0,1,2] : [3]
-      stresses.map { |i| {:label => ph.name + "#{is_vowel ? i : ''}", :stress => i, :type => ph.ptype}}
-    }.flatten[0..5]
+    phonemes_beginning_with(term).map { |ph| ph.autocomplete_format }.flatten
+  end
+
+  def phonemes_beginning_with term
+    Phoneme.where(["name LIKE ?", term + "%"])
   end
 
 end
