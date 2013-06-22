@@ -9,3 +9,4 @@
 //= require jquery.ui.autocomplete
 //= require jquery.ui.effect-slide
 //= require_tree .
+//= require jquery.tokeninput

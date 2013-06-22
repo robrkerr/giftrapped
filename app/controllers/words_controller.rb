@@ -4,6 +4,7 @@ class WordsController < ApplicationController
   	@title_word = params[:text]
     respond_to do |format|
       format.html
+      format.json { render :json => autocomplete_phonemes(params[:q]).to_json }
     end
   end
 
@@ -25,6 +26,16 @@ class WordsController < ApplicationController
 
   def destroy
 
+  end
+
+  private
+
+  def autocomplete_phonemes term
+    Phoneme.where(["name LIKE ?", term + "%"]).map { |ph| 
+      is_vowel = ph.ptype == "vowel"
+      stresses = is_vowel ? [0,1,2] : [3]
+      stresses.map { |i| {:label => ph.name + "#{is_vowel ? i : ''}", :stress => i, :type => ph.ptype}}
+    }.flatten[0..5]
   end
 
 end

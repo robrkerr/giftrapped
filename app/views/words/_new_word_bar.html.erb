@@ -3,7 +3,7 @@
 
 <div id="wr_heading_row" class="word_table heading">
   <div class="prompt">
-    Enter a phoneme:
+    <!-- Enter a phoneme: -->
   </div>
   <div class="phoneme_text overlapping"> 
     <input id="new_phoneme" type="text">
@@ -21,102 +21,28 @@
   });
   $(document).ready(function() {
     $("#new_phoneme").focus().val($("#new_phoneme").val());
-    $(function() {
-      var data = [
-            {label: "aa0", stress: "0", type: "vowel"},
-            {label: "aa1", stress: "1", type: "vowel"},
-            {label: "aa2", stress: "2", type: "vowel"},
-            {label: "ae0", stress: "0", type: "vowel"},
-            {label: "ae1", stress: "1", type: "vowel"},
-            {label: "ae2", stress: "2", type: "vowel"},
-            {label: "ah0", stress: "0", type: "vowel"},
-            {label: "ah1", stress: "1", type: "vowel"},
-            {label: "ah2", stress: "2", type: "vowel"},
-            {label: "ao0", stress: "0", type: "vowel"},
-            {label: "ao1", stress: "1", type: "vowel"},
-            {label: "ao2", stress: "2", type: "vowel"},
-            {label: "aw0", stress: "0", type: "vowel"},
-            {label: "aw1", stress: "1", type: "vowel"},
-            {label: "aw2", stress: "2", type: "vowel"},
-            {label: "ay0", stress: "0", type: "vowel"},
-            {label: "ay1", stress: "1", type: "vowel"},
-            {label: "ay2", stress: "2", type: "vowel"},
-            {label: "b", stress: "", type: "stop"},
-            {label: "ch", stress: "", type: "affricate"},
-            {label: "d", stress: "", type: "stop"},
-            {label: "dh", stress: "", type: "fricative"},
-            {label: "eh0", stress: "0", type: "vowel"},
-            {label: "eh1", stress: "1", type: "vowel"},
-            {label: "eh2", stress: "2", type: "vowel"},
-            {label: "er0", stress: "0", type: "vowel"},
-            {label: "er1", stress: "1", type: "vowel"},
-            {label: "er2", stress: "2", type: "vowel"},
-            {label: "ey0", stress: "0", type: "vowel"},
-            {label: "ey1", stress: "1", type: "vowel"},
-            {label: "ey2", stress: "2", type: "vowel"},
-            {label: "f", stress: "", type: "fricative"},
-            {label: "g", stress: "", type: "stop"},
-            {label: "hh", stress: "", type: "aspirate"},
-            {label: "ih0", stress: "0", type: "vowel"},
-            {label: "ih1", stress: "1", type: "vowel"},
-            {label: "ih2", stress: "2", type: "vowel"},
-            {label: "iy0", stress: "0", type: "vowel"},
-            {label: "iy1", stress: "1", type: "vowel"},
-            {label: "iy2", stress: "2", type: "vowel"},
-            {label: "jh", stress: "", type: "affricate"},
-            {label: "k", stress: "", type: "stop"},
-            {label: "l", stress: "", type: "liquid"},
-            {label: "m", stress: "", type: "nasal"},
-            {label: "n", stress: "", type: "nasal"},
-            {label: "ng", stress: "", type: "nasal"},
-            {label: "ow0", stress: "0", type: "vowel"},
-            {label: "ow1", stress: "1", type: "vowel"},
-            {label: "ow2", stress: "2", type: "vowel"},
-            {label: "oy0", stress: "0", type: "vowel"},
-            {label: "oy1", stress: "1", type: "vowel"},
-            {label: "oy2", stress: "2", type: "vowel"},
-            {label: "p", stress: "", type: "stop"},
-            {label: "r", stress: "", type: "liquid"},
-            {label: "s", stress: "", type: "fricative"},
-            {label: "sh", stress: "", type: "fricative"},
-            {label: "t", stress: "", type: "stop"},
-            {label: "th", stress: "", type: "fricative"},
-            {label: "uh0", stress: "0", type: "vowel"},
-            {label: "uh1", stress: "1", type: "vowel"},
-            {label: "uh2", stress: "2", type: "vowel"},
-            {label: "uw0", stress: "0", type: "vowel"},
-            {label: "uw1", stress: "1", type: "vowel"},
-            {label: "uw2", stress: "2", type: "vowel"},
-            {label: "v", stress: "", type: "fricative"},
-            {label: "w", stress: "", type: "semivowel"},
-            {label: "y", stress: "", type: "semivowel"},
-            {label: "z", stress: "", type: "fricative"},
-            {label: "zh", stress: "", type: "fricative"}]
-      $("#new_phoneme").autocomplete({
-        source: data,
-        select: function(event, ui) {
-          $("#new_phoneme").val(ui.item.label);
-          $("#wr_heading_row div.phonemes").append("<div class='single_phoneme reversed'>" + ui.item.label + "</div><div class='spacer reversed'></div>");
-          $("#new_phoneme").val("");
-          $("#new_phoneme").focus().val($("#new_phoneme").val());
-
-          // if ($(".syllables").val()!="") {
-          //   $("#wr_heading_row div.syllables").html(ui.item.num_syllables);
-          //   if ($("#wr_heading_row div.phonemes").hasClass("normal_order")) {
-          //     $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'></div><div class='single_phoneme normal_order'>") + "</div><div class='spacer normal_order'></div>");
-          //   } 
-          //   else if ($("#wr_heading_row div.phonemes").hasClass("reversed")) {
-          //     $("#wr_heading_row div.phonemes").html("<div class='spacer normal_order'></div><div class='single_phoneme reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'></div><div class='single_phoneme reversed'>") + "</div><div class='spacer reversed'></div>");
-          //   }
-          // }
-          return false;
-        }
-      }).data("uiAutocomplete")._renderItem = function(ul, item) {
-        return $("<li></li>")
-          .data("item.autocomplete", item)
-          .append("<a><span class='autoleft'>" + item.label + " (" + item.type + ")" + " </span></a>")
-          .appendTo(ul);
-        };
+    // $(function() {
+    //   $("#new_phoneme").autocomplete({
+    //     source: '<%= new_word_path(:json) %>',
+    //     select: function(event, ui) {
+    //       $("#new_phoneme").val(ui.item.label);
+    //       $("#wr_heading_row div.phonemes").append("<div class='single_phoneme reversed'>" + ui.item.label + "</div><div class='spacer reversed'></div>");
+    //       $("#new_phoneme").val("");
+    //       $("#new_phoneme").focus().val($("#new_phoneme").val());
+    //       return false;
+    //     }
+    //   }).data("uiAutocomplete")._renderItem = function(ul, item) {
+    //     return $("<li></li>")
+    //       .data("item.autocomplete", item)
+    //       .append("<a><span class='autoleft'>" + item.label + " (" + item.type + ")" + " </span></a>")
+    //       .appendTo(ul);
+    //     };
+    // });
+    $("#new_phoneme").tokenInput("<%= new_word_path(:json) %>", {
+              propertyToSearch: "label",
+              resultsFormatter: function(item){ return "<li>" + item.label + " (" + item.type + ")</li>" },
+              tokenFormatter: function(item) { return "<li><p>" + item.label + "</p></li>" }
     });
+    // $("#new_phoneme").tokenInput("<%= new_word_path(:json) %>", {theme: "facebook"});
   });
 </script>
