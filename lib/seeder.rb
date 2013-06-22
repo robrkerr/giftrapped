@@ -36,6 +36,18 @@ class Seeder
     add_extra_word_lexemes word_relations
   end
 
+  def update_r_vc_block
+    sub_query = "SELECT word_id, max(vc_block) as num_blocks FROM word_phonemes GROUP BY word_id"
+    query = "SELECT word_phonemes.word_id, vc_block, (blocks.num_blocks - vc_block) as r_vc_block 
+             FROM word_phonemes, (#{sub_query}) AS blocks 
+             WHERE blocks.word_id = word_phonemes.word_id"
+    WordPhoneme.connection.execute(<<-SQL)
+      UPDATE word_phonemes SET r_vc_block = query.r_vc_block FROM (#{query}) AS query 
+      WHERE word_phonemes.word_id = query.word_id AND word_phonemes.vc_block = query.vc_block
+    SQL
+  end
+  
+
   private
 
   def get_phonemes
@@ -47,7 +59,11 @@ class Seeder
       k = 0
       wps.each_with_index.map { |wp,j| 
         ph = phonemes[wp[0]].first
-        k += 1 unless (j==0) || ((ph.ptype=="vowel")==(phonemes[wps[j-1][0]].first.ptype=="vowel"))
+        if (ph.ptype=="vowel")
+          k += 1 unless (j==0)
+        else
+          k += 1 unless (j==0) || (phonemes[wps[j-1][0]].first.ptype!="vowel")
+        end
         {:word_id => words[i].id, 
          :phoneme_id => ph.id, 
          :position => j,

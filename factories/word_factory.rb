@@ -4,5 +4,3 @@ FactoryGirl.define {
     name {FactoryGirl.generate(:numbered_words) }
   }
 }
-
-# D IH0 F AO1 L T
