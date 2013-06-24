@@ -1,4 +1,5 @@
 source 'http://rubygems.org'
+# source 'http://rubygems.railscamp.org'
 
 gem 'rails', '3.1.0'
 
@@ -7,6 +8,7 @@ gem 'rails', '3.1.0'
 
 gem 'pg'
 gem 'activerecord-import'
+gem 'activerecord-postgres-array'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -29,6 +31,10 @@ gem 'jquery-ui-themes'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
+
+# group :development do 
+  # gem 'meta_request'
+# end
 
 group :test, :development do
   gem 'rspec-rails', '~> 2.5'

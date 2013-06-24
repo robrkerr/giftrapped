@@ -34,9 +34,9 @@
   <div id="wr_heading_row" class="word_table heading">
     <div class="text_field overlapping">
       <% if @query.dictionary=="1" %>
-        <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => :off %>
+        <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => :off, :class => 'main-input' %>
       <% else %>
-        <%= q.text_field :text, :value => (@query.text || "") %>
+        <%= q.text_field :text, :value => (@query.text || ""), :class => 'main-input' %>
       <% end %>
       <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
       <%= q.text_field :dictionary, :type => :hidden, :value => (@query.dictionary || "0") %>
@@ -55,9 +55,9 @@
       <% if @query.reverse=="0" %>
         <% wphonemes = wphonemes.reverse %>
       <% end %>
-      <% wphonemes.each_with_index do |p,j| %>
+      <% wphonemes.each_with_index do |ph,j| %>
         <div class="spacer <%= order_class %>"><%= "-" unless j == 0 %></div>
-        <div class="single_phoneme <%= order_class %>"> <%= p.full_name %> </div>
+        <div class="single_phoneme <%= order_class %>"> <%= ph.phoneme_string %> </div>
       <% end %>
     </div>
   </div>
@@ -101,7 +101,7 @@
         }).data("uiAutocomplete")._renderItem = function(ul, item) {
           return $("<li></li>")
             .data("item.autocomplete", item)
-            .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonemes.join(" - ") + "</span></a>")
+            .append("<a><span class='autoleft'>" + item.label + " </span><span class='autoright'> " + item.phonetic_label + "</span></a>")
             .appendTo(ul);
           };
       });

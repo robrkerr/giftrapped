@@ -34,19 +34,7 @@ class Seeder
 
   def seed_extra_word_lexemes word_relations
     add_extra_word_lexemes word_relations
-  end
-
-  def update_r_vc_block
-    sub_query = "SELECT word_id, max(vc_block) as num_blocks FROM word_phonemes GROUP BY word_id"
-    query = "SELECT word_phonemes.word_id, vc_block, (blocks.num_blocks - vc_block) as r_vc_block 
-             FROM word_phonemes, (#{sub_query}) AS blocks 
-             WHERE blocks.word_id = word_phonemes.word_id"
-    WordPhoneme.connection.execute(<<-SQL)
-      UPDATE word_phonemes SET r_vc_block = query.r_vc_block FROM (#{query}) AS query 
-      WHERE word_phonemes.word_id = query.word_id AND word_phonemes.vc_block = query.vc_block
-    SQL
-  end
-  
+  end  
 
   private
 
@@ -56,21 +44,28 @@ class Seeder
     
   def tidy_word_phonemes words, word_phonemes, phonemes
     word_phonemes.each_with_index.map { |wps,i|
-      k = 0
-      wps.each_with_index.map { |wp,j| 
+      blocks = []
+      wps.each_with_index { |wp,j|
         ph = phonemes[wp[0]].first
-        if (ph.ptype=="vowel")
-          k += 1 unless (j==0)
+        if ph.ptype=="vowel"
+          blocks << {
+            :word_id => words[i].id, 
+            :vc_block => blocks.length,
+            :phoneme_ids => [ph.id],
+            :v_stress => wp[1]
+          }
+        elsif blocks.empty? || blocks.last[:v_stress]!=3
+          blocks << {
+            :word_id => words[i].id, 
+            :vc_block => blocks.length,
+            :phoneme_ids => [ph.id],
+            :v_stress => 3
+          }
         else
-          k += 1 unless (j==0) || (phonemes[wps[j-1][0]].first.ptype!="vowel")
+          blocks.last[:phoneme_ids] << ph.id
         end
-        {:word_id => words[i].id, 
-         :phoneme_id => ph.id, 
-         :position => j,
-         :r_position => wps.length-1-j,
-         :vc_block => k,
-         :v_stress => (ph.ptype=="vowel") ? wp[1] : 3}
       }
+      blocks.map { |b| b[:r_vc_block] = blocks.length - b[:vc_block] - 1; b }
     }
   end
 
@@ -99,8 +94,9 @@ class Seeder
 
   def populate_word_lexemes word_lexemes, first_id
     word_lexeme_entries = []
+    all_words = Word.select([:id,:name]).group_by { |word| word.name }
     word_lexemes.each { |k,v|
-      Word.where("name = '#{k}'").each { |word|
+      (all_words[k] || []).each { |word|
         v.each { |lexeme_id|
           word_lexeme_entries << {:word_id => word.id, :lexeme_id => lexeme_id + first_id }
         }
@@ -113,11 +109,12 @@ class Seeder
 
   def add_extra_word_lexemes word_relations
     word_lexeme_entries = []
+    all_words = Word.select([:id,:name]).group_by { |word| word.name }
     word_relations.each { |word_name,related_words|
-      Word.where("name = '#{word_name}'").each { |word|
+      (all_words[word_name] || []).each { |word|
         lex_ids = word.word_lexemes.map(&:lexeme_id)
         related_words.each { |related_word_name|
-          Word.where("name = '#{related_word_name}'").each { |related_word|
+          (all_words[related_word_name] || []).each { |related_word|
             lex_ids.each { |lex_id|
               word_lexeme_entries << {:word_id => related_word.id, 
                                       :lexeme_id => lex_id }

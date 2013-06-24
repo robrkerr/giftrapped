@@ -1,6 +1,6 @@
 /*
  *= require jquery-ui/smoothness
- *= require token-input
+ *= require token-input-phonemes
  *
  */
 
@@ -85,15 +85,13 @@ div.title_gr {
   z-index :      20;
 }
 
-input[type=text] {
+.main-input {
   border-style:  none;
   font-weight:   bold;
   color:         rgba(0, 40, 200, 1);
   background:    rgba(255, 255, 255, 0.0);
   height:        48px;
   line-height:   30px;
-  position:      absolute;
-  z-index :      20;
 }
 
 #query_text {
@@ -288,20 +286,22 @@ span.autoright {
   color:            rgba(200, 0, 40, 1);
 }
 
-div.prompt {
+.prompt {
   color:          rgba(0, 0, 0, 1);
   font-weight:    normal;
-  float:          left;
   height:         48px;
-  width:          352px;
   vertical-align: middle;
   line-height:    48px;
   padding-left:    8px;
 }
 
+.prompt-text {
+  float: left;
+  padding-right: 12px;
+}
+
 div.phoneme_text {
-  float:          left;
-  width:          200px;
+  float: left;
   text-align:     left;
   height:         48px;
   vertical-align: middle;

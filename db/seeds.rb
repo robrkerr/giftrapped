@@ -39,9 +39,6 @@ Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|
   }
 end
 `rm data/word_batch_*`
-seed_timer("Updating 'r_vc_block' in word phonemes table...") {
-  seeder.update_r_vc_block
-}
 Dir[Rails.root + "data/wordnet/data.*"].each_with_index do |file,i|
   puts "Loading lexemes: Batch #{i+1}"
   lexemes = []

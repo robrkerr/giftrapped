@@ -9,7 +9,19 @@ class WordsController < ApplicationController
   end
 
   def create
+    # should take raw input and return something that
+    # the model can use without any work.
+    # phonemes = WordPhonemeList.parse(params[:phoneme_string])
 
+
+
+    # @word = Word.create(name: params[:word_name]) 
+    # @word = Word.new params[:word_name], params[:phoneme_string]
+
+    @word = Word.where("name = 'dog'").limit(1).first
+    respond_to do |format|
+      format.html { redirect_to edit_word_path(@word) }
+    end
   end
 
   def edit

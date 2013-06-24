@@ -4,7 +4,8 @@ class PhoneticWordReader
     file = File.new(filename,"r")
     while (line = file.gets)
       line.downcase!
-      next if !line[%r/^[a-z]/]
+      next unless line[%r/^[a-z]/]
+      next if line[%r/[0-9]/]
       line = line.chomp.split(" ")
       word = line[0].sub(%r/[0-9]/,"").sub(%r/\(\)/,"")
       phonemes = line[1..-1]

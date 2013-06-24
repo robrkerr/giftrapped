@@ -42,36 +42,28 @@ describe Seeder do
 		words = [{:name => "wordy", :phonemes => [["w"],["aa",1],["t"],["hh"]]}]
 		seeder.seed_words words
 		should satisfy { Word.count == 1 }
-		should satisfy { WordPhoneme.count == 4 }
+		should satisfy { WordPhoneme.count == 3 }
 		word = Word.first
 		should satisfy { word.name == "wordy" }
 		wphonemes = word.word_phonemes
-		should satisfy { wphonemes[0].position == 0 }
-		should satisfy { wphonemes[0].r_position == 3 }
 		should satisfy { wphonemes[0].vc_block == 0 }
+		should satisfy { wphonemes[0].r_vc_block == 2 }
 		should satisfy { wphonemes[0].v_stress == 3 }
-		should satisfy { wphonemes[1].position == 1 }
-		should satisfy { wphonemes[1].r_position == 2 }
 		should satisfy { wphonemes[1].vc_block == 1 }
+		should satisfy { wphonemes[1].r_vc_block == 1 }
 		should satisfy { wphonemes[1].v_stress == 1 }
-		should satisfy { wphonemes[2].position == 2 }
-		should satisfy { wphonemes[2].r_position == 1 }
 		should satisfy { wphonemes[2].vc_block == 2 }
+		should satisfy { wphonemes[2].r_vc_block == 0 }
 		should satisfy { wphonemes[2].v_stress == 3 }
-		should satisfy { wphonemes[3].position == 3 }
-		should satisfy { wphonemes[3].r_position == 0 }
-		should satisfy { wphonemes[3].vc_block == 2 }
-		should satisfy { wphonemes[3].v_stress == 3 }
-		phoneme_names = word.phoneme_names
-		should satisfy { phoneme_names[0] == "w" }
-		should satisfy { phoneme_names[1] == "aa" }
-		should satisfy { phoneme_names[2] == "t" }
-		should satisfy { phoneme_names[3] == "hh" }
-		phoneme_types = word.phoneme_types
-		should satisfy { phoneme_types[0] == "semivowel" }
-		should satisfy { phoneme_types[1] == "vowel" }
-		should satisfy { phoneme_types[2] == "stop" }
-		should satisfy { phoneme_types[3] == "aspirate" }
+		phonemes = word.phonemes
+		should satisfy { phonemes[0].name == "w" }
+		should satisfy { phonemes[1].name == "aa" }
+		should satisfy { phonemes[2].name == "t" }
+		should satisfy { phonemes[3].name == "hh" }
+		should satisfy { phonemes[0].ptype == "semivowel" }
+		should satisfy { phonemes[1].ptype == "vowel" }
+		should satisfy { phonemes[2].ptype == "stop" }
+		should satisfy { phonemes[3].ptype == "aspirate" }
 	end
 end
 

@@ -1,14 +1,35 @@
 <div id="input_area">
-  <input id="create_word" type="submit" value="Create Word">
+  <%= form_tag({:controller => "words", :action => "create"}, :id => "new_word_form") do %>
+    <%= hidden_field_tag(:word_name, @title_word) %>
+    <%= hidden_field_tag(:phoneme_string) %>
+    <%= submit_tag "Create Word" %>
+  <% end %>
+
+  <div>
+    <audio src="aa.ogg" type='audio/ogg; codecs="vorbis"' controls width="300">
+      <p> Not working! </p>
+        <!-- <source src="aa.mp3" type="audio/mpeg"> -->
+        <!-- <source src="aa.ogg" type='audio/ogg; codecs="vorbis"'> -->
+        <!-- <a href="aa.mp3">aa.mp3</a> -->
+        <!-- <a href="aa.ogg">aa.ogg</a> -->
+    </audio>
+    <!-- <audio id="phoneme_audio" src="aa.mp3">
+      <p> Not working! </p>
+    </audio>
+    <button id="phoneme_button">AA0</button> -->
+  </div>
+
 </div>
 
 <div id="wr_heading_row" class="word_table heading">
-  <div class="prompt">
-    <!-- Enter a phoneme: -->
-  </div>
-  <div class="phoneme_text overlapping"> 
-    <input id="new_phoneme" type="text">
-  </div>
+  <label class="prompt">
+    <span class="prompt-text">
+      Enter a phoneme:
+    </span>
+    <div class="phoneme_text "> 
+      <input id="new_phoneme" class="main-input" type="text">
+    </div>
+  </label>
   <div class="phonemes reversed">
     <div class="spacer reversed"> </div>
   </div>
@@ -42,8 +63,18 @@
     $("#new_phoneme").tokenInput("<%= new_word_path(:json) %>", {
               propertyToSearch: "label",
               resultsFormatter: function(item){ return "<li>" + item.label + " (" + item.type + ")</li>" },
-              tokenFormatter: function(item) { return "<li><p>" + item.label + "</p></li>" }
+              tokenFormatter: function(item) { return "<li><p>" + item.label + "</p></li>" },
+              hintText: ''
     });
-    // $("#new_phoneme").tokenInput("<%= new_word_path(:json) %>", {theme: "facebook"});
+    $("#new_word_form").submit(function() {
+      $("#phoneme_string").val($.map($('.token-input-list p'), function(p) { return $(p).text(); }).join('-'));  
+    });
+    // $("#phoneme_button").click(function() {
+    //   var theSound = $("#phoneme_audio")[0];
+    //   // console.log(theSound.volume);
+    //   // theSound.volume-=0.1;
+    //   // console.log(theSound.volume);
+    //   theSound.play();
+    // });
   });
 </script>
