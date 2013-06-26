@@ -20,17 +20,16 @@ class Seeder
     SegmentPhoneme.delete_all
   end
 
-  def seed_words words
+  def seed_words words, source
     word_names = words.map { |w| w[:name]}
     word_hash = populate_words word_names
     pronunciation_labels = words.map { |w| get_pronunciation_label(w[:syllables]) }
     pron_hash, new_pron_hash = populate_pronunciations pronunciation_labels
-    populate_word_pronunciations word_names, pronunciation_labels, word_hash, pron_hash
+    populate_word_pronunciations word_names, pronunciation_labels, word_hash, pron_hash, source
     different_segments = get_all_syllable_segments(words.map { |w| w[:syllables]}.flatten)
     seg_hash = populate_syllable_segments different_segments
     pronunciation_syllables = words.map { |w| w[:syllables] }
     populate_pronunciation_syllables pronunciation_syllables, new_pron_hash, seg_hash
-    # populate_word_phonemes tidy_word_phonemes(word_entries, words.map { |w| w[:phonemes]}, get_phonemes)
   end
 
   def clear_lexemes
@@ -38,14 +37,18 @@ class Seeder
     WordLexeme.delete_all
   end
 
-  # def seed_lexemes lexemes, word_lexemes
-  #   first_id = populate_lexemes lexemes
-  #   populate_word_lexemes word_lexemes, first_id
-  # end
+  def seed_lexemes word_lexemes, source
+    lexemes = []
+    word_lexemes.each { |wlex| wlex[:lexemes].each { |lex| 
+        lexemes << [wlex[:word],lex[:word_class],lex[:gloss]]
+    } }
+    lex_hash = populate_lexemes lexemes
+    populate_word_lexemes lexemes, lex_hash, source
+  end
 
-  # def seed_extra_word_lexemes word_relations
-  #   add_extra_word_lexemes word_relations
-  # end  
+  def seed_extra_word_lexemes word_relations, source
+    add_extra_word_lexemes word_relations, source
+  end  
 
   private
 
@@ -89,33 +92,6 @@ class Seeder
     }
     segments.uniq
   end
-    
-  # def tidy_word_phonemes words, word_phonemes, phonemes
-  #   word_phonemes.each_with_index.map { |wps,i|
-  #     blocks = []
-  #     wps.each_with_index { |wp,j|
-  #       ph = phonemes[wp[0]].first
-  #       if ph.phoneme_type=="vowel"
-  #         blocks << {
-  #           :word_id => words[i].id, 
-  #           :vc_block => blocks.length,
-  #           :phoneme_ids => [ph.id],
-  #           :v_stress => wp[1]
-  #         }
-  #       elsif blocks.empty? || blocks.last[:v_stress]!=3
-  #         blocks << {
-  #           :word_id => words[i].id, 
-  #           :vc_block => blocks.length,
-  #           :phoneme_ids => [ph.id],
-  #           :v_stress => 3
-  #         }
-  #       else
-  #         blocks.last[:phoneme_ids] << ph.id
-  #       end
-  #     }
-  #     blocks.map { |b| b[:r_vc_block] = blocks.length - b[:vc_block] - 1; b }
-  #   }
-  # end
 
   def populate_words words
     columns = [:name]
@@ -137,14 +113,14 @@ class Seeder
     return pron_hash.merge(new_pron_hash), new_pron_hash
   end
 
-  def populate_word_pronunciations words, labels, word_hash, pron_hash
-    columns = [:word_id, :pronunciation_id]
+  def populate_word_pronunciations words, labels, word_hash, pron_hash, source
+    columns = [:word_id, :pronunciation_id, :source]
     ids = words.zip(labels).map { |w,lab|
       [word_hash[w].id, pron_hash[lab].id]
     }
     values, _ = partition_new_and_existing WordPronunciation, columns[0..1], ids, ids
     WordPronunciation.transaction do
-      WordPronunciation.import columns, values, :validate => false
+      WordPronunciation.import columns, values.map { |v| v << source; v}, :validate => false
     end
   end
 
@@ -191,48 +167,46 @@ class Seeder
     end
   end
 
-  # def populate_lexemes lexemes
-  #   last_lexeme = Lexeme.all.sort_by(&:lexeme_id).last
-  #   first_id = last_lexeme ? last_lexeme.id+1 : 0
-  #   Lexeme.transaction do
-  #     Lexeme.import lexemes.map { |lex| lex[:lexeme_id] += first_id; Lexeme.new(lex) }
-  #   end
-  #   first_id
-  # end
+  def populate_lexemes lexemes
+    columns = [:word_class,:gloss]
+    lexeme_entries = lexemes.map { |lex| lex[1..2]}
+    values, lex_hash = partition_new_and_existing Lexeme, columns[0..1], lexeme_entries, lexeme_entries
+    Lexeme.transaction do
+      Lexeme.import columns, values, :validate => false
+    end
+    _, new_lex_hash = partition_new_and_existing Lexeme, columns[0..1], values.map { |v| v[0..1]}, values
+    lex_hash.merge(new_lex_hash)
+  end
 
-  # def populate_word_lexemes word_lexemes, first_id
-  #   word_lexeme_entries = []
-  #   all_words = Word.select([:id,:name]).group_by { |word| word.name }
-  #   word_lexemes.each { |k,v|
-  #     (all_words[k] || []).each { |word|
-  #       v.each { |lexeme_id|
-  #         word_lexeme_entries << {:word_id => word.id, :lexeme_id => lexeme_id + first_id }
-  #       }
-  #     }
-  #   }
-  #   WordLexeme.transaction do
-  #     WordLexeme.import word_lexeme_entries.map { |wl| WordLexeme.new(wl) }
-  #   end
-  # end
+  def populate_word_lexemes lexemes, lex_hash, source
+    words = lexemes.map { |lex| lex[0]}.uniq
+    _, words_hash = partition_new_and_existing Word, :name, words, words
+    columns = [:word_id, :lexeme_id, :source]
+    ids = lexemes.map { |word,word_class,gloss|
+      [words_hash[word].id, lex_hash[[word_class,gloss]].id]
+    }
+    values, _ = partition_new_and_existing WordLexeme, columns[0..1], ids, ids
+    WordLexeme.transaction do
+      WordLexeme.import columns, values.map { |v| v << source; v}, :validate => false
+    end
+  end
 
-  # def add_extra_word_lexemes word_relations
-  #   word_lexeme_entries = []
-  #   all_words = Word.select([:id,:name]).group_by { |word| word.name }
-  #   word_relations.each { |word_name,related_words|
-  #     (all_words[word_name] || []).each { |word|
-  #       lex_ids = word.word_lexemes.map(&:lexeme_id)
-  #       related_words.each { |related_word_name|
-  #         (all_words[related_word_name] || []).each { |related_word|
-  #           lex_ids.each { |lex_id|
-  #             word_lexeme_entries << {:word_id => related_word.id, 
-  #                                     :lexeme_id => lex_id }
-  #           }
-  #         }
-  #       }
-  #     }
-  #   }
-  #   WordLexeme.transaction do
-  #     WordLexeme.import word_lexeme_entries.map { |wl| WordLexeme.new(wl) }
-  #   end
-  # end
+  def add_extra_word_lexemes word_relations, source
+    words = word_relations.flatten(2)
+    _, words_hash = partition_new_and_existing Word, :name, words, words
+    columns = [:word_id, :lexeme_id, :source]
+    values = []
+    word_relations.each { |base_word,related_words|
+      lex_ids = WordLexeme.where(:word_id => words_hash[base_word].id)
+                          .map(&:lexeme_id)
+      related_words.each { |related_word|
+        lex_ids.each { |lex_id|
+          values << [words_hash[related_word].id, lex_id]
+        }
+      }
+    }
+    WordLexeme.transaction do
+      WordLexeme.import columns, values.map { |v| v << source; v}, :validate => false
+    end
+  end
 end
