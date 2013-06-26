@@ -7,6 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 require 'seeder'
+require 'syllable_structurer'
 require 'phoneme_loader'
 require 'phonetic_word_reader'
 require 'word_lexeme_reader'

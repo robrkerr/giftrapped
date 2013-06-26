@@ -2,7 +2,7 @@ class PhonemeLoader
 
   def get_phoneme_data
     phonemes.map { |name,type|
-      {:name => name, :ptype => type}
+      {:name => name, :phoneme_type => type}
     }
   end
 

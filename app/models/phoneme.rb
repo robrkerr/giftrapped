@@ -17,7 +17,7 @@ class Phoneme < ActiveRecord::Base
     	:label => stressed_name(i), 
       :stress => i, 
       :phoneme_id => id,
-      :type => ptype
+      :type => phoneme_type
     }}
   end
 
