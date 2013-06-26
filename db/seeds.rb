@@ -25,7 +25,8 @@ seed_timer("Clearing tables... ") {
   seeder.clear_lexemes
 }
 seed_timer("Seeding phonemes... ") {
-  seeder.seed_phonemes PhonemeLoader.get_phonemes
+  phoneme_loader = PhonemeLoader.new
+  seeder.seed_phonemes phoneme_loader.get_phoneme_data
 }
 `split -a 1 -l 10000 data/cmudict.0.7a data/word_batch_`
 Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|

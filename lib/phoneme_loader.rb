@@ -1,43 +1,56 @@
 class PhonemeLoader
-  def self.get_phonemes
-    [{:name => "aa", :ptype => "vowel"},
-     {:name => "ae", :ptype => "vowel"},
-     {:name => "ah", :ptype => "vowel"},
-     {:name => "ao", :ptype => "vowel"},
-     {:name => "aw", :ptype => "vowel"},
-     {:name => "ay", :ptype => "vowel"},
-     {:name => "b",  :ptype => "stop"},
-     {:name => "ch", :ptype => "affricate"},
-     {:name => "d",  :ptype => "stop"},
-     {:name => "dh", :ptype => "fricative"},
-     {:name => "eh", :ptype => "vowel"},
-     {:name => "er", :ptype => "vowel"},
-     {:name => "ey", :ptype => "vowel"},
-     {:name => "f",  :ptype => "fricative"},
-     {:name => "g",  :ptype => "stop"},
-     {:name => "hh", :ptype => "aspirate"},
-     {:name => "ih", :ptype => "vowel"},
-     {:name => "iy", :ptype => "vowel"},
-     {:name => "jh", :ptype => "affricate"},
-     {:name => "k",  :ptype => "stop"},
-     {:name => "l",  :ptype => "liquid"},
-     {:name => "m",  :ptype => "nasal"},
-     {:name => "n",  :ptype => "nasal"},
-     {:name => "ng", :ptype => "nasal"},
-     {:name => "ow", :ptype => "vowel"},
-     {:name => "oy", :ptype => "vowel"},
-     {:name => "p",  :ptype => "stop"},
-     {:name => "r",  :ptype => "liquid"},
-     {:name => "s",  :ptype => "fricative"},
-     {:name => "sh", :ptype => "fricative"},
-     {:name => "t",  :ptype => "stop"},
-     {:name => "th", :ptype => "fricative"},
-     {:name => "uh", :ptype => "vowel"},
-     {:name => "uw", :ptype => "vowel"},
-     {:name => "v",  :ptype => "fricative"},
-     {:name => "w",  :ptype => "semivowel"},
-     {:name => "y",  :ptype => "semivowel"},
-     {:name => "z",  :ptype => "fricative"},
-     {:name => "zh", :ptype => "fricative"}]
+
+  def get_phoneme_data
+    phonemes.map { |name,type|
+      {:name => name, :ptype => type}
+    }
   end
+
+  def phonemes_hash
+    Hash[phonemes]
+  end
+
+  private
+
+  def phonemes
+    [["aa", "vowel"],
+      ["ae", "vowel"],
+      ["ah", "vowel"],
+      ["ao", "vowel"],
+      ["aw", "vowel"],
+      ["ay", "vowel"],
+      ["b",  "stop"],
+      ["ch", "affricate"],
+      ["d",  "stop"],
+      ["dh", "fricative"],
+      ["eh", "vowel"],
+      ["er", "vowel"],
+      ["ey", "vowel"],
+      ["f",  "fricative"],
+      ["g",  "stop"],
+      ["hh", "aspirate"],
+      ["ih", "vowel"],
+      ["iy", "vowel"],
+      ["jh", "affricate"],
+      ["k",  "stop"],
+      ["l",  "liquid"],
+      ["m",  "nasal"],
+      ["n",  "nasal"],
+      ["ng", "nasal"],
+      ["ow", "vowel"],
+      ["oy", "vowel"],
+      ["p",  "stop"],
+      ["r",  "liquid"],
+      ["s",  "fricative"],
+      ["sh", "fricative"],
+      ["t",  "stop"],
+      ["th", "fricative"],
+      ["uh", "vowel"],
+      ["uw", "vowel"],
+      ["v",  "fricative"],
+      ["w",  "semivowel"],
+      ["y",  "semivowel"],
+      ["z",  "fricative"],
+      ["zh", "fricative"]]
+    end
 end

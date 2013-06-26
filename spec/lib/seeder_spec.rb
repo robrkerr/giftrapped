@@ -29,7 +29,8 @@ describe Seeder do
 	it "can enter the full set of phonemes into the phoneme tables" do
 		seeder = Seeder.new false
 		seeder.clear_phonemes
-		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		loader = PhonemeLoader.new
+		seeder.seed_phonemes loader.get_phoneme_data
 		should satisfy { Phoneme.count == 39 }
 	end
 end
@@ -38,7 +39,8 @@ describe Seeder do
 	it "can enter a phonetic word into the word and word_phonemes tables" do
 		seeder = Seeder.new false
 		seeder.clear_phonemes
-		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		loader = PhonemeLoader.new
+		seeder.seed_phonemes loader.get_phoneme_data
 		words = [{:name => "wordy", :phonemes => [["w"],["aa",1],["t"],["hh"]]}]
 		seeder.seed_words words
 		should satisfy { Word.count == 1 }
@@ -71,7 +73,8 @@ describe Seeder do
 	it "can enter a word and its lexemes into the word, lexeme and word_lexemes tables" do
 		seeder = Seeder.new false
 		seeder.clear_phonemes
-		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		loader = PhonemeLoader.new
+		seeder.seed_phonemes loader.get_phoneme_data
 		words = [{:name => "rabbit", :phonemes => [["r"]]}]
 		seeder.seed_words words
 		should satisfy { Word.count == 1 }
@@ -97,7 +100,8 @@ describe Seeder do
 	it "can add existing lexemes to words related to existing words with those lexemes" do
 		seeder = Seeder.new false
 		seeder.clear_phonemes
-		seeder.seed_phonemes PhonemeLoader.get_phonemes
+		loader = PhonemeLoader.new
+		seeder.seed_phonemes loader.get_phoneme_data
 		words = [{:name => "rabbit", :phonemes => [["r"]]},
 						 {:name => "rabbity", :phonemes => [["r"]]},
 						 {:name => "rabbits", :phonemes => [["r"]]}]
