@@ -5,15 +5,10 @@ class PhoneticWordReader
     while (line = file.gets)
       line.downcase!
       next unless line[%r/^[a-z]/]
-      next if line[%r/[0-9]/]
       line = line.chomp.split(" ")
-      word = line[0].sub(%r/[0-9]/,"").sub(%r/\(\)/,"")
+      word = line[0].sub(%r/\((.*?)\)/,"")
+      next if word[%r/[0-9]/]
       phonemes = line[1..-1]
-      phonemes.map!{ |ph| 
-        simple = ph.sub(%r/[0-9]/,"")
-        stress = ph.sub(%r/[a-z]+/,"").to_i
-        [simple, stress]
-      }
       words << {:name => word, :phonemes => phonemes}
     end
     file.close

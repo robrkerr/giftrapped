@@ -11,8 +11,7 @@ require 'phonetic_word_reader'
 require 'word_lexeme_reader'
 
 seeder = Seeder.new
-loader = PhonemeLoader.new
-seeder.seed_phonemes loader.get_phoneme_data
+seeder.seed_phonemes PhonemeLoader.get_phoneme_data
 
 World FactoryGirl::Syntax::Methods
 

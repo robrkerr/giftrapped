@@ -1,8 +1,8 @@
 class CreateTables < ActiveRecord::Migration
   def change
-  	# Word table
-  	create_table :words do |t|
-  		t.string :name
+  	# Spelling table
+  	create_table :spellings do |t|
+  		t.string :label
 
   		t.timestamps
   	end
@@ -12,25 +12,25 @@ class CreateTables < ActiveRecord::Migration
   		
   		t.timestamps
   	end
-  	# WordPronunciation table
-  	create_table :word_pronunciations do |t|
-  		t.integer :word_id
+  	# Word table
+  	create_table :words do |t|
+  		t.integer :spelling_id
   		t.integer :pronunciation_id
   		t.integer :source
   		
   		t.timestamps
   	end
-  	add_index :word_pronunciations, :word_id
-    add_index :word_pronunciations, :pronunciation_id
-    # SyllableSegment table
-  	create_table :syllable_segments do |t|
+  	add_index :words, :spelling_id
+    add_index :words, :pronunciation_id
+    # Segment table
+  	create_table :segments do |t|
   		t.string :label
       t.integer :segment_type
   		
   		t.timestamps
   	end
-  	# PronunciationSyllables table
-  	create_table :pronunciation_syllables do |t|
+  	# Syllables table
+  	create_table :syllables do |t|
   		t.integer :pronunciation_id
   		t.integer :position
   		t.integer :r_position
@@ -42,7 +42,7 @@ class CreateTables < ActiveRecord::Migration
   		
   		t.timestamps
   	end
-  	add_index :pronunciation_syllables, :pronunciation_id
+  	add_index :syllables, :pronunciation_id
   	# Phoneme table
   	create_table :phonemes do |t|
   		t.string :name

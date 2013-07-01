@@ -1,6 +1,10 @@
 class Word < ActiveRecord::Base
-  has_many :word_lexemes
-  validates :name, :presence => true
+  belongs_to :spelling
+  belongs_to :pronunciation
+  has_many :lexemes, :through => :word_lexemes
+
+  def name
+  	spelling.label
+  end
 
 end
-

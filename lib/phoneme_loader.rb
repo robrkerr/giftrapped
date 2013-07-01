@@ -1,18 +1,18 @@
 class PhonemeLoader
 
-  def get_phoneme_data
+  def self.get_phoneme_data
     phonemes.map { |name,type|
       {:name => name, :phoneme_type => type}
     }
   end
 
-  def phonemes_hash
+  def self.phonemes_hash
     Hash[phonemes]
   end
 
   private
 
-  def phonemes
+  def self.phonemes
     [["aa", "vowel"],
       ["ae", "vowel"],
       ["ah", "vowel"],

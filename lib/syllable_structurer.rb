@@ -4,8 +4,7 @@ class SyllableStructurer
 
 	def initialize
 		@sonority_by_type = build_sonority_hash
-		phoneme_loader = PhonemeLoader.new
-		@phonemes = phoneme_loader.phonemes_hash
+		@phonemes = PhonemeLoader.phonemes_hash
 	end
 
 	def group_phonemes word_phonemes
@@ -22,10 +21,14 @@ class SyllableStructurer
 			end
 		}
 		chunked_types << chunk
-		syllables = chunked_types.each_slice(2).map { |e| e << [] }
-		if chunked_types.last != ["vowel"]
-			syllables = syllables[0..-2]
-			syllables[-1][-1] = chunked_types.last
+		if chunked_types.length <= 1
+			return []
+		else
+			syllables = chunked_types.each_slice(2).map { |e| e << [] }
+			if chunked_types.last != ["vowel"]
+				syllables = syllables[0..-2]
+				syllables[-1][-1] = chunked_types.last
+			end
 		end
 		1.upto(syllables.length-1) { |i|
 			split_group = split_consonant_group(syllables[i][0],vowel_stresses[i-1..i])

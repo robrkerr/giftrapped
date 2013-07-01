@@ -27,21 +27,6 @@ ActiveRecord::Schema.define(:version => 20130626011040) do
     t.datetime "updated_at"
   end
 
-  create_table "pronunciation_syllables", :force => true do |t|
-    t.integer  "pronunciation_id"
-    t.integer  "position"
-    t.integer  "r_position"
-    t.integer  "onset_id"
-    t.integer  "nucleus_id"
-    t.integer  "coda_id"
-    t.integer  "stress"
-    t.string   "label"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "pronunciation_syllables", ["pronunciation_id"], :name => "index_pronunciation_syllables_on_pronunciation_id"
-
   create_table "pronunciations", :force => true do |t|
     t.string   "label"
     t.datetime "created_at"
@@ -58,12 +43,33 @@ ActiveRecord::Schema.define(:version => 20130626011040) do
   add_index "segment_phonemes", ["phoneme_id"], :name => "index_segment_phonemes_on_phoneme_id"
   add_index "segment_phonemes", ["segment_id"], :name => "index_segment_phonemes_on_segment_id"
 
-  create_table "syllable_segments", :force => true do |t|
+  create_table "segments", :force => true do |t|
     t.string   "label"
     t.integer  "segment_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "spellings", :force => true do |t|
+    t.string   "label"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "syllables", :force => true do |t|
+    t.integer  "pronunciation_id"
+    t.integer  "position"
+    t.integer  "r_position"
+    t.integer  "onset_id"
+    t.integer  "nucleus_id"
+    t.integer  "coda_id"
+    t.integer  "stress"
+    t.string   "label"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "syllables", ["pronunciation_id"], :name => "index_syllables_on_pronunciation_id"
 
   create_table "word_lexemes", :force => true do |t|
     t.integer  "word_id"
@@ -76,21 +82,15 @@ ActiveRecord::Schema.define(:version => 20130626011040) do
   add_index "word_lexemes", ["lexeme_id"], :name => "index_word_lexemes_on_lexeme_id"
   add_index "word_lexemes", ["word_id"], :name => "index_word_lexemes_on_word_id"
 
-  create_table "word_pronunciations", :force => true do |t|
-    t.integer  "word_id"
+  create_table "words", :force => true do |t|
+    t.integer  "spelling_id"
     t.integer  "pronunciation_id"
     t.integer  "source"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "word_pronunciations", ["pronunciation_id"], :name => "index_word_pronunciations_on_pronunciation_id"
-  add_index "word_pronunciations", ["word_id"], :name => "index_word_pronunciations_on_word_id"
-
-  create_table "words", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  add_index "words", ["pronunciation_id"], :name => "index_words_on_pronunciation_id"
+  add_index "words", ["spelling_id"], :name => "index_words_on_spelling_id"
 
 end
