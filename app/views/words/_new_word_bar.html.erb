@@ -6,19 +6,28 @@
   <% end %>
 
   <div>
-    <audio src="aa.ogg" type='audio/ogg; codecs="vorbis"' controls width="300">
-      <p> Not working! </p>
-        <!-- <source src="aa.mp3" type="audio/mpeg"> -->
-        <!-- <source src="aa.ogg" type='audio/ogg; codecs="vorbis"'> -->
-        <!-- <a href="aa.mp3">aa.mp3</a> -->
-        <!-- <a href="aa.ogg">aa.ogg</a> -->
+    <audio id="phoneme_audio1">
+      <source src="/audio/jh.ogg">
+      <source src="/audio/jh.mp3">
     </audio>
-    <!-- <audio id="phoneme_audio" src="aa.mp3">
-      <p> Not working! </p>
+    <audio id="phoneme_audio2">
+      <source src="/audio/eh.ogg">
+      <source src="/audio/eh.mp3">
     </audio>
-    <button id="phoneme_button">AA0</button> -->
+    <audio id="phoneme_audio3">
+      <source src="/audio/s.ogg">
+      <source src="/audio/s.mp3">
+    </audio>
+    <audio id="phoneme_audio4">
+      <source src="/audio/t.ogg">
+      <source src="/audio/t.mp3">
+    </audio>
+    <audio id="phoneme_audio5">
+      <source src="/audio/er.ogg">
+      <source src="/audio/er.mp3">
+    </audio>
+    <button id="phoneme_button">Play 'Jester'</button>
   </div>
-
 </div>
 
 <div id="wr_heading_row" class="word_table heading">
@@ -63,18 +72,23 @@
     $("#new_phoneme").tokenInput("<%= new_word_path(:json) %>", {
               propertyToSearch: "label",
               resultsFormatter: function(item){ return "<li>" + item.label + " (" + item.type + ")</li>" },
-              tokenFormatter: function(item) { return "<li><p>" + item.label + "</p></li>" },
+              tokenFormatter: function(item) { return "<li><p class='" + item.label + "'>" + item.label + "</p></li>" },
               hintText: ''
     });
     $("#new_word_form").submit(function() {
       $("#phoneme_string").val($.map($('.token-input-list p'), function(p) { return $(p).text(); }).join('-'));  
     });
-    // $("#phoneme_button").click(function() {
-    //   var theSound = $("#phoneme_audio")[0];
-    //   // console.log(theSound.volume);
-    //   // theSound.volume-=0.1;
-    //   // console.log(theSound.volume);
-    //   theSound.play();
-    // });
+    $("#phoneme_button").click(function() {
+      var audio1 = $("#phoneme_audio1")[0];
+      var audio2 = $("#phoneme_audio2")[0];
+      var audio3 = $("#phoneme_audio3")[0];
+      var audio4 = $("#phoneme_audio4")[0];
+      var audio5 = $("#phoneme_audio5")[0];
+      audio1.addEventListener("ended", function() { audio2.play(); }, true);
+      audio2.addEventListener("ended", function() { audio3.play(); }, true);
+      audio3.addEventListener("ended", function() { audio4.play(); }, true);
+      audio4.addEventListener("ended", function() { audio5.play(); }, true);
+      audio1.play();
+    });
   });
 </script>

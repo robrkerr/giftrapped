@@ -1,7 +1,7 @@
 class Phoneme < ActiveRecord::Base
 
   def is_vowel
-  	ptype == "vowel"
+  	phoneme_type == "vowel"
   end
 
   def possible_stresses
