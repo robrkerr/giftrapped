@@ -116,7 +116,7 @@ input:focus {
   border-bottom:    none;
 }
 
-#input_area div.first_phoneme_field {
+#input_area div.first_onset_field {
   width:         195px;
 }
 
@@ -180,18 +180,18 @@ div.syllables {
   line-height:    48px;
 }
 
-div.phonemes {
+div.pronunciation {
   float:          left;
   width:          640px;
   height:         48px;
 }
 
-div.phonemes.normal_order {
+div.pronunciation.normal_order {
   margin-left:    auto;
   margin-right:   0px;
 }
 
-div.phonemes.reversed {
+div.pronunciation.reversed {
   margin-left:    0px;
   margin-right:   auto;
 }
@@ -214,7 +214,7 @@ div.lexeme_spacer {
   height:         15px;
 }
 
-div.single_phoneme {
+div.single_syllable {
   /*width:          34px;*/
   height:         48px;
   text-align:     center;
@@ -223,11 +223,11 @@ div.single_phoneme {
   /*background-color: rgba(255,220,240,1);*/
 }
 
-div.single_phoneme.normal_order {
+div.single_syllable.normal_order {
   float:          right;
 }
 
-div.single_phoneme.reversed {
+div.single_syllable.reversed {
   float:          left;
 }
 

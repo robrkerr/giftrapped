@@ -7,6 +7,17 @@ class SyllableStructurer
 		@phonemes = PhonemeLoader.phonemes_hash
 	end
 
+	def prepare_words read_words
+		read_words.map { |word| 
+      syllables = group_phonemes word[:phonemes]
+      if syllables.length > 0
+        {:name => word[:name], :syllables => syllables}
+      else
+        nil
+      end
+    }.compact
+	end
+
 	def group_phonemes word_phonemes
 		types = word_phonemes.map { |ph| @phonemes[get_phoneme_without_stress(ph)]}
 		vowel_stresses = word_phonemes.map { |ph| get_vowel_stress(ph) }.select { |stress| stress }

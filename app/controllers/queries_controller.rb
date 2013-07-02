@@ -17,7 +17,7 @@ class QueriesController < ApplicationController
       else
         format.html # show.html.erb
       end
-      format.json { render :json => @query.auto_complete.to_json }
+      format.json { render :json => @query.auto_complete(5).to_json }
     end
   end
 

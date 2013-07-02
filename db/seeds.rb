@@ -37,15 +37,7 @@ Dir[Rails.root + "data/word_batch_*"].each_with_index do |file,i|
   	read_words = PhoneticWordReader.read_words(file)
   }
   seed_timer("  Grouping phonemes into syllables... ") {
-    structurer = SyllableStructurer.new
-    words = read_words.map { |word| 
-      syllables = structurer.group_phonemes word[:phonemes]
-      if syllables.length > 0
-        {:name => word[:name], :syllables => syllables}
-      else
-        nil
-      end
-    }.compact
+    words = SyllableStructurer.new.prepare_words read_words
   }
   seed_timer("  Populating word tables... ") {
   	seeder.seed_words words, 0
