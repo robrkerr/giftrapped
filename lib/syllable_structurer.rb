@@ -77,17 +77,19 @@ class SyllableStructurer
 			if stresses.first >= stresses.last
 				1.upto(group.length-1).each { |i|
 					sonority_increased = @sonority_by_type[group[i]] >= @sonority_by_type[group[i-1]]
-					if sonority_increased || (i == group.length-1)
+					if sonority_increased
 						return [group.take(i),group.drop(i)]
 					end
 				}
+				return [group.take(group.length),group.drop(group.length)]
 			else
 				(group.length-2).downto(0).each { |i|
 					sonority_increased = @sonority_by_type[group[i]] >= @sonority_by_type[group[i+1]]
-					if sonority_increased || (i == 0)
-						return [group.take(i),group.drop(i)]
+					if sonority_increased
+						return [group.take(i+1),group.drop(i+1)]
 					end
 				}
+				return [group.take(0),group.drop(0)]
 			end
 		end
 	end

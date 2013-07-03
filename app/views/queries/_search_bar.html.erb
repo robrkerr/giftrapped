@@ -56,8 +56,8 @@
         <% syllables = syllables.reverse %>
       <% end %>
       <% syllables.each_with_index do |ph,j| %>
-        <div class="spacer <%= order_class %>"><%= " - " unless j == 0 %></div>
-        <div class="single_syllable <%= order_class %>"> <%= ph.label %> </div>
+        <div class="spacer <%= order_class %>"><%= " -- " unless j == 0 %></div>
+        <div class="single_syllable <%= order_class %>"> <%= ph.label.gsub("-"," ") %> </div>
       <% end %>
     </div>
   </div>

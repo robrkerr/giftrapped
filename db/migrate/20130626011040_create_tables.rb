@@ -61,8 +61,9 @@ class CreateTables < ActiveRecord::Migration
   	add_index :segment_phonemes, :phoneme_id
   	# Lexeme table
   	create_table :lexemes do |t|
-  		t.string :word_class
-  		t.string :gloss
+  		t.integer :entry_id
+      t.string :word_class
+  		t.text :gloss
   		
   		t.timestamps
   	end

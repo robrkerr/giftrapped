@@ -150,40 +150,64 @@ describe Seeder do
 		end
 	end
 
-	# context "can seed words and their lexemes" do
+	context "can seed words and their lexemes" do
+		let(:word_name1) { "jester" }
+		let(:word_name2) { "buffet" }
+		let(:word_name3) { "word" }
+		let(:word_name4) { "dog" }
+		let(:word_name5) { "cat" }
+		let(:gloss1) { "gloss1" }
+		let(:gloss2) { "gloss2" }
+		let(:gloss3) { "gloss3' having" }
+		let(:gloss4) { "gloss4" }
+		let(:empty_syllables) { [] }
+		let(:words) { [{:name => word_name1, :syllables => empty_syllables},
+									 {:name => word_name2, :syllables => empty_syllables},
+									 {:name => word_name3, :syllables => empty_syllables},
+									 {:name => word_name4, :syllables => empty_syllables},
+									 {:name => word_name5, :syllables => empty_syllables}] }
+		let(:base_source) { 41 }
+		let(:lexemes) { [{entry_id: 0, word_class: "verb",   gloss: gloss1}, 
+										 {entry_id: 1, word_class: "noun",   gloss: gloss2},
+										 {entry_id: 2, word_class: "adverb", gloss: gloss3},
+										 {entry_id: 3, word_class: "verb",   gloss: gloss4}] }
+		let(:word_to_lexemes) { {word_name1 => [lexemes[0]], 
+														 word_name2 => [lexemes[1]], 
+														 word_name3 => [lexemes[0],lexemes[3]],  
+														 word_name5 => [lexemes[0],lexemes[2],lexemes[3]]} }
+		before { seeder.seed_words words, base_source }
+		before { seeder.seed_lexemes word_to_lexemes, base_source }
 
-	# end
+		it "should add all lexemes" do
+			Lexeme.count.should eql(4)
+		end
 
+		it "should add all word-lexeme links" do
+			WordLexeme.count.should eql(7)
+		end
 
+		it "should have no lexemes for 'dog'" do
+			Spelling.where(label: "dog").first.words.first.lexemes.length.should eql(0)
+		end
 
-	# 	context "seeding words and their lexemes" do
-	# 		syllables = [{:onset => ["jh"], :nucleus => ["eh"], :coda => ["s"], :stress => 1},
-	# 					 			 {:onset => ["t"],  :nucleus => ["er"], :coda => [],    :stress => 0}]
-	# 		words = [{:name => "jester", :syllables => syllables}]
-	# 		seeder.seed_words words, 0
-	# 		should satisfy { Word.count == 1 }
-	# 		lexemes = [{:word_class => "noun", :gloss => "jester meaning1"},
-	# 							 {:word_class => "verb", :gloss => "jester meaning2"}]
-	# 		word_lexemes = [{:word => "jester", :lexemes => lexemes}]
-	# 		seeder.seed_lexemes word_lexemes, 0
-	# 		Lexeme.count.should eql(2)
-	# 		WordLexeme.count.should eql(2)
-	# 		Word.first.name.should eql("jester")
-	# 		lexeme_records = Lexeme.order(:word_class).all
-	# 		lexeme_records[0].word_class.should eql("noun")
-	# 		lexeme_records[0].gloss.should eql("jester meaning1")
-	# 		lexeme_records[1].word_class.should eql("verb")
-	# 		lexeme_records[1].gloss.should eql("jester meaning2")
-	# 		word_id = Word.first.id
-	# 		lexeme_ids = lexeme_records.map { |lex| lex.id }.sort
-	# 		word_lexemes_records = WordLexeme.order(:lexeme_id).all
-	# 		word_lexemes_records[0].word_id.should eql(word_id)
-	# 		word_lexemes_records[0].lexeme_id.should eql(lexeme_ids[0])
-	# 		word_lexemes_records[0].source.should eql(0)
-	# 		word_lexemes_records[1].word_id.should eql(word_id)
-	# 		word_lexemes_records[1].lexeme_id.should eql(lexeme_ids[1])
-	# 		word_lexemes_records[1].source.should eql(0)
-	# 	end
+		context "should have the correct lexemes for 'cat'" do
+			it { Spelling.where(label: "cat").first.words.first.lexemes.length.should eql(3) }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[0].word_class.should eql("verb") }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[0].gloss.should eql(gloss1) }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[1].word_class.should eql("verb") }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[1].gloss.should eql(gloss4) }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[2].word_class.should eql("adverb") }
+			it { Spelling.where(label: "cat").first.words.first.lexemes[2].gloss.should eql(gloss3) }
+		end
+
+		context "should have the correct lexemes for 'jester'" do
+			it { Spelling.where(label: "jester").first.words.first.lexemes.length.should eql(1) }
+			it { Spelling.where(label: "jester").first.words.first.lexemes[0].word_class.should eql("verb") }
+			it { Spelling.where(label: "jester").first.words.first.lexemes[0].gloss.should eql(gloss1) }
+			it { Spelling.where(label: "jester").first.words.first.word_lexemes[0].source.should eql(base_source) }
+		end
+	end
+end
 
 	# 	it "can add existing lexemes to words related to existing words with those lexemes" do
 	# 		syllables1 = [{:onset => ["jh"], :nucleus => ["eh"], :coda => ["s"], :stress => 1},
@@ -219,6 +243,4 @@ describe Seeder do
 	# 		word_lexemes_records[3].lexeme_id.should eql(lexeme_records[1].id)
 	# 		word_lexemes_records[3].source.should eql(0)
 	# 	end
-	# end
-end
 

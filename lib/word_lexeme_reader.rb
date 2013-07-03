@@ -1,6 +1,6 @@
 class WordLexemeReader
   def self.read_lexemes filename
-    lexemes = []
+    id = 0
     word_lexemes = Hash.new { |h,k| h[k] = [] }
     full_types = self.load_full_types
     file = File.new(filename,"r")
@@ -12,20 +12,15 @@ class WordLexemeReader
         split_line[4+2*i].gsub("_"," ")
       }
       gloss = line.split("|").last.strip
-      id = lexemes.length
-      at_least_one_word = false
       words.each { |w| 
         if !w[/[^a-z]/]
-          word_lexemes[w] << id
-          at_least_one_word = true
+          word_lexemes[w] << {:entry_id => id, :word_class => type[0], :gloss => gloss}
         end
       }
-      if at_least_one_word
-        lexemes << {:lexeme_id => id, :word_class => type[0], :gloss => gloss}
-      end
+      id += 1
     end
     file.close
-    return lexemes, word_lexemes
+    word_lexemes
   end
 
   def self.read_word_relations filename

@@ -14,8 +14,9 @@
 ActiveRecord::Schema.define(:version => 20130626011040) do
 
   create_table "lexemes", :force => true do |t|
+    t.integer  "entry_id"
     t.string   "word_class"
-    t.string   "gloss"
+    t.text     "gloss"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -17,8 +17,8 @@
       <% matching = @query.dictionary=="0" %>
       <% syllables = (@query.reverse=="1") ? word.syllables.reverse : word.syllables %>
       <% syllables.each_with_index do |syllable,j| %>
-        <div class="spacer <%= order_class %> <%= "match" if matching %>"><%= " - " unless j == 0 %></div>
-        <div class="single_syllable <%= order_class %> <%= "match" if matching %>"> <%= syllable.label %> </div>
+        <div class="spacer <%= order_class %> <%= "match" if matching %>"><%= " -- " unless j == 0 %></div>
+        <div class="single_syllable <%= order_class %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
       <% end %>
     </div>
   </div>

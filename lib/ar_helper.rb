@@ -14,7 +14,7 @@ class ArHelper
 	def find_ids_with_multiple_columns ar_table, columns, all_entries
 		return {} if all_entries.length == 0
     existing_entries_to_id = {}
-    set_string = all_entries.map { |entry| "('" + entry.join("','") + "')" }.join(",")
+    set_string = all_entries.map { |entry| "(" + entry.map { |e| ActiveRecord::Base.connection.quote(e) }.join(",") + ")" }.join(",")
     columns_string = columns.map(&:to_s).join(",")
     ar_table.
       select("#{columns_string}, id").

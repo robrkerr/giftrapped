@@ -40,12 +40,14 @@ class Seeder
   end
 
   def seed_lexemes word_lexemes, source
-    lexemes = []
-    word_lexemes.each { |wlex| wlex[:lexemes].each { |lex| 
-        lexemes << [wlex[:word],lex[:word_class],lex[:gloss]]
+    all_lexemes = []
+    max_id = Lexeme.select("max(entry_id)").first.attributes["max"].to_i
+    word_lexemes.each { |spelling,lexemes| lexemes.each { |lexeme| 
+        all_lexemes << [spelling, lexeme[:entry_id] + max_id + 1,
+                          lexeme[:word_class], lexeme[:gloss]]
     } }
-    lexeme_to_id = populate_lexemes lexemes
-    populate_word_lexemes lexemes, lexeme_to_id, source
+    lexeme_to_id = populate_lexemes all_lexemes
+    populate_word_lexemes all_lexemes, lexeme_to_id, source
   end
 
   def seed_extra_word_lexemes word_relations, source
@@ -131,30 +133,33 @@ class Seeder
   end
 
   def populate_lexemes lexemes
-    columns = [:word_class,:gloss]
-    lexeme_entries = lexemes.map { |lex| lex[1..2]}
-    already_existing = ArHelper.new.find_ids_with_multiple_columns Lexeme, columns, lexeme_entries
-    values_to_insert = lexeme_entries.reject { |entry| already_existing.has_key?(entry) }
+    columns = [:entry_id,:word_class,:gloss]
+    lexeme_entries = lexemes.map { |lex| lex[1..3]}
+    already_existing = ArHelper.new.find_ids_with_single_column Lexeme, columns[0], lexeme_entries.map { |lex| lex[0] }
+    values_to_insert = lexeme_entries.reject { |entry| already_existing.has_key?(entry[0]) }
     Lexeme.transaction do
-      Lexeme.import columns, values_to_insert.uniq, :validate => false
+      Lexeme.import columns.dup, values_to_insert.uniq, :validate => false
     end
-    new_records = ArHelper.new.find_ids_with_multiple_columns Lexeme, columns, values_to_insert
+    new_records = ArHelper.new.find_ids_with_single_column Lexeme, columns[0], values_to_insert.map { |v| v[0] }
     already_existing.merge(new_records)
   end
 
   def populate_word_lexemes lexemes, lexeme_to_id, source
     spellings = lexemes.map { |lex| lex[0]}
     spelling_to_id = ArHelper.new.find_ids_with_single_column Spelling, :label, spellings
-
-    spelling_to_id = ArHelper.new.find_ids_with_single_column Word, :spelling_id, spelling_to_id.values
-
     columns = [:word_id, :lexeme_id, :source]
-    ids = lexemes.map { |word,word_class,gloss|
-      [words_hash[[word]].id, lex_hash[[word_class,gloss]].id]
+    id_pairs = []
+    lexemes.each { |spelling,entry_id,word_class,gloss|
+      if spelling_to_id[spelling]
+        Spelling.find(spelling_to_id[spelling]).words.each { |word| 
+          id_pairs << [word.id, lexeme_to_id[entry_id]]
+        }
+      end
     }
-    values, _ = partition_new_and_existing WordLexeme, columns[0..1], ids, ids
+    already_existing = ArHelper.new.find_ids_with_multiple_columns WordLexeme, columns[0..1], id_pairs
+    values_to_insert = id_pairs.reject { |id_pair| already_existing.has_key?(id_pair) }.uniq.map { |v| v << source }
     WordLexeme.transaction do
-      WordLexeme.import columns, values.map { |v| v << source; v}.uniq, :validate => false
+      WordLexeme.import columns, values_to_insert, :validate => false
     end
   end
 
