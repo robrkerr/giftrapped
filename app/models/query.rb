@@ -115,9 +115,9 @@ class Query
 
   def onset_filter_options 
     onsets = Segment.select([:id,:label]).where(segment_type: 0).order(:label)
-    labels = onsets.map(&:label)
+    labels = onsets.map { |on| (on.label == "") ? "no onset" : on.label }
     vals = onsets.map(&:id)
-		labels.zip(vals)
+		labels.unshift("").zip(vals.unshift(""))
   end
 
   def num_syllables_filter_options
