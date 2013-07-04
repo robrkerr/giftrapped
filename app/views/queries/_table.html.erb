@@ -8,6 +8,7 @@
       <% else %>
         <%= link_to word.name, @query.params_for_each_option[i], :class => "word_link" %> 
       <% end %>
+      <%= "(+#{result[:other_words].length})" if result[:other_words].length > 0 %>
     </div>
     <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
       <%= word.num_syllables %> 
@@ -22,15 +23,47 @@
       <% end %>
     </div>
   </div>
-  <div id="wr_<%= i %>_lexemes" class="word_table result_extended">
+  <div id="wr_<%= i %>_extended" class="word_table result_extended">
     <% if word.lexemes.length > 0 %>
-      <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
-      <% word.lexemes.each_with_index do |lexeme,j| %>
-        <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
-          <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
+      <div>
+        <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+          <% word.lexemes.each_with_index do |lexeme,j| %>
+            <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
+              <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
+            </div>
+          <% end%>
+        <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+      </div>
+    <% end %>
+    <% result[:other_words].each do |other_word| %>
+      <div>
+        <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
+          <%= link_to other_word.name, @query.params_for_each_option[i], :class => "word_link" %>
         </div>
-      <% end%>
-      <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+        <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
+          <%= other_word.num_syllables %> 
+        </div>
+        <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
+        <div class="pronunciation <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
+          <% matching = @query.dictionary=="0" %>
+          <% syllables = (@query.reverse=="1") ? other_word.syllables.reverse : other_word.syllables %>
+          <% syllables.each_with_index do |syllable,j| %>
+            <div class="spacer <%= order_class %> <%= "match" if matching %>"><%= " -- " unless j == 0 %></div>
+            <div class="single_syllable <%= order_class %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
+          <% end %>
+        </div>
+      </div>
+      <div>
+        <% if other_word.lexemes.length > 0 %>
+          <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+          <% other_word.lexemes.each_with_index do |lexeme,j| %>
+            <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
+              <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
+            </div>
+          <% end%>
+          <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+        <% end %>
+      </div>
     <% end %>
   </div>
 <% end %>
@@ -58,11 +91,11 @@
     });
     // $("#wr_heading_row").show("slide", {direction: "down"}, 500);
     $(".result_simple").click(function() {
-      if ($("#" + this.id + "lexemes").is(":visible")) {
+      if ($("#" + this.id + "extended").is(":visible")) {
         $(".result_extended").slideUp(500);
       } else {
         $(".result_extended").slideUp(500);
-        $("#" + this.id + "lexemes").slideToggle(500);
+        $("#" + this.id + "extended").slideToggle(500);
       }
     });
     $("a").click(function(e) {

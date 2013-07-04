@@ -99,6 +99,10 @@ div.title_gr {
   padding-left:  8px;
 }
 
+#query_first_segment_text {
+  width:         80px;
+}
+
 #new_phoneme {
   width:         200px;
   margin-left:   150px;
@@ -116,8 +120,8 @@ input:focus {
   border-bottom:    none;
 }
 
-#input_area div.first_onset_field {
-  width:         195px;
+#input_area div.first_segment_field {
+  width:         225px;
 }
 
 #input_area div.num_syllables_field {
@@ -129,11 +133,11 @@ input:focus {
 }
 
 #input_area div.perfect_box {
-  width:         170px;
+  width:         160px;
 }
 
 #input_area div.reverse_box {
-  width:         175px;
+  width:         165px;
 }
 
 #input_area div.rap_button_box {

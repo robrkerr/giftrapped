@@ -1,9 +1,10 @@
 <%= form_for @query, :url => query_path do |q| %>
   <div id="input_area">
     <% if @query.dictionary == "0" %>
-      <div class="first_phoneme_field" > 
-        <span><%= (@query.reverse=="1") ? "Last phoneme:" : "First phoneme:"%></span>
-        <%= q.select :first_onset, options_for_select(@query.onset_filter_options, @query.first_onset) %>
+      <div class="first_segment_field" > 
+        <span><%= (@query.reverse=="1") ? "Last segment:" : "First segment:"%></span>
+        <%= q.text_field :first_segment_text, :value => (@query.first_segment_text || "") %>
+        <%= q.text_field :first_segment, :type => :hidden, :value => (@query.first_segment || "") %>
       </div>
       <div class="num_syllables_field" >
         <span>Number of syllables:</span>
@@ -64,35 +65,37 @@
 <% end %>
 
 <script>
-  $(document).delegate('*', 'keypress', function (evt) {
-    if (!$("#query_text").focus()) {
-      $("#query_text").focus().val($("#query_text").val());
-    }
-    $("#query_id").val("");
-  });
+  // $(document).delegate('*', 'keypress', function (evt) {
+  //   if (!$("#query_text").focus()) {
+  //     $("#query_text").focus().val($("#query_text").val());
+  //   }
+  //   $("#query_id").val("");
+  // });
   $(document).ready(function() {
     $("#query_reverse").click(function() {
-      if ($(".first_onset_field span").html()=="Last coda:") {
-        $(".first_onset_field span").html("First onset:");
+      $("#query_first_segment_text").val("");
+      $("#query_first_segment").val("");
+      if ($(".first_segment_field span").html()=="Last segment:") {
+        $(".first_segment_field span").html("First segment:");
       } else {
-        $(".first_onset_field span").html("Last coda:");
+        $(".first_segment_field span").html("Last segment:");
       }
     });
     $("#query_text").focus().val($("#query_text").val());
     if ($("#query_dictionary").val()!="1") {
       $(function() {
         $("#query_text").autocomplete({
-          source: '<%= query_path(:json) %>',
+          source: '<%= query_path(:json, {:autocomplete => "words"}) %>',
           select: function(event, ui) {
             $("#query_text").val(ui.item.label);
             $("#query_id").val(ui.item.id);
             if ($(".syllables").val()!="") {
               $("#wr_heading_row div.syllables").html(ui.item.num_syllables);
-              if ($("#wr_heading_row div.phonemes").hasClass("normal_order")) {
-                $("#wr_heading_row div.phonemes").html("<div class='single_phoneme normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'> - </div><div class='single_phoneme normal_order'>") + "</div>");
+              if ($("#wr_heading_row div.pronunciation").hasClass("normal_order")) {
+                $("#wr_heading_row div.pronunciation").html("<div class='single_syllable normal_order'>" + ui.item.reversed_phonemes.join("</div><div class='spacer normal_order'> - </div><div class='single_phoneme normal_order'>") + "</div>");
               } 
-              else if ($("#wr_heading_row div.phonemes").hasClass("reversed")) {
-                $("#wr_heading_row div.phonemes").html("<div class='single_phoneme reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'> - </div><div class='single_phoneme reversed'>") + "</div>");
+              else if ($("#wr_heading_row div.pronunciation").hasClass("reversed")) {
+                $("#wr_heading_row div.pronunciation").html("<div class='single_syllable reversed'>" + ui.item.phonemes.join("</div><div class='spacer reversed'> - </div><div class='single_syllable reversed'>") + "</div>");
               }
             }
             $("#new_query").submit();
@@ -106,5 +109,26 @@
           };
       });
     }
+    $(function() {
+      var available_segments;
+      if ($(".first_segment_field span").html()=="Last segment:") {
+        available_segments = "<%= query_path(:json, {autocomplete: 'segments', reverse: '1'}) %>"
+      } else {
+        available_segments = "<%= query_path(:json, {autocomplete: 'segments', reverse: '0'}) %>"
+      }
+      $("#query_first_segment_text").autocomplete({
+        source: available_segments,
+        select: function(event, ui) {
+          $("#query_first_segment_text").val(ui.item.label);
+          $("#query_first_segment").val(ui.item.id);
+          return false;
+        }
+      }).data("uiAutocomplete")._renderItem = function(ul, item) {
+        return $("<li></li>")
+          .data("item.autocomplete", item)
+          .append("<a><span>" + item.label + " </span></a>")
+          .appendTo(ul);
+        };
+    });
   });
 </script>
