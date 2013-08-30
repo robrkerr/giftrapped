@@ -34,7 +34,7 @@
 
   <div id="wr_heading_row" class="word_table heading">
     <div class="text_field overlapping">
-      <% if @query.dictionary=="1" %>
+      <% if @query.dictionary_mode %>
         <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => :off, :class => 'main-input' %>
       <% else %>
         <%= q.text_field :text, :value => (@query.text || ""), :class => 'main-input' %>
@@ -45,33 +45,39 @@
     <div class="word">
       <!-- background -->
     </div>
+    <div class="controls">
+      <!-- background -->
+    </div>
     <div class="syllables"> <%= (@query.word.try(&:num_syllables) || "") unless (@query.dictionary=="1") %> </div>
-    <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
-    <div class="pronunciation <%= order_class %>">
-      <% if @query.dictionary=="1" %>
+    <div class="pronunciation <%= @query.reversed_tag %>">
+      <% if @query.dictionary_mode %>
         <% syllables = [] %>
       <% else %>
         <% syllables = @query.word.try(&:syllables) || [] %>
       <% end %>
-      <% if @query.reverse=="1" %>
+      <% if @query.reversed_mode %>
         <% syllables = syllables.reverse %>
       <% end %>
       <% syllables.each_with_index do |ph,j| %>
-        <div class="spacer <%= order_class %>"><%= " -- " unless j == 0 %></div>
-        <div class="single_syllable <%= order_class %>"> <%= ph.label.gsub("-"," ") %> </div>
+        <div class="spacer <%= @query.reversed_tag %>"><%= " . " unless j == 0 %></div>
+        <div class="single_syllable <%= @query.reversed_tag %>"> <%= ph.label.gsub("-"," ") %> </div>
       <% end %>
     </div>
   </div>
 <% end %>
 
 <script>
-  // $(document).delegate('*', 'keypress', function (evt) {
-  //   if (!$("#query_text").focus()) {
-  //     $("#query_text").focus().val($("#query_text").val());
-  //   }
-  //   $("#query_id").val("");
-  // });
   $(document).ready(function() {
+    $("#query_text").change(function() {
+      $("#wr_heading_row div.pronunciation").html("");
+      $("#wr_heading_row div.syllables").html("");
+      $("#query_id").val("");
+    });
+    $("#query_first_segment_text").change(function() {
+      if ($("#query_first_segment_text").val()=="") {
+        $("#query_first_segment").val("");
+      }
+    });
     $("#query_reverse").click(function() {
       $("#query_first_segment_text").val("");
       $("#query_first_segment").val("");

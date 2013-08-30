@@ -72,7 +72,7 @@ class Query
 
   def auto_complete_segments number
     return [] unless @term
-    if (@reverse == "1")
+    if reversed_mode
       segments = Segment.select([:id,:label,:segment_type])
                      .where(["label LIKE ? AND segment_type > ?", "#{@term}%", 0])
                      .order(:label)
@@ -85,9 +85,9 @@ class Query
       }
     else
       segments = Segment.select([:id,:label,:segment_type])
-                      .where(["label LIKE ? AND segment_type < ?", "#{@term}%", 2])
-                      .order(:label)
-                      .limit(number)
+                        .where(["label LIKE ? AND segment_type < ?", "#{@term}%", 2])
+                        .order(:label)
+                        .limit(number)
       segments.map { |segment| {
           :label => segment.label, 
           :id => segment.id,
@@ -106,8 +106,34 @@ class Query
   end
 
   def dictionary_results text
-    results = Spelling.where(label: text).first.words
-    results.map { |word| { primary_word: word, other_words: [] } }
+    spelling = Spelling.where(label: text).first
+    words = spelling.words
+    linked_results = Word.select("words.id, lexemes.word_class, lexemes.gloss")
+                         .where(:id => words.map(&:id))
+                         .joins("LEFT JOIN word_lexemes ON word_lexemes.word_id = words.id
+                                 LEFT JOIN lexemes ON lexemes.id = word_lexemes.lexeme_id")
+                         .map(&:attributes)
+                         .group_by { |r| r["id"] }
+    word_id_to_syllables = Syllable.where(:pronunciation_id => words.map(&:pronunciation_id))
+                                   .order("position ASC").group_by(&:pronunciation_id)
+    words.each_with_index.map { |word,i| 
+      syllables = word_id_to_syllables[word.pronunciation_id]
+      p linked_results
+      lexemes = linked_results[word.id].each_with_index.map { |word_lexeme,j|
+        if word_lexeme["word_class"] && word_lexeme["gloss"]
+          "#{j+1}: (" + word_lexeme["word_class"] + ") " + word_lexeme["gloss"] + "."
+        else 
+          nil
+        end
+      }.compact
+      word_hash = { name: spelling.label, num_syllables: syllables.length, 
+                        lexemes: lexemes, word_id: word.id }
+      { primary_word: word_hash, 
+        other_words: [], 
+        even_tag: (i%2==0) ? "even" : "odd",
+        pronunciation_label: syllables.map(&:label).join("-"), 
+        syllables: reversed_mode ? syllables : syllables.reverse }
+    }
   end
 
   def params
@@ -143,22 +169,66 @@ class Query
     hash
   end
 
-  def params_for_each_option
-    words_to_show.map { |word| optional_params.merge({:id => word[:primary_word].id}) }
+  def rhyming_link word_id
+    optional_params.merge({:id => word_id})
   end
 
   def words_to_show
-    return [] unless valid?
-    return dictionary_results(@word.name) if (@dictionary=="1")
-    run_query
+    if @words_to_show_cached 
+      # return that
+    elsif !valid?
+      @words_to_show_cached = []
+    elsif dictionary_mode
+      @words_to_show_cached = dictionary_results @word.name
+    else
+      @words_to_show_cached = run_query
+    end
+    @words_to_show_cached
+  end
+
+  def dictionary_mode
+    @dictionary=="1"
+  end
+
+  def reversed_mode
+    @reverse=="1"
+  end
+
+  def reversed_tag
+    reversed_mode ? "reversed" : "normal_order"
   end
 
   def run_query
     scope = filter_by_first_segment filter_by_num_syllables(Syllable)
-    results = WordMatcher.find_rhymes @word.pronunciation, scope, @number_of_results, (@reverse == "1")
-    results.map { |pron| 
-      words_sorted = pron.words.sort_by { |w| -w.lexemes.length }
-      { primary_word: words_sorted.first, other_words: words_sorted[1..-1] } 
+    pronunciations = WordMatcher.find_rhymes @word.pronunciation, scope, @number_of_results, reversed_mode
+    pron_ids = pronunciations.map { |pron| pron.id }
+    linked_results = Word.select("pronunciation_id, words.id, spellings.label, lexemes.word_class, lexemes.gloss")
+                         .where(:pronunciation_id => pron_ids)
+                         .joins("LEFT JOIN spellings ON spellings.id = words.spelling_id
+                                 LEFT JOIN word_lexemes ON word_lexemes.word_id = words.id
+                                 LEFT JOIN lexemes ON lexemes.id = word_lexemes.lexeme_id")
+                         .map(&:attributes)
+                         .group_by { |r| r["pronunciation_id"] }
+    pron_id_to_syllables = Syllable.where(:pronunciation_id => pron_ids).order("position ASC").group_by(&:pronunciation_id)
+    pron_ids.map { |id| linked_results[id] }.each_with_index.map { |pron_words,i| 
+      syllables = pron_id_to_syllables[pronunciations[i].id]
+      words = pron_words.group_by { |w| w["id"] }
+      words_sorted = words.keys.map { |id| 
+        lexemes = words[id].each_with_index.map { |word_lexeme,j|
+          if word_lexeme["word_class"] && word_lexeme["gloss"]
+            "#{j+1}: (" + word_lexeme["word_class"] + ") " + word_lexeme["gloss"] + "."
+          else 
+            nil
+          end
+        }.compact
+        { name: words[id].first["label"], num_syllables: syllables.length, 
+                        lexemes: lexemes, word_id: id}
+      }.sort_by { |word| -word[:lexemes].length }
+      { primary_word: words_sorted.first, 
+        other_words: words_sorted[1..-1], 
+        even_tag: (i%2==0) ? "even" : "odd",
+        pronunciation_label: pronunciations[i].label, 
+        syllables: reversed_mode ? syllables : syllables.reverse }
     }
   end
 
@@ -181,7 +251,7 @@ class Query
       when 0
         segment_condition = "onset_id = #{@first_segment}"
       when 1
-        if (@reverse == "1")
+        if reversed_mode
           blank_id = Segment.select(:id).where({label: "", segment_type: 2}).first.id
           segment_condition = "nucleus_id = #{@first_segment} AND coda_id = #{blank_id}"
         else
@@ -191,7 +261,7 @@ class Query
       when 2
         segment_condition = "coda_id = #{@first_segment}"
       end
-      if (@reverse == "1")
+      if reversed_mode
         position_condition = "r_position = 0"
       else
         position_condition = "position = 0"

@@ -1,67 +1,65 @@
 <% @query.words_to_show.each_with_index do |result,i| %>
   <% word = result[:primary_word] %>
   <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
-  <!-- <div id="wr_<%= i %>_" class="word_table result_simple"> -->
-    <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
-      <% if @query.dictionary=="1" %>
-        <%= link_to word.name, edit_word_path(@query.word), :class => "word_link" %> 
-      <% else %>
-        <%= link_to word.name, @query.params_for_each_option[i], :class => "word_link" %> 
-      <% end %>
+    <div class="word <%= result[:even_tag] %>"> 
+      <%= word[:name] %> 
       <%= "(+#{result[:other_words].length})" if result[:other_words].length > 0 %>
     </div>
-    <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
-      <%= word.num_syllables %> 
+    <div class="controls <%= result[:even_tag] %>">
+      <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b>
+      <%= link_to "D", edit_word_path(word[:word_id]) %>
+      <%= link_to "R", @query.rhyming_link(word[:word_id]) %>
     </div>
-    <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
-    <div class="pronunciation <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
+    <div class="syllables <%= result[:even_tag] %>"> 
+      <%= word[:num_syllables] %> 
+    </div>
+    <div class="pronunciation <%= @query.reversed_tag %> <%= result[:even_tag] %>">
       <% matching = @query.dictionary=="0" %>
-      <% syllables = (@query.reverse=="1") ? word.syllables.reverse : word.syllables %>
-      <% syllables.each_with_index do |syllable,j| %>
-        <div class="spacer <%= order_class %> <%= "match" if matching %>"><%= " -- " unless j == 0 %></div>
-        <div class="single_syllable <%= order_class %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
+      <% result[:syllables].each_with_index do |syllable,j| %>
+        <div class="spacer <%= @query.reversed_tag %> <%= "match" if matching %>"><%= " . " unless j == 0 %></div>
+        <div class="single_syllable <%= @query.reversed_tag %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
       <% end %>
     </div>
   </div>
   <div id="wr_<%= i %>_extended" class="word_table result_extended">
-    <% if word.lexemes.length > 0 %>
+    <% if word[:lexemes].length > 0 %>
       <div>
-        <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
-          <% word.lexemes.each_with_index do |lexeme,j| %>
-            <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
-              <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
-            </div>
+        <div class="lexeme_spacer <%= result[:even_tag] %>"> </div>
+          <% word[:lexemes].each do |lexeme| %>
+            <div class="lexemes <%= result[:even_tag] %>"><%= lexeme %></div>
           <% end%>
-        <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+        <div class="lexeme_spacer <%= result[:even_tag] %>"> </div>
       </div>
     <% end %>
     <% result[:other_words].each do |other_word| %>
       <div>
-        <div class="word <%= (i%2==0) ? "even" : "odd" %>"> 
-          <%= link_to other_word.name, @query.params_for_each_option[i], :class => "word_link" %>
+        <div class="word <%= result[:even_tag] %>"> 
+          <%= other_word[:name] %> 
         </div>
-        <div class="syllables <%= (i%2==0) ? "even" : "odd" %>"> 
-          <%= other_word.num_syllables %> 
+        <div class="buttons <%= result[:even_tag] %>"></div>
+        <div class="controls <%= result[:even_tag] %>">
+          <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b>
+          <%= link_to "D", edit_word_path(other_word[:word_id]) %>
+          <%= link_to "R", @query.rhyming_link(other_word[:word_id]) %>
         </div>
-        <% order_class = (@query.reverse=="1") ? "reversed" : "normal_order" %>
-        <div class="pronunciation <%= order_class %> <%= (i%2==0) ? "even" : "odd" %>">
+        <div class="syllables <%= result[:even_tag] %>"> 
+          <%= other_word[:num_syllables] %> 
+        </div>
+        <div class="pronunciation <%= @query.reversed_tag %> <%= result[:even_tag] %>">
           <% matching = @query.dictionary=="0" %>
-          <% syllables = (@query.reverse=="1") ? other_word.syllables.reverse : other_word.syllables %>
-          <% syllables.each_with_index do |syllable,j| %>
-            <div class="spacer <%= order_class %> <%= "match" if matching %>"><%= " -- " unless j == 0 %></div>
-            <div class="single_syllable <%= order_class %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
+          <% result[:syllables].each_with_index do |syllable,j| %>
+            <div class="spacer <%= @query.reversed_tag %> <%= "match" if matching %>"><%= " . " unless j == 0 %></div>
+            <div class="single_syllable <%= @query.reversed_tag %> <%= "match" if matching %>"> <%= syllable.label.gsub("-"," ") %> </div>
           <% end %>
         </div>
       </div>
       <div>
-        <% if other_word.lexemes.length > 0 %>
-          <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
-          <% other_word.lexemes.each_with_index do |lexeme,j| %>
-            <div class="lexemes <%= (i%2==0) ? "even" : "odd" %>">
-              <%= "#{j+1}: (" + lexeme.word_class + ") " + lexeme.gloss + "." %>
-            </div>
+        <% if other_word[:lexemes].length > 0 %>
+          <div class="lexeme_spacer <%= result[:even_tag] %>"> </div>
+          <% other_word[:lexemes].each do |lexeme| %>
+            <div class="lexemes <%= result[:even_tag] %>"><%= lexeme %></div>
           <% end%>
-          <div class="lexeme_spacer <%= (i%2==0) ? "even" : "odd" %>"> </div>
+          <div class="lexeme_spacer <%= result[:even_tag] %>"> </div>
         <% end %>
       </div>
     <% end %>
@@ -115,6 +113,28 @@
       $(".title_word").hide("slide", {direction: "left"}, 500);
       // $(".title_word").toggleClass("visible");
     });
+  });
+  $(".audio").click(function() {
+    var audios = $.map($(this).data("phonemes").replace(/[0-9]*/g, "").split("-"), function(val,i) {
+      sound = new Audio();
+      if (sound.canPlayType('audio/mpeg')) {
+        sound.src = "/audio/" + val + ".mp3";
+        sound.accessKey = i;
+      } else if (sound.canPlayType('audio/ogg')) {
+        sound.src = "/audio/" + val + ".ogg";
+        sound.accessKey = i;
+      } else {
+        sound.src = null;
+        sound.accessKey = i;
+      }
+      return sound;
+    });
+    for (var i = 0; i < (audios.length-1); i++) {
+      audios[i].addEventListener("ended", function() { 
+        audios[parseInt($(this)[0].accessKey)+1].play();
+      }, true);
+    }
+    audios[0].play();
   });
 </script>
 
