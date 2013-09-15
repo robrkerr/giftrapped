@@ -46,7 +46,7 @@ class Query
           [split_e[0].to_i,split_e[1]!="false"]
         else
           split_e.map { |ee|
-            split_ee = ee.split("-")
+            split_ee = ee.split(";")
             [split_ee[0],split_ee[1]!="false"]
           }
         end

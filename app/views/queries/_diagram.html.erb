@@ -184,9 +184,9 @@
 						var matched = $(this).find(".match_boxes").find(".matching").is(':checked');
 						match_string += label;
 						if (matched) {
-							match_string += "-true:";
+							match_string += ";true:";
 						} else {
-							match_string += "-false:";
+							match_string += ";false:";
 						}
 					});
 					match_string = match_string.substr(0,match_string.length-1);
