@@ -1,5 +1,10 @@
 <%= render "layouts/title" %>
 <%= render "search_bar" %>
+<div class="diagram_box">
+<% if @query.word && !@query.dictionary_mode %>
+	<%= render "diagram" %>
+<% end %>
+</div>
 <div id="results_table">
   <%= render "table" %> 
 </div>

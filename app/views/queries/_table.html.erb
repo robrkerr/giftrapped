@@ -6,7 +6,7 @@
       <%= "(+#{result[:other_words].length})" if result[:other_words].length > 0 %>
     </div>
     <div class="controls <%= result[:even_tag] %>">
-      <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b>
+      <!-- <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b> -->
       <%= link_to "D", edit_word_path(word[:word_id]) %>
       <%= link_to "R", @query.rhyming_link(word[:word_id]) %>
     </div>
@@ -38,7 +38,7 @@
         </div>
         <div class="buttons <%= result[:even_tag] %>"></div>
         <div class="controls <%= result[:even_tag] %>">
-          <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b>
+          <!-- <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b> -->
           <%= link_to "D", edit_word_path(other_word[:word_id]) %>
           <%= link_to "R", @query.rhyming_link(other_word[:word_id]) %>
         </div>
@@ -100,14 +100,17 @@
       e.stopPropagation();
       $(".result_extended").slideUp(500);
       $(".result_simple").slideUp(500);
+      $(".diagram_box").slideUp(500);
       $("#wr_heading_row").hide("slide", {direction: "down"}, 500);
       $(".title_word").animate({"width": "toggle"}, 500);
       $(".title_word").hide("slide", {direction: "left"}, 500);
+
       // $(".title_word").toggleClass("visible");
     });
     $("#new_query").submit(function() {
       $(".result_extended").slideUp(500);
       $(".result_simple").slideUp(500);
+      $(".diagram_box").slideUp(500);
       // $("#wr_heading_row").hide("slide", {direction: "down"}, 500);
       $(".title_word").animate({"width": "toggle"}, 500);
       $(".title_word").hide("slide", {direction: "left"}, 500);

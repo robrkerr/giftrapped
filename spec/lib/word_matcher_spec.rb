@@ -35,6 +35,24 @@ describe WordMatcher do
 			it { rhyming_pronunciations.length.should eql(0) }
 		end
 	end
+
+	context "can find matching words (from the test word set)" do
+		let(:matching_pronunciations) { subject.find_words syllables_to_match, num_syllables }
+		before do 
+			read_words = PhoneticWordReader.read_words "data/cmudict.0.7a.partial"
+			words = SyllableStructurer.new.prepare_words read_words
+			Seeder.new(false).seed_words words, 0
+		end
+
+		context "when it finds what rhymes with house" do
+			let(:pronunciation) { Spelling.where(label: "house").first.words.first.pronunciation }
+			let(:syllables_to_match) { pronunciation.syllables.map { |s| [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] } }
+			let(:num_syllables) { 1 }
+			
+			it { matching_pronunciations.length.should eql(1) }
+			it { matching_pronunciations.first.spellings.first.label.should eql("mouse") }
+		end
+	end
 end
 
 

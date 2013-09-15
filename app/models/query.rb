@@ -5,8 +5,8 @@ class Query
   include ActiveModel::Conversion
   extend  ActiveModel::Naming
 
-  attr_accessor :word, :id, :text, :first_segment, :num_syllables
-  attr_accessor :reverse, :word_type, :perfect, :dictionary
+  attr_accessor :word, :id, :text, :match_details, :match_string
+  attr_accessor :word_type, :dictionary
   validate :found_a_word
 
   def found_a_word
@@ -19,11 +19,9 @@ class Query
   end
 
   def initialize params = {}
-    @first_segment = params[:first_segment] || ""
-    @num_syllables = params[:num_syllables] || ""
+    @match_string = params[:match_string] || ""
+    @match_details = parse_match_string(@match_string)
     @word_type = params[:word_type] || ""
-    @reverse = params[:reverse] || "0"
-    @perfect = params[:perfect] || "0"
     @dictionary = params[:dictionary] || "0"
     @auto_complete = params[:autocomplete] || "words"
     @term = params[:term] || false
@@ -37,6 +35,25 @@ class Query
       @word = Spelling.where(:label => @text).try(&:first).try(&:words).try(&:first) || nil
       @id = @word.id if @word
     end
+    @match_details = default_match_details if @word && @match_details.empty?
+  end
+
+  def parse_match_string string
+    string.split(",").map { |e|
+      if e.include?(":")
+        split_e = e.split(":")
+        if split_e.length == 2
+          [split_e[0].to_i,split_e[1]!="false"]
+        else
+          split_e.map { |ee|
+            split_ee = ee.split("-")
+            [split_ee[0],split_ee[1]!="false"]
+          }
+        end
+      else
+        false
+      end
+    }
   end
 
   def parse_text text
@@ -46,6 +63,104 @@ class Query
 
   def persisted?
     false
+  end
+
+  def default_match_details
+    num = @word.last_stressed_syllable
+    num = ((@word.syllables.length - num) > 3) ? (@word.syllables.length - 3) : num
+    word_syllables = @word.syllables.reverse[num..-1]
+    word_syllables.map! { |s| 
+      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
+    }
+    word_syllables[0][0][1] = false
+    match_details = [false,[0,true]] + [false]*num + word_syllables + [false,false]
+  end
+
+  def match_total_syllables
+    num = @match_details[0] ? 1 : (@match_details[-1] ? 1 : 0)
+    num += (@match_details[1] ? @match_details[1][0] : (@match_details[-2] ? @match_details[-2][0] : 0))
+    return num + match_word_syllables
+  end
+
+  def match_word_syllables
+    return @match_details[2..-3].inject(0) { |s,e| e ? s+1 : s }
+  end
+
+  def match_at_least
+    return @match_details[1] ? @match_details[1][1] : (@match_details[-2] ? @match_details[-2][1] : false)
+  end
+
+  def match_to_first
+    return !!@match_details[-1] || !!@match_details[-2]
+  end
+
+  def match_from_first
+    return !@match_details[-3]
+  end
+
+  def syllable_diagram_object_presence syllable_num
+    return (@match_details[syllable_num]) ? "" : "no_syllable"
+  end
+
+  def syllable_diagram_object_colour syllable_num, chunk_num
+    if @match_details[syllable_num]
+      chunk = @match_details[syllable_num][chunk_num]
+      if chunk[0]=="*"
+        return "blue"
+      elsif chunk[1]
+        return "green"
+      else
+        return "red"
+      end
+    else
+      return "blue"
+    end
+  end
+
+  def syllable_diagram_object_phoneme syllable_num, chunk_num
+    if @match_details[syllable_num]
+      return @match_details[syllable_num][chunk_num][0]
+    else
+      return "*"
+    end
+  end
+
+  def syllable_diagram_object_match syllable_num, chunk_num
+    if @match_details[syllable_num]
+      chunk = @match_details[syllable_num][chunk_num]
+      if chunk[0]!="*" && chunk[1]
+        return "checked=checked"
+      end
+    end
+    return ""
+  end
+
+  def syllable_diagram_object_antimatch syllable_num, chunk_num
+    if @match_details[syllable_num]
+      chunk = @match_details[syllable_num][chunk_num]
+      if chunk[0]!="*" && !chunk[1]
+        return "checked=checked"
+      end
+    end
+    return ""
+  end
+
+  def syllable_diagram_object_leading
+    if @match_details[1]
+      if @match_details[-2]
+        # error
+      end
+      leading = @match_details[1]
+    elsif @match_details[-2]
+      leading = @match_details[-2]
+    else
+      return ""
+    end
+    if leading[1]
+      return "#{leading[0]}+"
+    else
+      return "#{leading[0]}"
+    end
   end
 
   def auto_complete number
@@ -97,14 +212,6 @@ class Query
     end
   end
 
-  def first_segment_text
-    @first_segment.present? ? Segment.find(@first_segment).label : ""
-  end
-
-  def first_segment_type
-    Segment.find(@first_segment).segment_type
-  end
-
   def dictionary_results text
     spelling = Spelling.where(label: text).first
     words = spelling.words
@@ -118,7 +225,7 @@ class Query
                                    .order("position ASC").group_by(&:pronunciation_id)
     words.each_with_index.map { |word,i| 
       syllables = word_id_to_syllables[word.pronunciation_id]
-      p linked_results
+      # p linked_results
       lexemes = linked_results[word.id].each_with_index.map { |word_lexeme,j|
         if word_lexeme["word_class"] && word_lexeme["gloss"]
           "#{j+1}: (" + word_lexeme["word_class"] + ") " + word_lexeme["gloss"] + "."
@@ -160,11 +267,8 @@ class Query
 
   def optional_params hash={}
     if valid?
-      hash[:first_segment] = @first_segment if @first_segment.present?
-      hash[:num_syllables] = @num_syllables if @num_syllables.present?
       hash[:word_type] = @word_type if @word_type.present?
-      hash[:reverse] = @reverse if @reverse.present? && @reverse == "1"
-      hash[:perfect] = @perfect if @perfect.present? && @perfect == "1"
+      hash[:match_string] = @match_string if @match_string.present?
     end
     hash
   end
@@ -199,8 +303,14 @@ class Query
   end
 
   def run_query
-    scope = filter_by_first_segment filter_by_num_syllables(Syllable)
-    pronunciations = WordMatcher.find_rhymes @word.pronunciation, scope, @number_of_results, reversed_mode
+    # scope = filter_by_first_segment filter_by_num_syllables(Syllable)
+    # pronunciations = WordMatcher.find_rhymes @word.pronunciation, scope, @number_of_results, reversed_mode
+    pronunciations = WordMatcher.find_words(@match_details[2..-3], 
+                                            match_total_syllables, 
+                                            match_at_least, 
+                                            (match_to_first ? @match_details[-1] : @match_details[0]), 
+                                            match_to_first, 
+                                            @number_of_results)
     pron_ids = pronunciations.map { |pron| pron.id }
     linked_results = Word.select("pronunciation_id, words.id, spellings.label, lexemes.word_class, lexemes.gloss")
                          .where(:pronunciation_id => pron_ids)

@@ -1,16 +1,18 @@
 /*
  *= require jquery-ui/smoothness
  *= require token-input-phonemes
+ *= require rhyming_diagram
  *
  */
 
 * {
-  padding: 0;
-  margin: 0;
+  padding:          0;
+  margin:           0;
+  box-sizing:       border-box;
 }
 
 html {
-  background: white;
+  background:       white;
 }
 
 a {
@@ -22,7 +24,14 @@ a:hover, a:active {
 }
 
 input {
-  font: 13pt "Myriad Pro", Helvetica;
+  font:                 13pt "Myriad Pro", Helvetica;
+}
+
+select {
+  font:                 13pt "Myriad Pro", Helvetica;
+  background-color:     rgba(0,0,0,0);
+  border-style:         none;
+  line-height:          1.6;  
 }
 
 body {
@@ -78,70 +87,46 @@ div.title_gr {
   line-height:    30px;
 }
 
-#input_area div.text_field {
-  width:         0px;
-  height:        48px;
-  position:      absolute;
-  z-index :      20;
-}
-
 .main-input {
-  border-style:  none;
+  /*border-style:  none;*/
   /*font-weight:   bold;*/
   color:         rgba(0, 40, 200, 1);
-  background:    rgba(255, 255, 255, 0.0);
-  height:        48px;
-  line-height:   30px;
+  height:        32px;
+  width:         920px;
+  line-height:   1.6;
+}
+
+input:focus {
+  /*outline:          none;*/
+  /*border-color:     #9ecaed;*/
+  /*box-shadow:       inset 0 0 15px 5px #9ecaed;*/
+  /*border-bottom:    none;*/
 }
 
 #query_text {
-  width:         242px;
-  padding-left:  8px;
+  display: inline-block;
+  /*width:         242px;*/
+  padding-left:  4px;
 }
 
-#query_first_segment_text {
-  width:         80px;
+.rap_button_box {
+  /*display: inline-block;*/
+  /*position: relative;
+  left: 950px;
+  top: -40px;*/
+  margin-left: 10px;
+}
+
+.rap_button {
+  height: 32px;
+  border: none;
+  width: 70px;
 }
 
 #new_phoneme {
   width:         200px;
   margin-left:   150px;
   padding-left:  10px;
-}
-
-div.overlapping {
-  position:       absolute;
-}
-
-input:focus {
-  outline:          none;
-  /*border-color:     #9ecaed;*/
-  /*box-shadow:       inset 0 0 15px 5px #9ecaed;*/
-  border-bottom:    none;
-}
-
-#input_area div.first_segment_field {
-  width:         225px;
-}
-
-#input_area div.num_syllables_field {
-  width:         235px;
-}
-
-#input_area div.word_type_field {
-  width:         175px;
-}
-
-#input_area div.perfect_box {
-  width:         160px;
-}
-
-#input_area div.reverse_box {
-  width:         165px;
-}
-
-#input_area div.rap_button_box {
-  float:         right;
 }
 
 div.heading {
@@ -168,17 +153,17 @@ div.word_table {
 
 div.word {
   float:          left;
-  width:          242px;
+  width:          250px;
   height:         48px;
   vertical-align: middle;
   line-height:    48px;
-  padding-left:    8px;
+  padding-left:   8px;
 }
 
 div.controls {
   float:          left;
   width:          120px;
-  height:         24px;
+  height:         48px;
   padding-top:    12px;
   padding-bottom: 12px;
 }
@@ -209,7 +194,7 @@ div.pronunciation.reversed {
 }
 
 div.lexemes {
-  width:          970px;
+  width:          1000px;
   height:         auto;
   padding-left:   15px;
   padding-right:  15px;
@@ -279,7 +264,7 @@ div.match {
   overflow: hidden;
   margin:0;
   padding:0;
-  width: 980px;
+  width: 910px;
 }
 
 span.autoleft {

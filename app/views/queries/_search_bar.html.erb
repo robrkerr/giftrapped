@@ -1,91 +1,60 @@
 <%= form_for @query, :url => query_path do |q| %>
   <div id="input_area">
+    <div class="text_field">
+      <% if @query.dictionary_mode %>
+        <%= q.text_field :text, :value => "", :autocomplete => :off, :class => 'main-input' %>
+      <% else %>
+        <%= q.text_field :text, :value => "", :class => 'main-input' %>
+      <% end %>
+      <%= q.text_field :dictionary, :type => :hidden, :value => (@query.dictionary || "0") %>
+    </div>
     <% if @query.dictionary == "0" %>
-      <div class="first_segment_field" > 
-        <span><%= (@query.reverse=="1") ? "Last segment:" : "First segment:"%></span>
-        <%= q.text_field :first_segment_text, :value => (@query.first_segment_text || "") %>
-        <%= q.text_field :first_segment, :type => :hidden, :value => (@query.first_segment || "") %>
-      </div>
-      <div class="num_syllables_field" >
-        <span>Number of syllables:</span>
-        <%= q.select :num_syllables, options_for_select(@query.num_syllables_filter_options, @query.num_syllables) %>
-      </div>
-      <div class="word_type_field" >
-        <span>Word type:</span>
-        <%= q.select :word_type, options_for_select(@query.word_type_filter_options, @query.word_type) %>
-      </div>
-      <div class="perfect_box" >
-        <span>Perfect rhyme:</span>
-        <%= q.check_box :perfect %>
-      </div>
-      <div class="reverse_box" >
-        <span>Reverse rhyme:</span>
-        <%= q.check_box :reverse %>
-      </div>
       <div class="rap_button_box">
-        <%= q.submit "Rap" %>
+        <%= q.submit "Rap", :class => 'rap_button' %>
       </div>
     <% else %> 
-      <div>
-        <%= q.submit "Search" %>
+      <div class="rap_button_box">
+        <%= q.submit "Search", :class => 'rap_button' %>
       </div>
     <% end %>
   </div>
-
-  <div id="wr_heading_row" class="word_table heading">
-    <div class="text_field overlapping">
-      <% if @query.dictionary_mode %>
-        <%= q.text_field :text, :value => (@query.text || ""), :autocomplete => :off, :class => 'main-input' %>
-      <% else %>
-        <%= q.text_field :text, :value => (@query.text || ""), :class => 'main-input' %>
-      <% end %>
-      <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-      <%= q.text_field :dictionary, :type => :hidden, :value => (@query.dictionary || "0") %>
-    </div>
-    <div class="word">
-      <!-- background -->
-    </div>
-    <div class="controls">
-      <!-- background -->
-    </div>
-    <div class="syllables"> <%= (@query.word.try(&:num_syllables) || "") unless (@query.dictionary=="1") %> </div>
-    <div class="pronunciation <%= @query.reversed_tag %>">
-      <% if @query.dictionary_mode %>
-        <% syllables = [] %>
-      <% else %>
-        <% syllables = @query.word.try(&:syllables) || [] %>
-      <% end %>
-      <% if @query.reversed_mode %>
-        <% syllables = syllables.reverse %>
-      <% end %>
-      <% syllables.each_with_index do |ph,j| %>
-        <div class="spacer <%= @query.reversed_tag %>"><%= " . " unless j == 0 %></div>
-        <div class="single_syllable <%= @query.reversed_tag %>"> <%= ph.label.gsub("-"," ") %> </div>
-      <% end %>
-    </div>
-  </div>
 <% end %>
+
+<div id="wr_heading_row" class="word_table heading">
+  <div class="word">
+    <%= @query.text %>
+  </div>
+  <div class="controls">
+    <!-- background -->
+  </div>
+  <div class="syllables"> <%= (@query.word.try(&:num_syllables) || "") unless (@query.dictionary=="1") %> </div>
+  <div class="pronunciation <%= @query.reversed_tag %>">
+    <% if @query.dictionary_mode %>
+      <% syllables = [] %>
+    <% else %>
+      <% syllables = @query.word.try(&:syllables) || [] %>
+    <% end %>
+    <% if @query.reversed_mode %>
+      <% syllables = syllables.reverse %>
+    <% end %>
+    <% syllables.each_with_index do |ph,j| %>
+      <div class="spacer <%= @query.reversed_tag %>"><%= " . " unless j == 0 %></div>
+      <div class="single_syllable <%= @query.reversed_tag %>"> <%= ph.label.gsub("-"," ") %> </div>
+    <% end %>
+  </div>
+</div>
 
 <script>
   $(document).ready(function() {
+    var reset_hidden_fields = function() {
+      $("#query_match_string").val("");
+      $("#query_word_type").val("");
+      $("#query_id").val("");
+    };
     $("#query_text").change(function() {
       $("#wr_heading_row div.pronunciation").html("");
       $("#wr_heading_row div.syllables").html("");
-      $("#query_id").val("");
-    });
-    $("#query_first_segment_text").change(function() {
-      if ($("#query_first_segment_text").val()=="") {
-        $("#query_first_segment").val("");
-      }
-    });
-    $("#query_reverse").click(function() {
-      $("#query_first_segment_text").val("");
-      $("#query_first_segment").val("");
-      if ($(".first_segment_field span").html()=="Last segment:") {
-        $(".first_segment_field span").html("First segment:");
-      } else {
-        $(".first_segment_field span").html("Last segment:");
-      }
+      reset_hidden_fields();
     });
     $("#query_text").focus().val($("#query_text").val());
     if ($("#query_dictionary").val()!="1") {
