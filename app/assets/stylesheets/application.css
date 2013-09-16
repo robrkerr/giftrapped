@@ -36,8 +36,7 @@ select {
 
 body {
   font: 13pt "Myriad Pro", Helvetica;
-  margin: 5px 10% 0 10%;
-  height: 100%;
+  margin: 5px 10% 0px 10%;
   padding: 30px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;

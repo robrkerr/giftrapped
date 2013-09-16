@@ -147,11 +147,29 @@
 	</div>
 </div>
 </div>
+<div class="quick_match_text">Quick match:</div>
 <%= form_for @query, :url => query_path do |q| %>
   <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-  <%= q.text_field :word_type, :type => :hidden, :value => @query.word_type %>
-  <%= q.text_field :match_string, :type => :hidden, :value => @query.match_string %>
-  <%= q.submit "Update", :class => 'update_button' %>
+  <%= q.text_field :word_type, :class => 'perfect_rhyme_word_type', :type => :hidden, :value => @query.word_type %>
+  <%= q.submit "Perfect Rhyme", :class => 'preset button' %>
+<% end %>
+<%= form_for @query, :url => query_path do |q| %>
+  <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
+  <%= q.text_field :word_type, :class => 'portmanteau2_word_type', :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :class => 'portmanteau2_match_string', :type => :hidden, :value => "portmanteau1" %>
+  <%= q.submit "Portmanteau 1", :class => 'preset button' %>
+<% end %>
+<%= form_for @query, :url => query_path do |q| %>
+  <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
+  <%= q.text_field :word_type, :class => 'portmanteau2_word_type', :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :class => 'portmanteau2_match_string', :type => :hidden, :value => "portmanteau2" %>
+  <%= q.submit "Portmanteau 2", :class => 'preset button' %>
+<% end %>
+<%= form_for @query, :url => query_path do |q| %>
+  <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
+  <%= q.text_field :word_type, :class => 'update_word_type', :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :class => 'update_match_string', :type => :hidden, :value => @query.match_string %>
+  <%= q.submit "Update", :class => 'update button' %>
 <% end %>
 <script>
 	$(document).ready(function() {
@@ -193,7 +211,7 @@
 					match_string += ",";
 				}
 			});
-			$("#query_match_string").val(match_string.substr(0,match_string.length-1));
+			$(".update_match_string").val(match_string.substr(0,match_string.length-1));
 		};
 		var update_diagram = function() {
 			if ($(".num_syllables_match").val() > $(".num_syllables_number").val()) {
@@ -286,8 +304,6 @@
 			}
 			resize_inner_container();
 		}
-		$(".word_type").val($("#query_word_type").val());
-		$(".word_type").val($("#query_word_type").val());
 		$(".chunk_text").each(function() {
 			$(this).bind("propertychange keyup input paste", function(event) {
 				var checkboxes = $(this).parent(".chunk").parent(".chunk_container").find(".match_boxes");
@@ -343,8 +359,8 @@
 		$(".chunk_text").change(function() {
 			populate_form_fields_from_diagram();
 		});
-		$(".word_type").change(function() {
-			$("#query_word_type").val($(".word_type").val());
-		});
+		// $(".word_type").change(function() {
+		// 	$("#update_word_type").val($(".word_type").val());
+		// });
   });
 </script>

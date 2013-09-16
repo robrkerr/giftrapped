@@ -39,68 +39,73 @@ class WordMatcher
 	# 	}
 	# end
 
-	def self.find_rhymes pronunciation, scope=Syllable, num=10, reverse=false
-		syllables = [*pronunciation].map { |word| 
-			reverse ? word.syllables : word.syllables.reverse
-		}.flatten
-		number_to_match = syllables.length
-		results = []
-		while results.length < num
-			break if number_to_match == 0
-			if syllables[number_to_match-1].stress == 0
-				number_to_match -= 1
-				next
-			end
-			rhymes = syllables[0..(number_to_match-1)].each_with_index.map { |syllable, i|
-				if reverse
-					string_beginning = "(position = #{i} AND onset_id = #{syllable[:onset_id]}"
-				else
-					string_beginning = "(r_position = #{i} AND coda_id = #{syllable[:coda_id]}"
-				end
-				string = string_beginning + " AND nucleus_id = #{syllable[:nucleus_id]}"
-				if i == (number_to_match-1)
-					if reverse
-		    			string + " AND coda_id != #{syllable[:coda_id]} AND stress > 0)"
-					else
-						string + " AND onset_id != #{syllable[:onset_id]} AND stress > 0)"
-					end
-				elsif syllable.stress > 0
-					if reverse
-		    		string + " AND (r_position > 0 OR coda_id != #{syllable[:coda_id]}) AND stress > 0)"
-					else
-						string + " AND (position > 0 OR onset_id != #{syllable[:onset_id]}) AND stress > 0)"
-					end
-		    else
-		    	if reverse
-		    		string + " AND coda_id = #{syllable[:coda_id]})"
-					else
-						string + " AND onset_id = #{syllable[:onset_id]})"
-					end
-		    end
-  		}.join(" OR ")
-  		new_results = scope.where(rhymes)
-												 .select(:pronunciation_id)
-							  				 .group(:pronunciation_id)
-							  				 .having("count(1) = #{number_to_match}")
-							  				 .order("pronunciation_id ASC")
-							  				 # .limit(num - results.length)
-			results.concat(new_results.take(num - results.length))
-			number_to_match -= 1
-		end
-		pron_ids = results.map { |r| r.pronunciation_id }
-		pronunciations = Pronunciation.find(pron_ids).group_by(&:id)
-		pron_ids.map { |id| pronunciations[id].first }
-	end
+	# def self.find_rhymes pronunciation, scope=Syllable, num=10, reverse=false
+	# 	syllables = [*pronunciation].map { |word| 
+	# 		reverse ? word.syllables : word.syllables.reverse
+	# 	}.flatten
+	# 	number_to_match = syllables.length
+	# 	results = []
+	# 	while results.length < num
+	# 		break if number_to_match == 0
+	# 		if syllables[number_to_match-1].stress == 0
+	# 			number_to_match -= 1
+	# 			next
+	# 		end
+	# 		rhymes = syllables[0..(number_to_match-1)].each_with_index.map { |syllable, i|
+	# 			if reverse
+	# 				string_beginning = "(position = #{i} AND onset_id = #{syllable[:onset_id]}"
+	# 			else
+	# 				string_beginning = "(r_position = #{i} AND coda_id = #{syllable[:coda_id]}"
+	# 			end
+	# 			string = string_beginning + " AND nucleus_id = #{syllable[:nucleus_id]}"
+	# 			if i == (number_to_match-1)
+	# 				if reverse
+	# 	    			string + " AND coda_id != #{syllable[:coda_id]} AND stress > 0)"
+	# 				else
+	# 					string + " AND onset_id != #{syllable[:onset_id]} AND stress > 0)"
+	# 				end
+	# 			elsif syllable.stress > 0
+	# 				if reverse
+	# 	    		string + " AND (r_position > 0 OR coda_id != #{syllable[:coda_id]}) AND stress > 0)"
+	# 				else
+	# 					string + " AND (position > 0 OR onset_id != #{syllable[:onset_id]}) AND stress > 0)"
+	# 				end
+	# 	    else
+	# 	    	if reverse
+	# 	    		string + " AND coda_id = #{syllable[:coda_id]})"
+	# 				else
+	# 					string + " AND onset_id = #{syllable[:onset_id]})"
+	# 				end
+	# 	    end
+ #  		}.join(" OR ")
+ #  		new_results = scope.where(rhymes)
+	# 											 .select(:pronunciation_id)
+	# 						  				 .group(:pronunciation_id)
+	# 						  				 .having("count(1) = #{number_to_match}")
+	# 						  				 .order("pronunciation_id ASC")
+	# 						  				 # .limit(num - results.length)
+	# 		results.concat(new_results.take(num - results.length))
+	# 		number_to_match -= 1
+	# 	end
+	# 	pron_ids = results.map { |r| r.pronunciation_id }
+	# 	pronunciations = Pronunciation.find(pron_ids).group_by(&:id)
+	# 	pron_ids.map { |id| pronunciations[id].first }
+	# end
 
 	def self.find_words syllables_to_match, num_syllables, match_at_least_num=true, end_syllable_to_match=false, reverse=false, num=10
 		syllables_to_match.map! { |s| s ? self.convert_segment_labels_to_ids(s) : s }
+		p syllables_to_match
+		p reverse
+		p num_syllables
 		syllable_index_offset = reverse ? syllables_to_match.index { |s| s } : syllables_to_match.reverse.index { |s| s }
 		number_to_match = syllables_to_match.count { |e| e }
+		p syllable_index_offset
 		if !reverse
 			sql_string = syllables_to_match.reverse.each_with_index.map { |syllable,i|
 				if syllable
-					string = "(r_position = #{i+syllable_index_offset}"
-					string += " AND position #{match_at_least_num ? ">" : ""}= #{num_syllables-1-i-syllable_index_offset}" if (i+syllable_index_offset) == 0
+					new_i = syllables_to_match.first ? i-syllable_index_offset : i+syllable_index_offset
+					string = "(r_position = #{new_i}"
+					string += " AND position #{match_at_least_num ? ">" : ""}= #{num_syllables-1-new_i}" if new_i == 0
 					string + self.sql_string_for_syllable(syllable) + ")"
 				else 
 					""
@@ -115,8 +120,9 @@ class WordMatcher
 		else
 			sql_string = syllables_to_match.each_with_index.map { |syllable,i|
 				if syllable
-					string = "(position = #{i-syllable_index_offset}"
-					string += " AND r_position #{match_at_least_num ? ">" : ""}= #{num_syllables-1-i+syllable_index_offset}" if (i-syllable_index_offset) == 0
+					new_i = syllables_to_match.first ? i+syllable_index_offset : i-syllable_index_offset
+					string = "(position = #{new_i}"
+					string += " AND r_position #{match_at_least_num ? ">" : ""}= #{num_syllables-1-new_i}" if new_i == 0
 					string + self.sql_string_for_syllable(syllable) + ")"
 				else 
 					""

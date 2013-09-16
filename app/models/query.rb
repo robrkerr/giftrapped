@@ -20,7 +20,6 @@ class Query
 
   def initialize params = {}
     @match_string = params[:match_string] || ""
-    @match_details = parse_match_string(@match_string)
     @word_type = params[:word_type] || ""
     @dictionary = params[:dictionary] || "0"
     @auto_complete = params[:autocomplete] || "words"
@@ -35,7 +34,17 @@ class Query
       @word = Spelling.where(:label => @text).try(&:first).try(&:words).try(&:first) || nil
       @id = @word.id if @word
     end
-    @match_details = default_match_details if @word && @match_details.empty?
+    if @word
+      if @match_string == "" || @match_string == "perfect_rhyme"
+        @match_details = perfect_rhyme_match_details
+      elsif @match_string == "portmanteau1"
+        @match_details = portmanteau1_match_details
+      elsif @match_string == "portmanteau2"
+        @match_details = portmanteau2_match_details
+      else
+        @match_details = parse_match_string @match_string
+      end
+    end
   end
 
   def parse_match_string string
@@ -65,7 +74,7 @@ class Query
     false
   end
 
-  def default_match_details
+  def perfect_rhyme_match_details
     num = @word.last_stressed_syllable
     num = ((@word.syllables.length - num) > 3) ? (@word.syllables.length - 3) : num
     word_syllables = @word.syllables.reverse[num..-1]
@@ -74,6 +83,24 @@ class Query
     }
     word_syllables[0][0][1] = false
     match_details = [false,[0,true]] + [false]*num + word_syllables + [false,false]
+  end
+
+  def portmanteau1_match_details
+    num = @word.syllables.length - 1
+    word_syllables = @word.syllables.reverse[-1..-1]
+    word_syllables.map! { |s| 
+      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
+    }
+    match_details = [false,false] + [false]*num + word_syllables + [[1,true],false]
+  end
+
+  def portmanteau2_match_details
+    num = @word.syllables.length - 1
+    word_syllables = @word.syllables.reverse[0..0]
+    word_syllables.map! { |s| 
+      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
+    }
+    match_details = [false,[1,true]] + word_syllables + [false]*num + [false,false]
   end
 
   def match_total_syllables
@@ -225,7 +252,6 @@ class Query
                                    .order("position ASC").group_by(&:pronunciation_id)
     words.each_with_index.map { |word,i| 
       syllables = word_id_to_syllables[word.pronunciation_id]
-      # p linked_results
       lexemes = linked_results[word.id].each_with_index.map { |word_lexeme,j|
         if word_lexeme["word_class"] && word_lexeme["gloss"]
           "#{j+1}: (" + word_lexeme["word_class"] + ") " + word_lexeme["gloss"] + "."

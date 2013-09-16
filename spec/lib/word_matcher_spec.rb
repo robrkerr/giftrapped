@@ -7,34 +7,34 @@ require 'phonetic_word_reader'
 describe WordMatcher do
 	subject { WordMatcher }
 
-	context "can find some rhymes (in the test word set)" do
-		let(:rhyming_pronunciations) { subject.find_rhymes pronunciation }
-		before do 
-			read_words = PhoneticWordReader.read_words "data/cmudict.0.7a.partial"
-			words = SyllableStructurer.new.prepare_words read_words
-			Seeder.new(false).seed_words words, 0
-		end
+	# context "can find some rhymes (in the test word set)" do
+	# 	let(:rhyming_pronunciations) { subject.find_rhymes pronunciation }
+	# 	before do 
+	# 		read_words = PhoneticWordReader.read_words "data/cmudict.0.7a.partial"
+	# 		words = SyllableStructurer.new.prepare_words read_words
+	# 		Seeder.new(false).seed_words words, 0
+	# 	end
 
-		context "when it finds what rhymes with house" do
-			let(:pronunciation) { Spelling.where(label: "house").first.words.first.pronunciation }
+	# 	context "when it finds what rhymes with house" do
+	# 		let(:pronunciation) { Spelling.where(label: "house").first.words.first.pronunciation }
 			
-			it { rhyming_pronunciations.length.should eql(1) }
-			it { rhyming_pronunciations.first.spellings.first.label.should eql("mouse") }
-		end
+	# 		it { rhyming_pronunciations.length.should eql(1) }
+	# 		it { rhyming_pronunciations.first.spellings.first.label.should eql("mouse") }
+	# 	end
 
-		context "when it finds what rhymes with mouse" do
-			let(:pronunciation) { Spelling.where(label: "mouse").first.words.first.pronunciation }
+	# 	context "when it finds what rhymes with mouse" do
+	# 		let(:pronunciation) { Spelling.where(label: "mouse").first.words.first.pronunciation }
 			
-			it { rhyming_pronunciations.length.should eql(1) }
-			it { rhyming_pronunciations.first.spellings.first.label.should eql("house") }
-		end
+	# 		it { rhyming_pronunciations.length.should eql(1) }
+	# 		it { rhyming_pronunciations.first.spellings.first.label.should eql("house") }
+	# 	end
 
-		context "when it finds what rhymes with cutthroat" do
-			let(:pronunciation) { Spelling.where(label: "cutthroat").first.words.first.pronunciation }
+	# 	context "when it finds what rhymes with cutthroat" do
+	# 		let(:pronunciation) { Spelling.where(label: "cutthroat").first.words.first.pronunciation }
 
-			it { rhyming_pronunciations.length.should eql(0) }
-		end
-	end
+	# 		it { rhyming_pronunciations.length.should eql(0) }
+	# 	end
+	# end
 
 	context "can find matching words (from the test word set)" do
 		let(:matching_pronunciations) { subject.find_words syllables_to_match, num_syllables }
@@ -44,13 +44,35 @@ describe WordMatcher do
 			Seeder.new(false).seed_words words, 0
 		end
 
-		context "when it finds what rhymes with house" do
-			let(:pronunciation) { Spelling.where(label: "house").first.words.first.pronunciation }
-			let(:syllables_to_match) { pronunciation.syllables.map { |s| [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] } }
-			let(:num_syllables) { 1 }
-			
-			it { matching_pronunciations.length.should eql(1) }
-			it { matching_pronunciations.first.spellings.first.label.should eql("mouse") }
+		context "when it finds words that rhyme" do
+			let(:syllables_to_match) { 
+				new_syllables = pronunciation.syllables.map { |s| 
+					[[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
+				} 
+				new_syllables.first[0][1] = false
+				new_syllables
+			}
+			let(:num_syllables) { pronunciation.syllables.length }
+
+			context "with house" do
+				let(:pronunciation) { Spelling.where(label: "house").first.words.first.pronunciation }
+				
+				it { matching_pronunciations.length.should eql(1) }
+				it { matching_pronunciations.first.spellings.first.label.should eql("mouse") }
+			end
+
+			context "with mouse" do
+				let(:pronunciation) { Spelling.where(label: "mouse").first.words.first.pronunciation }
+				
+				it { matching_pronunciations.length.should eql(1) }
+				it { matching_pronunciations.first.spellings.first.label.should eql("house") }
+			end
+
+			context "with cutthroat" do
+				let(:pronunciation) { Spelling.where(label: "cutthroat").first.words.first.pronunciation }
+
+				it { matching_pronunciations.length.should eql(0) }
+			end
 		end
 	end
 end

@@ -8,14 +8,14 @@
 .outer_container {
 	height:               240px;
 	width:                1000px;
-	padding:              20px 30px 0px;
+	padding:              10px 30px 10px;
 	overflow-x:           scroll;
   overflow-y:           hidden;
 	white-space:          nowrap;
 }
 
 .num_syllables_box {
-	margin:               30px 20px 0px;
+	margin:               15px 8px 0px;
 }
 
 .inner_container {
@@ -23,12 +23,32 @@
 	margin:               0px auto;
 }
 
-.update_button {
+.button {
   height:               32px;
   border:               none;
-  width:                90px;
+  background-color:     rgb(192,192,192);
+}
+
+.update.button {
   margin:               0px 0px 15px;
   float:                right;
+  width:                90px;
+}
+
+.quick_match_text {
+	height:               32px;
+	margin:               0px 0px 15px 0px;
+  float:                left;
+  width:                120px;
+  padding:              8px;
+}
+.preset.button {
+	/*display: inline-block;*/
+  margin:               0px 0px 15px 10px;
+  float:                left;
+  width:                150px;
+  text-align:           center;
+  padding:              5px;
 }
 
 .chunk_text {
