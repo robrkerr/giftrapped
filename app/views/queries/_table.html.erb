@@ -1,6 +1,6 @@
 <% @query.words_to_show.each_with_index do |result,i| %>
   <% word = result[:primary_word] %>
-  <div id="wr_<%= i %>_" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
+  <div id="wr_<%= i %>_" class="word_table word_row<%= (@query.word) ? " result_simple" : "" %>">
     <div class="word <%= result[:even_tag] %>"> 
       <!-- <%= word[:name] %>  -->
       <%= link_to word[:name], @query.rhyming_link(word[:word_id]) %>
@@ -10,7 +10,11 @@
       <!-- <b data-phonemes="<%= result[:pronunciation_label] %>" class="audio">P</b> -->
       <!-- <%= link_to "D", edit_word_path(word[:word_id]) %> -->
       <!-- <%= link_to "Rhyme", @query.rhyming_link(word[:word_id]) %> -->
-      <%= "↓" if word[:lexemes].length > 0 || result[:other_words].length > 0 %>
+      <% if word[:lexemes].length > 0 %>
+        ↓
+      <% elsif result[:other_words].length > 0 %>
+        ↓
+      <% end %>
     </div>
     <div class="syllables <%= result[:even_tag] %>"> 
       <%= word[:num_syllables] %> 
@@ -34,7 +38,7 @@
       </div>
     <% end %>
     <% result[:other_words].each do |other_word| %>
-      <div>
+      <div class="word_row">
         <div class="word <%= result[:even_tag] %>"> 
           <!-- <%= other_word[:name] %>  -->
           <%= link_to other_word[:name], @query.rhyming_link(other_word[:word_id]) %>
@@ -69,7 +73,7 @@
   </div>
 <% end %>
 <% if (@query.dictionary=="1") && (@query.text != "") %>
-  <div id="new_entry" class="word_table<%= (@query.word) ? " result_simple" : "" %>">
+  <div id="new_entry" class="word_table word_row<%= (@query.word) ? " result_simple" : "" %>">
     <div class="word <%= (@query.words_to_show.length%2==0) ? "even" : "odd" %>"> 
       <%= link_to "add new word...", new_word_path({:text => @query.text}), :class => "word_link" %> 
     </div>

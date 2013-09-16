@@ -38,6 +38,7 @@ body {
   font: 13pt "Myriad Pro", Helvetica;
   margin: 5px 10% 0px 10%;
   padding: 30px;
+  /*height: 1300px;*/
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 }
@@ -144,10 +145,15 @@ div.even {
 }
 
 div.word_table {
+  display: block;
   width:          1000px;
   /*height:         auto;*/
   /*margin-bottom:  0px;*/
   /*margin-top:     0px;*/
+}
+
+.word_row {
+  height: 48px;
 }
 
 div.word {
@@ -165,6 +171,7 @@ div.controls {
   height:         48px;
   padding-top:    12px;
   padding-bottom: 12px;
+  text-align: center;
 }
 
 div.syllables {
@@ -205,7 +212,7 @@ div.lexemes {
 }
 
 div.lexeme_spacer {
-  float:          left;
+  /*float:          left;*/
   width:          1000px;
   height:         15px;
 }
