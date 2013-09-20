@@ -150,19 +150,25 @@
 <div class="quick_match_text">Quick match:</div>
 <%= form_for @query, :url => query_path do |q| %>
   <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-  <%= q.text_field :word_type, :class => 'perfect_rhyme_word_type', :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :word_type, :type => :hidden, :value => @query.word_type %>
   <%= q.submit "Perfect Rhyme", :class => 'preset button' %>
 <% end %>
+<!-- <%= form_for @query, :url => query_path do |q| %>
+  <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
+  <%= q.text_field :word_type, :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :type => :hidden, :value => @query.vowels_only_match_string %>
+  <%= q.submit "Vowels Only", :class => 'preset button' %>
+<% end %> -->
 <%= form_for @query, :url => query_path do |q| %>
   <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-  <%= q.text_field :word_type, :class => 'portmanteau2_word_type', :type => :hidden, :value => @query.word_type %>
-  <%= q.text_field :match_string, :class => 'portmanteau2_match_string', :type => :hidden, :value => "portmanteau1" %>
+  <%= q.text_field :word_type, :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :type => :hidden, :value => @query.portmanteau1_match_string %>
   <%= q.submit "Portmanteau 1", :class => 'preset button' %>
 <% end %>
 <%= form_for @query, :url => query_path do |q| %>
   <%= q.text_field :id, :type => :hidden, :value => (@query.id || "") %>
-  <%= q.text_field :word_type, :class => 'portmanteau2_word_type', :type => :hidden, :value => @query.word_type %>
-  <%= q.text_field :match_string, :class => 'portmanteau2_match_string', :type => :hidden, :value => "portmanteau2" %>
+  <%= q.text_field :word_type, :type => :hidden, :value => @query.word_type %>
+  <%= q.text_field :match_string, :type => :hidden, :value => @query.portmanteau2_match_string %>
   <%= q.submit "Portmanteau 2", :class => 'preset button' %>
 <% end %>
 <%= form_for @query, :url => query_path do |q| %>

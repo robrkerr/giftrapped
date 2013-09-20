@@ -35,12 +35,8 @@ class Query
       @id = @word.id if @word
     end
     if @word
-      if @match_string == "" || @match_string == "perfect_rhyme"
-        @match_details = perfect_rhyme_match_details
-      elsif @match_string == "portmanteau1"
-        @match_details = portmanteau1_match_details
-      elsif @match_string == "portmanteau2"
-        @match_details = portmanteau2_match_details
+      if @match_string == ""
+        @match_details = parse_match_string perfect_rhyme_match_string
       else
         @match_details = parse_match_string @match_string
       end
@@ -74,33 +70,50 @@ class Query
     false
   end
 
-  def perfect_rhyme_match_details
+  def perfect_rhyme_match_string
     num = @word.last_stressed_syllable
     num = ((@word.syllables.length - num) > 3) ? (@word.syllables.length - 3) : num
     word_syllables = @word.syllables.reverse[num..-1]
-    word_syllables.map! { |s| 
-      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
-    }
-    word_syllables[0][0][1] = false
-    match_details = [false,[0,true]] + [false]*num + word_syllables + [false,false]
+    word_syllables_str = word_syllables.each_with_index.map { |s,i|
+      if i == 0
+        "#{s.onset.label};false:#{s.nucleus.label}#{s.stress};true:#{s.coda.label};true" 
+      else
+        "#{s.onset.label};true:#{s.nucleus.label}#{s.stress};true:#{s.coda.label};true" 
+      end
+    }.join(",")
+    return "false,0:true," + (["false,"]*num).join("") + word_syllables_str + ",false,false"
   end
 
-  def portmanteau1_match_details
+  def vowels_only_match_string
+    num = @word.last_stressed_syllable
+    num = ((@word.syllables.length - num) > 3) ? (@word.syllables.length - 3) : num
+    word_syllables = @word.syllables.reverse[num..-1]
+    word_syllables_str = word_syllables.each_with_index.map { |s,i|
+      if i == 0
+        "#{s.onset.label};false:#{s.nucleus.label}#{s.stress};true:*;true" 
+      else
+        "*;true:#{s.nucleus.label}#{s.stress};true:*;true" 
+      end
+    }.join(",")
+    return "false,0:true," + (["false,"]*num).join("") + word_syllables_str + ",false,false"
+  end
+
+  def portmanteau1_match_string
     num = @word.syllables.length - 1
     word_syllables = @word.syllables.reverse[-1..-1]
-    word_syllables.map! { |s| 
-      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
-    }
-    match_details = [false,false] + [false]*num + word_syllables + [[1,true],false]
+    word_syllables_str = word_syllables.map { |s|
+      "#{s.onset.label};true:#{s.nucleus.label}#{s.stress};true:#{s.coda.label};true" 
+    }.join(",")
+    return "false,false," + (["false,"]*num).join("") + word_syllables_str + ",1:true,false"
   end
 
-  def portmanteau2_match_details
+  def portmanteau2_match_string
     num = @word.syllables.length - 1
     word_syllables = @word.syllables.reverse[0..0]
-    word_syllables.map! { |s| 
-      [[s.onset.label,true],[s.nucleus.label + "#{s.stress}",true],[s.coda.label,true]] 
-    }
-    match_details = [false,[1,true]] + word_syllables + [false]*num + [false,false]
+    word_syllables_str = word_syllables.map { |s|
+      "#{s.onset.label};true:#{s.nucleus.label}#{s.stress};true:#{s.coda.label};true" 
+    }.join(",")
+    return "false,1:true," + word_syllables_str + ([",false"]*num).join("") + ",false,false"
   end
 
   def match_total_syllables
@@ -212,32 +225,32 @@ class Query
     }
   end
 
-  def auto_complete_segments number
-    return [] unless @term
-    if reversed_mode
-      segments = Segment.select([:id,:label,:segment_type])
-                     .where(["label LIKE ? AND segment_type > ?", "#{@term}%", 0])
-                     .order(:label)
-                     .limit(number)
-      segments.map { |segment| {
-          :label => segment.label, 
-          :id => segment.id,
-          :type => segment.segment_type
-        }
-      }
-    else
-      segments = Segment.select([:id,:label,:segment_type])
-                        .where(["label LIKE ? AND segment_type < ?", "#{@term}%", 2])
-                        .order(:label)
-                        .limit(number)
-      segments.map { |segment| {
-          :label => segment.label, 
-          :id => segment.id,
-          :type => segment.segment_type
-        }
-      }
-    end
-  end
+  # def auto_complete_segments number
+  #   return [] unless @term
+  #   if reversed_mode
+  #     segments = Segment.select([:id,:label,:segment_type])
+  #                    .where(["label LIKE ? AND segment_type > ?", "#{@term}%", 0])
+  #                    .order(:label)
+  #                    .limit(number)
+  #     segments.map { |segment| {
+  #         :label => segment.label, 
+  #         :id => segment.id,
+  #         :type => segment.segment_type
+  #       }
+  #     }
+  #   else
+  #     segments = Segment.select([:id,:label,:segment_type])
+  #                       .where(["label LIKE ? AND segment_type < ?", "#{@term}%", 2])
+  #                       .order(:label)
+  #                       .limit(number)
+  #     segments.map { |segment| {
+  #         :label => segment.label, 
+  #         :id => segment.id,
+  #         :type => segment.segment_type
+  #       }
+  #     }
+  #   end
+  # end
 
   def dictionary_results text
     spelling = Spelling.where(label: text).first
@@ -300,7 +313,8 @@ class Query
   end
 
   def rhyming_link word_id
-    optional_params.merge({:id => word_id})
+    # optional_params.merge({:id => word_id})
+    {:id => word_id}
   end
 
   def words_to_show
@@ -329,8 +343,6 @@ class Query
   end
 
   def run_query
-    # scope = filter_by_first_segment filter_by_num_syllables(Syllable)
-    # pronunciations = WordMatcher.find_rhymes @word.pronunciation, scope, @number_of_results, reversed_mode
     pronunciations = WordMatcher.find_words(@match_details[2..-3], 
                                             match_total_syllables, 
                                             match_at_least, 
@@ -377,56 +389,6 @@ class Query
   def word_type_filter_options
     opts = ["","noun","adj","adv","verb"]
     opts.zip(opts)
-  end
-
-  private
-
-  def filter_by_first_segment scope
-    if @first_segment.present?
-      case first_segment_type
-      when 0
-        segment_condition = "onset_id = #{@first_segment}"
-      when 1
-        if reversed_mode
-          blank_id = Segment.select(:id).where({label: "", segment_type: 2}).first.id
-          segment_condition = "nucleus_id = #{@first_segment} AND coda_id = #{blank_id}"
-        else
-          blank_id = Segment.select(:id).where({label: "", segment_type: 0}).first.id
-          segment_condition = "nucleus_id = #{@first_segment} AND onset_id = #{blank_id}"
-        end
-      when 2
-        segment_condition = "coda_id = #{@first_segment}"
-      end
-      if reversed_mode
-        position_condition = "r_position = 0"
-      else
-        position_condition = "position = 0"
-      end
-      filtered_pronunciations = <<-SQL
-        INNER JOIN (SELECT pronunciation_id AS filtered_pronunciation_id 
-          FROM syllables 
-          WHERE #{position_condition} 
-          AND #{segment_condition})
-        AS fw1 ON fw1.filtered_pronunciation_id = syllables.pronunciation_id
-      SQL
-      scope.joins(filtered_pronunciations)
-    else
-      scope
-    end
-  end
-
-  def filter_by_num_syllables scope
-    if @num_syllables.present?
-      filtered_pronunciations = <<-SQL
-        INNER JOIN (SELECT pronunciation_id AS filtered_pronunciation_id
-          FROM syllables GROUP BY pronunciation_id 
-          HAVING count(1) = #{@num_syllables})
-        AS fw2 ON fw2.filtered_pronunciation_id = syllables.pronunciation_id
-      SQL
-      scope.joins(filtered_pronunciations)
-    else
-      scope
-    end
   end
 
 end
