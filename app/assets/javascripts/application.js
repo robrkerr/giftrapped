@@ -6,7 +6,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery.ui.autocomplete
-//= require jquery.ui.effect-slide
+//= require jquery-ui-1.10.3.custom.min
 //= require_tree .
 //= require jquery.tokeninput

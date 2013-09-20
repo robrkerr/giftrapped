@@ -20,8 +20,8 @@ group :assets do
 end
 
 gem 'jquery-rails'
-gem 'jquery-ui-rails'
-gem 'jquery-ui-themes'
+# gem 'jquery-ui-rails'
+# gem 'jquery-ui-themes'
 
 # gem 'mime-types', :require => 'mime/types'
 
